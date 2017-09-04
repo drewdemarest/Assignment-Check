@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network widgets networkauth
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,11 +24,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp
+    main.cpp \
+    mainwindow.cpp \
+    gmTypes/gm_i18nlocale.cpp \
+    gmTypes/gm_organization.cpp \
+    gmTypes/gmorganization.cpp \
+    netcode/netconnect.cpp \
+    netcode/oauthnetconnect.cpp
 
 HEADERS += \
-        mainwindow.h
+    mainwindow.h \
+    gmTypes/gm_i18nlocale.h \
+    gmTypes/gm_organization.h \
+    jsonTypes/jsonType.hpp \
+    netcode/netconnect.h \
+    netcode/oauthnetconnect.h \
 
 FORMS += \
         mainwindow.ui
