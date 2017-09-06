@@ -30,7 +30,8 @@ SOURCES += \
     gmTypes/gm_organization.cpp \
     gmTypes/gmorganization.cpp \
     netcode/netconnect.cpp \
-    netcode/oauthnetconnect.cpp
+    netcode/oauthnetconnect.cpp \
+    masterroute/masterroute.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -39,6 +40,7 @@ HEADERS += \
     jsonTypes/jsonType.hpp \
     netcode/netconnect.h \
     netcode/oauthnetconnect.h \
+    masterroute/masterroute.h
 
 FORMS += \
         mainwindow.ui

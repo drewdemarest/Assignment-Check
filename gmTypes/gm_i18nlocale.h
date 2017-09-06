@@ -53,13 +53,6 @@ private:
     JsonType<QString>         digitalGrouping;
 
     QJsonObject           jsonForm;
-
-//    QMap<QString, shared_ptr<QVariant>> testMap
-//    {
-//        {"Test0", key},
-//        {"Test1", language}
-//    };
-    shared_ptr<QString> testPtr = make_shared<QString>(QString("Potato"));
 };
 
 #endif // GM_I18NLOCALE_H

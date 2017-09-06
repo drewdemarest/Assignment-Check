@@ -47,7 +47,7 @@ public:
 
 private:
     //Construct happisly exists within each constructor.
-    //This can be overloaded or not because of its inline status.
+    //This can be overloaded (or not) because of its inline status.
     inline void construct();
 
     QString         key;
