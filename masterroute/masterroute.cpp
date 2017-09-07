@@ -14,6 +14,8 @@ void MasterRoute::buildRoutes(const QByteArray &qba)
 {
     Route route;
     int matchIdx = -1;
+    bool foundDate = false;
+
     QJsonObject routeSheet = QJsonDocument::fromJson(qba).object();
     QJsonArray routeArray = routeSheet["values"].toArray();
     QJsonArray routeTuple;
@@ -123,9 +125,7 @@ void MasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPrecedence)
         const int trailerIndex =      routeIndexVector.at(3);
         const int notesIndex =        routeIndexVector.at(4);
 
-
-
-        //everything builds relative to the route. Route is 0, all other feilds
+        //everything builds relative to the route. Route is 0, all other fields
         //are calculated based on the difference between them and route
         routeOffset = routeIndex - routeIndex;
         driverOffset = driverIndex - routeIndex;

@@ -25,9 +25,11 @@ private:
     int notesOffset = 4;
 
     QVector<Route> routes;
-    QRegExp routeRegExp = QRegExp("^[A-Z]-[A-Z,0-9]{3}");
-    QRegExp driverRegExp = QRegExp("(\\w')?(\\w+),\\s[A-Z]");
-    QRegExp equipmentRegExp = QRegExp("\\b\\d+\\b");
+
+    QRegExp mrsSheetDateRegExp  = QRegExp("\\d+-[A-Z,a-z]{3}-\\d+");
+    QRegExp routeRegExp         = QRegExp("^[A-Z]-[A-Z,0-9]{3}");
+    QRegExp driverRegExp        = QRegExp("(\\w')?(\\w+),\\s[A-Z]");
+    QRegExp equipmentRegExp     = QRegExp("\\b\\d+\\b");
 
     enum routeInfo {key, driver, powerUnit, trailer};
 
