@@ -40,7 +40,8 @@ HEADERS += \
     jsonTypes/jsonType.hpp \
     netcode/netconnect.h \
     netcode/oauthnetconnect.h \
-    masterroute/masterroute.h
+    masterroute/masterroute.h \
+    masterroute/route.h
 
 FORMS += \
         mainwindow.ui

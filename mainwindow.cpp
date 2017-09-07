@@ -13,7 +13,12 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << credFilePath;
     qDebug() << address;
     oauthConn->buildOAuth(scope, address, credFilePath);
-    qDebug() << oauthConn->get();
+    MasterRoute mrs;
+
+    QStringList alteredRoutePrecedence {"driver", "powerUnit", "trailer", "route", "notes"};
+    mrs.setRouteInfoPrecedence(alteredRoutePrecedence);
+    mrs.buildRoutes(oauthConn->get());
+    //qDebug() << oauthConn->get();
 }
 
 MainWindow::~MainWindow()

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <netcode/oauthnetconnect.h>
+#include <masterroute/masterroute.h>
 
 namespace Ui {
 class MainWindow;
