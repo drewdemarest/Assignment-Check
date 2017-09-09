@@ -22,6 +22,7 @@ OAuthNetConnect::OAuthNetConnect(const QString &scope, const QString &address, c
 
 OAuthNetConnect::~OAuthNetConnect()
 {
+    oauthSettings->deleteLater();
 }
 
 void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, const QString &credentialFilePath)
@@ -63,7 +64,10 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
 
     if(tokenExpire < QDateTime(QDateTime::currentDateTime()))
     {
-        qDebug() << "make reply handler?" << bool(tokenExpire < QDateTime::currentDateTime());
+        //Seems like reply handler always exists within QOAuth2AuthorizationCodeFlow...
+        //So I delete whatever is in there and then allocate on the stack.
+        //oauth2NetworkAccess->replyHandler()->deleteLater();
+
         auto replyHandler = new QOAuthHttpServerReplyHandler(port, this);
         oauth2NetworkAccess->setReplyHandler(replyHandler);
     }
@@ -150,7 +154,7 @@ QByteArray OAuthNetConnect::get()
 
     if(reply->errorString() == QNetworkReply::AuthenticationRequiredError)
     {
-        qDebug() << "err1" << reply->errorString();
+        qDebug() << reply->errorString();
         oauth2NetworkAccess->grant();
     }
     else
@@ -168,26 +172,31 @@ void OAuthNetConnect::debugReply()
     qDebug() << oauth2NetworkAccess->authorizationUrl();
     QNetworkReply *reply = oauth2NetworkAccess->get(QUrl(address));
 
-    while(!reply->isFinished())
+    while(waitingForOauth)
+    {
+        usleep(1000);
         qApp->processEvents();
-
+    }
     if(reply->errorString() == QNetworkReply::AuthenticationRequiredError)
     {
         qDebug() << reply->errorString();
         oauth2NetworkAccess->grant();
     }
+    if(reply->errorString() != QNetworkReply::NoError)
+    {
+       qDebug() << reply->errorString();
+    }
     else
         qDebug() << reply->readAll();
+
     reply->deleteLater();
 }
 
 void OAuthNetConnect::oauthGranted()
 {
     waitingForOauth = false;
-    qDebug() << "Auth granted, yaaay!";
     oauthToken = oauth2NetworkAccess->token();
     tokenExpire = oauth2NetworkAccess->expirationAt();
-    qDebug() << "granted: token expires at" << tokenExpire.toString();
     saveSettings();
     oauthSettings->sync();
 }

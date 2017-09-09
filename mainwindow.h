@@ -19,7 +19,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    OAuthNetConnect *oauthConn = new OAuthNetConnect(this);
+    MasterRoute mrs;
 };
 
 #endif // MAINWINDOW_H

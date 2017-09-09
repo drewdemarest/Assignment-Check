@@ -7,18 +7,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QString scope = "https://www.googleapis.com/auth/spreadsheets.readonly";
-    QString address = "https://sheets.googleapis.com/v4/spreadsheets/1KA7c9bbG2p4f8SFe5ibbkIycwt0wukRe2_xpTB3SI6A/values/Monday";
-    QString credFilePath = QApplication::applicationDirPath() + "/client.json";
-    qDebug() << credFilePath;
-    qDebug() << address;
-    oauthConn->buildOAuth(scope, address, credFilePath);
-    MasterRoute mrs;
-
-    QStringList alteredRoutePrecedence {"driver", "powerUnit", "trailer", "route", "notes"};
-    mrs.setRouteInfoPrecedence(alteredRoutePrecedence);
-    mrs.buildRoutes(oauthConn->get());
-    //qDebug() << oauthConn->get();
+    QStringList routePrec = {"route", "junk", "driver", "powerUnit", "trailer", "junk", "notes"};
+    mrs.setRouteInfoPrecedence(routePrec);
+    mrs.buildRoutes();
 }
 
 MainWindow::~MainWindow()

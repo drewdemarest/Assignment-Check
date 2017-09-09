@@ -2,21 +2,21 @@
 
 MasterRoute::MasterRoute(QObject *parent) : QObject(parent)
 {
-
+    qDebug() << queryRouteStartTimes();
 }
 
-void MasterRoute::buildRoutes(const QJsonObject &qjo)
+void MasterRoute::buildRoutes()
 {
+    QDate sheetDate;
+    QString dateFormat = "d-MMM-yyyy";
 
-}
-
-void MasterRoute::buildRoutes(const QByteArray &qba)
-{
     Route route;
     int matchIdx = -1;
     bool foundDate = false;
 
-    QJsonObject routeSheet = QJsonDocument::fromJson(qba).object();
+    QString dayOfWeekToQuery = "test";
+
+    QJsonObject routeSheet = QJsonDocument::fromJson(queryRoutes(dayOfWeekToQuery)).object();
     QJsonArray routeArray = routeSheet["values"].toArray();
     QJsonArray routeTuple;
 
@@ -25,58 +25,59 @@ void MasterRoute::buildRoutes(const QByteArray &qba)
     QVector<int> driverFound;
     QVector<int> miscFound;;
 
-    for(int i = 0; i < routeArray.size(); i++)
+    for(int row = 0; row < routeArray.size(); row++)
     {
         routeKeyFound.clear();
         equipmentFound.clear();
         driverFound.clear();
         miscFound.clear();
 
-        routeTuple = routeArray.at(i).toArray();
+        routeTuple = routeArray.at(row).toArray();
 
-        for(int j = 0; j < routeTuple.size(); j++)
+        for(int col = 0; col < routeTuple.size(); col++)
         {
-            matchIdx = -1;
-            matchIdx = routeRegExp.indexIn(routeTuple.at(j).toString());
-            if(matchIdx != -1)
+            for(int k = 0; k < regExpVector.size(); k++)
             {
-                //qDebug() << "Row" << i << "Col" << j << "Route:" << routeRegExp.cap(matchIdx);
-                routeKeyFound.append(j);
-                continue;
-            }
+                if(foundDate && k == matchSheetDate)
+                    continue;
 
-            matchIdx = -1;
-            matchIdx = driverRegExp.indexIn(routeTuple.at(j).toString());
-            if(matchIdx != -1)
-            {
-                //qDebug() << "Row" << i << "Col" << j << "Driver:" << driverRegExp.cap(matchIdx);
-                driverFound.append(j);
-                continue;
-            }
+                qDebug() << k;
+                matchIdx = -1;
+                matchIdx = regExpVector.at(k)->indexIn(routeTuple.at(col).toString());
+                if(matchIdx != -1)
+                {
+                    switch(k)
+                    {
+                    case matchSheetDate:
+                        sheetDate = QDate::fromString(mrsSheetDateRegExp.cap(matchIdx), dateFormat);
+                        foundDate = true;
+                        break;
 
-            matchIdx = -1;
-            matchIdx = equipmentRegExp.indexIn(routeTuple.at(j).toString());
-            if(matchIdx != -1)
-            {
-                //qDebug() << "Row" << i << "Col" << j << "Equipment:" << equipmentRegExp.cap(matchIdx);
-                equipmentFound.append(j);
-                continue;
-            }
+                    case matchRoute:
+                        routeKeyFound.append(col);
+                        break;
 
-            miscFound.append(j);
+                    case matchDriver:
+                        driverFound.append(col);
+                        break;
+
+                    case matchEquipment:
+                        equipmentFound.append(col);
+                        break;
+                    }
+                }
+            }
         }
+
 
         for(auto expectedRouteKeyCol: routeKeyFound)
         {
             route = Route();
-            //qDebug() << routeTuple.at(0).toString();
-            //qDebug() << routeInfoPrecedence;
+
             int expectedDriverCol = expectedRouteKeyCol +  driverOffset;
             int expectedPowerUnitCol = expectedRouteKeyCol + powerUnitOffset;
             int expectedTrailerCol = expectedRouteKeyCol + trailerOffset;
-            int expectedNotesCol = expectedRouteKeyCol + notesOffset;
-
-            //qDebug() << expectedRouteKeyCol << expectedDriverCol << expectedPowerUnitCol << expectedTrailerCol << expectedNotesCol;
+            //int expectedNotesCol = expectedRouteKeyCol + notesOffset;
 
             route.routeKey = routeTuple.at(expectedRouteKeyCol).toString();
 
@@ -89,12 +90,17 @@ void MasterRoute::buildRoutes(const QByteArray &qba)
             if(equipmentFound.contains(expectedTrailerCol))
                 route.trailerNumber = routeTuple.at(expectedTrailerCol).toString();
 
-            if(miscFound.contains(expectedNotesCol))
-                route.notes = routeTuple.at(expectedNotesCol).toString();
+//            if(miscFound.contains(expectedNotesCol))
+//                route.notes = routeTuple.at(expectedNotesCol).toString();
 
-            qDebug() << route.routeKey <<  route.driverName << route.truckNumber << route.trailerNumber << route.notes;
+            if(foundDate)
+            {
+                route.baselineDeparture = QDateTime(sheetDate);
+            }
+
+            routes.append(route);
+            qDebug() << route.baselineDeparture.toString() << route.routeKey <<  route.driverName << route.truckNumber << route.trailerNumber;
         }
-
 
 //        qDebug() << "row" << i;
 //        qDebug() << "keys:" << routeKeyFound;
@@ -114,8 +120,9 @@ void MasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPrecedence)
         routeInfoPrecedence.indexOf("driver"),
         routeInfoPrecedence.indexOf("powerUnit"),
         routeInfoPrecedence.indexOf("trailer"),
-        routeInfoPrecedence.indexOf("notes")
+        //routeInfoPrecedence.indexOf("notes")
     };
+
 
     if(!routeIndexVector.contains(-1))
     {
@@ -123,7 +130,6 @@ void MasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPrecedence)
         const int driverIndex =       routeIndexVector.at(1);
         const int powerUnitIndex =    routeIndexVector.at(2);
         const int trailerIndex =      routeIndexVector.at(3);
-        const int notesIndex =        routeIndexVector.at(4);
 
         //everything builds relative to the route. Route is 0, all other fields
         //are calculated based on the difference between them and route
@@ -131,14 +137,59 @@ void MasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPrecedence)
         driverOffset = driverIndex - routeIndex;
         powerUnitOffset = powerUnitIndex - routeIndex;
         trailerOffset = trailerIndex - routeIndex;
-        notesOffset = notesIndex - routeIndex;
 
-        qDebug() << routeOffset << driverOffset << powerUnitOffset << trailerOffset << notesOffset;
+        //notesOffset = notesIndex - routeIndex;
+
+        //qDebug() << routeOffset << driverOffset << powerUnitOffset << trailerOffset << notesOffset;
 
     }
     else
     {
-        qDebug() << "Error with routeInfoPrecidence. There is a missing field";
+        qDebug() << "Error with routeInfoPrecidence. There is a missing field. Check for route, driver, powerUnit, and trailer";
     }
 
+}
+
+void MasterRoute::buildRouteStartTimes()
+{
+    QJsonObject startTimes = QJsonDocument::fromJson(queryRouteStartTimes()).object();
+    QJsonArray startTimeArray = startTimes["values"].toArray();
+    QJsonArray startTimeTuple;
+
+    QVector<int> routeKeyFound;
+
+
+//    for(int i = 0; i < startTimeArray.size(); i++)
+//    {
+//        routeKeyFound.clear();
+
+//        startTimeTuple = startTimeArray.at(i).toArray();
+
+//        for(int j = 0; j < startTimeTuple.size(); j++)
+//        {
+//            matchIdx = -1;
+//            matchIdx = routeRegExp.indexIn(routeTuple.at(j).toString());
+//            if(matchIdx != -1)
+//            {
+//                //qDebug() << "Row" << i << "Col" << j << "Route:" << routeRegExp.cap(matchIdx);
+//                routeKeyFound.append(j);
+//                continue;
+//            }
+//        }
+
+
+//    }
+
+}
+
+QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
+{
+    oauthConn->buildOAuth(sheetsScope, QString(sheetsAddressBase + dayOfWeekToQuery), sheetsCredFilePath);
+    return oauthConn->get();
+}
+
+QByteArray MasterRoute::queryRouteStartTimes()
+{
+    oauthConn->buildOAuth(sheetsScope, sheetsStartTimeAddress, sheetsCredFilePath);
+    return oauthConn->get();
 }
