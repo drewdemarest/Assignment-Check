@@ -196,6 +196,7 @@ void OAuthNetConnect::oauthGranted()
 {
     waitingForOauth = false;
     oauthToken = oauth2NetworkAccess->token();
+
     tokenExpire = oauth2NetworkAccess->expirationAt();
     saveSettings();
     oauthSettings->sync();
@@ -211,3 +212,4 @@ bool OAuthNetConnect::isWaitingForOauth()
 {
     return waitingForOauth;
 }
+

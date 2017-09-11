@@ -57,26 +57,27 @@ void MasterRoute::buildRoutes()
                     case matchSheetDate:
                         sheetDate = QDate::fromString(mrsSheetDateRegExp.cap(matchIdx), dateFormat);
                         foundDate = true;
-                        foundMatch =true;
+                        foundMatch = true;
                         break;
 
                     case matchRoute:
                         routeKeyFound.append(col);
-                        foundMatch =true;
+                        foundMatch = true;
                         break;
 
                     case matchDriver:
                         driverFound.append(col);
-                        foundMatch =true;
+                        foundMatch = true;
                         break;
 
                     case matchEquipment:
                         equipmentFound.append(col);
-                        foundMatch =true;
+                        foundMatch = true;
                         break;
                     }
                 }
             }
+            //It would just be foundmatch but... some poeple stick white space in the sheets
             if(!foundMatch && !routeTuple.at(col).toString().trimmed().isEmpty()){
                 miscFound.append(col);
             }
@@ -90,7 +91,6 @@ void MasterRoute::buildRoutes()
             int expectedDriverCol = expectedRouteKeyCol +  driverOffset;
             int expectedPowerUnitCol = expectedRouteKeyCol + powerUnitOffset;
             int expectedTrailerCol = expectedRouteKeyCol + trailerOffset;
-            //int expectedNotesCol = expectedRouteKeyCol + notesOffset;
 
             route.routeKey = routeTuple.at(expectedRouteKeyCol).toString();
 
@@ -102,9 +102,6 @@ void MasterRoute::buildRoutes()
 
             if(equipmentFound.contains(expectedTrailerCol))
                 route.trailerNumber = routeTuple.at(expectedTrailerCol).toString();
-
-//            if(miscFound.contains(expectedNotesCol))
-//                route.notes = routeTuple.at(expectedNotesCol).toString();
 
             if(foundDate)
             {
@@ -160,6 +157,82 @@ void MasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPrecedence)
     {
         qDebug() << "Error with routeInfoPrecidence. There is a missing field. Check for route, driver, powerUnit, and trailer";
     }
+
+}
+
+void MasterRoute::setStartTimeInfoPrecedence(QStringList &startTimeInfoPrecedence)
+{
+
+    QVector<int> startTimeColumnsVerify =
+    {
+        startTimeInfoPrecedence.indexOf("route"),
+        startTimeInfoPrecedence.indexOf("startsPrevDay"),
+        startTimeInfoPrecedence.indexOf("mon"),
+        startTimeInfoPrecedence.indexOf("tue"),
+        startTimeInfoPrecedence.indexOf("wed"),
+        startTimeInfoPrecedence.indexOf("thu"),
+        startTimeInfoPrecedence.indexOf("fri"),
+        startTimeInfoPrecedence.indexOf("sat"),
+        startTimeInfoPrecedence.indexOf("sun"),
+    };
+
+    int matchNotFound = -1;
+    QVector<int>::iterator start = startTimeColumnsVerify.begin();
+    QVector<int>::iterator end = startTimeColumnsVerify.end();
+
+    if(!startTimeColumnsVerify.contains(-1))
+    {
+        startTimeColumns = startTimeColumnsVerify;
+    }
+    else
+    {
+        while(end > start){
+            start = std::find_if(start, end, [&matchNotFound](const int& j) {return j == matchNotFound;});
+            if(start != end)
+            {
+                switch(start - startTimeColumnsVerify.begin())
+                {
+                case(routeKeyStartTimeCol):
+                    qDebug() << "routeKeyStartTimeCol missing. Reverting to default precedence.";
+                    break;
+
+                case(startsPrevDayStartTimeCol):
+                    qDebug() << "startsPrevDayStartTimeCol missing. Reverting to default precedence.";
+                    break;
+
+                case(monStartTimeCol):
+                    qDebug() << "monStartTimeCol missing. Reverting to default precedence.";
+                    break;
+
+                case(tueStartTimeCol):
+                    qDebug() << "tueStartTimeCol missing. Reverting to default precedence.";
+                    break;
+
+                case(wedStartTimeCol):
+                    qDebug() << "wedStartTimeCol missing. Reverting to default precedence.";
+                    break;
+
+                case(thuStartTimeCol):
+                    qDebug() << "thuStartTimeCol missing. Reverting to default precedence.";
+                    break;
+
+                case(friStartTimeCol):
+                    qDebug() << "friStartTimeCol missing. Reverting to default precedence.";
+                    break;
+
+                case(satStartTimeCol):
+                    qDebug() << "satStartTimeCol missing. Reverting to default precedence.";
+                    break;
+
+                case(sunStartTimeCol):
+                    qDebug() << "sunStartTimeCol missing. Reverting to default precedence.";
+                    break;
+                }
+            }
+            start++;
+        }
+    }
+
 
 }
 

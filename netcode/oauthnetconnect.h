@@ -47,6 +47,7 @@ signals:
 
 
 public slots:
+
 };
 
 #endif // OAUTHNETCONNECT_H

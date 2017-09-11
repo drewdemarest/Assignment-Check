@@ -3,6 +3,7 @@
 
 #include "route.h"
 #include "netcode/oauthnetconnect.h"
+#include <algorithm>
 #include <QApplication>
 #include <QtCore>
 #include <QObject>
@@ -63,17 +64,20 @@ private:
     {"building", "route", "name", "startsPrevDay", "mon",
      "tue", "wed", "thu", "fri","sat", "sun"};
 
-    int buildingOffset      = -1;
-    //routeOffset already   = 0;
-    int nameOffset          = 1;
-    int startsPrevDayOffset = 2;
-    int monOffset           = 3;
-    int tueOffset           = 4;
-    int wedOffset           = 5;
-    int thuOffset           = 6;
-    int friOffset           = 7;
-    int satOffset           = 8;
-    int sunOffset           = 9;
+    enum routeStartTimeCol {
+                            routeKeyStartTimeCol,
+                            startsPrevDayStartTimeCol,
+                            monStartTimeCol,
+                            tueStartTimeCol,
+                            wedStartTimeCol,
+                            thuStartTimeCol,
+                            friStartTimeCol,
+                            satStartTimeCol,
+                            sunStartTimeCol
+                           };
+
+    QVector<int> startTimeColumns {1, 3, 4, 5, 6, 7, 8, 9, 10};
+
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
