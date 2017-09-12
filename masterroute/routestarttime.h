@@ -18,5 +18,5 @@ struct RouteStartTime
     qint64 friMidnightOffsetSec;
     qint64 satMidnightOffsetSec;
     qint64 sunMidnightOffsetSec;
-}
+};
 #endif // ROUTESTARTTIME_H

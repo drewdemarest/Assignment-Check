@@ -97,7 +97,7 @@ private:
     QRegExp routeRegExp         = QRegExp("^[A-Z]-[A-Z,0-9]{3}");
     QRegExp driverRegExp        = QRegExp("(\\w')?(\\w+),\\s[A-Z]");
     QRegExp equipmentRegExp     = QRegExp("\\b\\d+\\b");
-    QRegExp timeRegExp          = QRegExp("\\d+:\\d+)?(\d){4,3}");
+    QRegExp timeRegExp          = QRegExp("\\d+:\\d+)?(\\d){4,3}");
     //Added all regexp to vector allow for more succinct code.
     const QVector<QRegExp*> regExpVector = {&mrsSheetDateRegExp, &routeRegExp,
                                      &driverRegExp, &equipmentRegExp};

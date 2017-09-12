@@ -2,7 +2,7 @@
 
 MasterRoute::MasterRoute(QObject *parent) : QObject(parent)
 {
-    qDebug() << queryRouteStartTimes();
+    buildRouteStartTimes();
 }
 
 void MasterRoute::buildRoutes()
@@ -243,6 +243,8 @@ void MasterRoute::buildRouteStartTimes()
     QJsonArray startTimeArray = startTimes["values"].toArray();
     QJsonArray startTimeTuple;
     RouteStartTime routeStart;
+    QString timeFormat  = "hmm";
+    int msecsInDay = 86400000;
 
     for(int row = 0; row < startTimeArray.size(); row++)
     {
@@ -250,12 +252,11 @@ void MasterRoute::buildRouteStartTimes()
 
         for(int col = 0; col < startTimeTuple.size(); col++)
         {
-            switch(col)
+            if(startTimeColumns.at(routeKeyStartTimeCol) == col)
+                routeStart.routeKey = startTimeTuple.at(col).toString();
+
+            if(startTimeColumns.at(startsPrevDayStartTimeCol) == col)
             {
-            case routeKeyStartTimeCol:
-                routeStart.routeKey = startTimeTuple.at(col);
-                break;
-            case startsPrevDayStartTimeCol:
                 routeStart.startsPrevDay[routeStart.mon] = startTimeTuple.at(col).toString().contains("M");
                 routeStart.startsPrevDay[routeStart.tue] = startTimeTuple.at(col).toString().contains("T");
                 routeStart.startsPrevDay[routeStart.wed] = startTimeTuple.at(col).toString().contains("W");
@@ -263,9 +264,17 @@ void MasterRoute::buildRouteStartTimes()
                 routeStart.startsPrevDay[routeStart.fri] = startTimeTuple.at(col).toString().contains("F");
                 routeStart.startsPrevDay[routeStart.sat] = startTimeTuple.at(col).toString().contains("S");
                 routeStart.startsPrevDay[routeStart.sun] = startTimeTuple.at(col).toString().contains("U");
-                break;
+            }
 
-            case monStartTimeCol:
+            if(startTimeColumns.at(monStartTimeCol) == col)
+            {
+                startTimeTuple[col] = QJsonValue(startTimeTuple.at(col).toString().remove(":"));
+
+                if(routeStart.startsPrevDay[routeStart.mon])
+                {
+                    routeStart.monMidnightOffsetSec = (msecsInDay - QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay());
+                    qDebug() <<startTimeTuple.at(col).toString() << routeStart.monMidnightOffsetSec;
+                }
                 break;
 
             }
@@ -279,19 +288,19 @@ void MasterRoute::buildRouteStartTimes()
             satStartTimeCol,
             sunStartTimeCol
             */
-            }
+        }
 
-            }
-            }
+    }
+}
 
-            QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
-            {
-            oauthConn->buildOAuth(sheetsScope, QString(sheetsAddressBase + dayOfWeekToQuery), sheetsCredFilePath);
-            return oauthConn->get();
-            }
+QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
+{
+    oauthConn->buildOAuth(sheetsScope, QString(sheetsAddressBase + dayOfWeekToQuery), sheetsCredFilePath);
+    return oauthConn->get();
+}
 
-            QByteArray MasterRoute::queryRouteStartTimes()
-            {
-            oauthConn->buildOAuth(sheetsScope, sheetsStartTimeAddress, sheetsCredFilePath);
-            return oauthConn->get();
-            }
+QByteArray MasterRoute::queryRouteStartTimes()
+{
+    oauthConn->buildOAuth(sheetsScope, sheetsStartTimeAddress, sheetsCredFilePath);
+    return oauthConn->get();
+}
