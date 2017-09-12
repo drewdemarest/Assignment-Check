@@ -15,6 +15,6 @@ struct Route
 
     QStringList miscData;
     QDateTime   baselineDeparture;
-};
+}
 
 #endif // ROUTE_H

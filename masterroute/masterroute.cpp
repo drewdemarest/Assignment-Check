@@ -98,7 +98,7 @@ void MasterRoute::buildRoutes()
                 route.driverName = routeTuple.at(expectedDriverCol).toString();
 
             if(equipmentFound.contains(expectedPowerUnitCol))
-               route.truckNumber = routeTuple.at(expectedPowerUnitCol).toString();
+                route.truckNumber = routeTuple.at(expectedPowerUnitCol).toString();
 
             if(equipmentFound.contains(expectedTrailerCol))
                 route.trailerNumber = routeTuple.at(expectedTrailerCol).toString();
@@ -112,12 +112,12 @@ void MasterRoute::buildRoutes()
             qDebug() << route.baselineDeparture.toString() << route.routeKey <<  route.driverName << route.truckNumber << route.trailerNumber;
         }
 
-//        qDebug() << "row" << i;
-//        qDebug() << "keys:" << routeKeyFound;
-//        qDebug() << "drivers:" << driverFound;
-//        qDebug() << "equipment:" << equipmentFound;
-//        qDebug() << "misc" << miscFound << miscFound.size();
-//        qDebug() << " ";
+        //        qDebug() << "row" << i;
+        //        qDebug() << "keys:" << routeKeyFound;
+        //        qDebug() << "drivers:" << driverFound;
+        //        qDebug() << "equipment:" << equipmentFound;
+        //        qDebug() << "misc" << miscFound << miscFound.size();
+        //        qDebug() << " ";
 
     }
 }
@@ -127,10 +127,10 @@ void MasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPrecedence)
     const QVector<int> routeIndexVector
     {
         routeInfoPrecedence.indexOf("route"),
-        routeInfoPrecedence.indexOf("driver"),
-        routeInfoPrecedence.indexOf("powerUnit"),
-        routeInfoPrecedence.indexOf("trailer"),
-        //routeInfoPrecedence.indexOf("notes")
+                routeInfoPrecedence.indexOf("driver"),
+                routeInfoPrecedence.indexOf("powerUnit"),
+                routeInfoPrecedence.indexOf("trailer"),
+                //routeInfoPrecedence.indexOf("notes")
     };
 
 
@@ -186,6 +186,8 @@ void MasterRoute::setStartTimeInfoPrecedence(QStringList &startTimeInfoPrecedenc
     }
     else
     {
+        //iterates through vector and provides the indexes of all duplicates. This is then mapped to
+        //the enum type regarding what vector idx applies to what column.
         while(end > start){
             start = std::find_if(start, end, [&matchNotFound](const int& j) {return j == matchNotFound;});
             if(start != end)
@@ -232,50 +234,64 @@ void MasterRoute::setStartTimeInfoPrecedence(QStringList &startTimeInfoPrecedenc
             start++;
         }
     }
-
-
 }
 
 void MasterRoute::buildRouteStartTimes()
 {
+    QVector<int> regexToUse = {matchRoute, matchTime};
     QJsonObject startTimes = QJsonDocument::fromJson(queryRouteStartTimes()).object();
     QJsonArray startTimeArray = startTimes["values"].toArray();
     QJsonArray startTimeTuple;
+    RouteStartTime routeStart;
 
-    QVector<int> routeKeyFound;
+    for(int row = 0; row < startTimeArray.size(); row++)
+    {
+        startTimeTuple = startTimeArray.at(row).toArray();
 
+        for(int col = 0; col < startTimeTuple.size(); col++)
+        {
+            switch(col)
+            {
+            case routeKeyStartTimeCol:
+                routeStart.routeKey = startTimeTuple.at(col);
+                break;
+            case startsPrevDayStartTimeCol:
+                routeStart.startsPrevDay[routeStart.mon] = startTimeTuple.at(col).toString().contains("M");
+                routeStart.startsPrevDay[routeStart.tue] = startTimeTuple.at(col).toString().contains("T");
+                routeStart.startsPrevDay[routeStart.wed] = startTimeTuple.at(col).toString().contains("W");
+                routeStart.startsPrevDay[routeStart.thu] = startTimeTuple.at(col).toString().contains("R");
+                routeStart.startsPrevDay[routeStart.fri] = startTimeTuple.at(col).toString().contains("F");
+                routeStart.startsPrevDay[routeStart.sat] = startTimeTuple.at(col).toString().contains("S");
+                routeStart.startsPrevDay[routeStart.sun] = startTimeTuple.at(col).toString().contains("U");
+                break;
 
-//    for(int i = 0; i < startTimeArray.size(); i++)
-//    {
-//        routeKeyFound.clear();
+            case monStartTimeCol:
+                break;
 
-//        startTimeTuple = startTimeArray.at(i).toArray();
+            }
+            /*
+            startsPrevDayStartTimeCol,
+            monStartTimeCol,
+            tueStartTimeCol,
+            wedStartTimeCol,
+            thuStartTimeCol,
+            friStartTimeCol,
+            satStartTimeCol,
+            sunStartTimeCol
+            */
+            }
 
-//        for(int j = 0; j < startTimeTuple.size(); j++)
-//        {
-//            matchIdx = -1;
-//            matchIdx = routeRegExp.indexIn(routeTuple.at(j).toString());
-//            if(matchIdx != -1)
-//            {
-//                //qDebug() << "Row" << i << "Col" << j << "Route:" << routeRegExp.cap(matchIdx);
-//                routeKeyFound.append(j);
-//                continue;
-//            }
-//        }
+            }
+            }
 
+            QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
+            {
+            oauthConn->buildOAuth(sheetsScope, QString(sheetsAddressBase + dayOfWeekToQuery), sheetsCredFilePath);
+            return oauthConn->get();
+            }
 
-//    }
-
-}
-
-QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
-{
-    oauthConn->buildOAuth(sheetsScope, QString(sheetsAddressBase + dayOfWeekToQuery), sheetsCredFilePath);
-    return oauthConn->get();
-}
-
-QByteArray MasterRoute::queryRouteStartTimes()
-{
-    oauthConn->buildOAuth(sheetsScope, sheetsStartTimeAddress, sheetsCredFilePath);
-    return oauthConn->get();
-}
+            QByteArray MasterRoute::queryRouteStartTimes()
+            {
+            oauthConn->buildOAuth(sheetsScope, sheetsStartTimeAddress, sheetsCredFilePath);
+            return oauthConn->get();
+            }

@@ -41,7 +41,8 @@ HEADERS += \
     netcode/netconnect.h \
     netcode/oauthnetconnect.h \
     masterroute/masterroute.h \
-    masterroute/route.h
+    masterroute/route.h \
+    masterroute/routestarttime.h
 
 FORMS += \
         mainwindow.ui
