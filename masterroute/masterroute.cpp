@@ -111,14 +111,6 @@ void MasterRoute::buildRoutes()
             routes.append(route);
             qDebug() << route.baselineDeparture.toString() << route.routeKey <<  route.driverName << route.truckNumber << route.trailerNumber;
         }
-
-        //        qDebug() << "row" << i;
-        //        qDebug() << "keys:" << routeKeyFound;
-        //        qDebug() << "drivers:" << driverFound;
-        //        qDebug() << "equipment:" << equipmentFound;
-        //        qDebug() << "misc" << miscFound << miscFound.size();
-        //        qDebug() << " ";
-
     }
 }
 
@@ -272,13 +264,13 @@ void MasterRoute::buildRouteStartTimes()
 
                 if(routeStart.startsPrevDay[routeStart.mon])
                 {
-                    routeStart.monMidnightOffsetSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
+                    routeStart.monMidnightOffsetmSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
                 }
                 else
                 {
-                    routeStart.monMidnightOffsetSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
+                    routeStart.monMidnightOffsetmSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
                 }
-                qDebug() << startTimeTuple.at(col).toString() << routeStart.monMidnightOffsetSec;
+                qDebug() << startTimeTuple.at(col).toString() << routeStart.monMidnightOffsetmSec;
             }
 
             if(startTimeColumns.at(tueStartTimeCol) == col)
@@ -287,13 +279,13 @@ void MasterRoute::buildRouteStartTimes()
 
                 if(routeStart.startsPrevDay[routeStart.tue])
                 {
-                    routeStart.tueMidnightOffsetSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
+                    routeStart.tueMidnightOffsetmSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
                 }
                 else
                 {
-                    routeStart.tueMidnightOffsetSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
+                    routeStart.tueMidnightOffsetmSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
                 }
-                qDebug() << startTimeTuple.at(col).toString() << routeStart.tueMidnightOffsetSec;
+                qDebug() << startTimeTuple.at(col).toString() << routeStart.tueMidnightOffsetmSec;
             }
 
             if(startTimeColumns.at(wedStartTimeCol) == col)
@@ -302,13 +294,13 @@ void MasterRoute::buildRouteStartTimes()
 
                 if(routeStart.startsPrevDay[routeStart.wed])
                 {
-                    routeStart.wedMidnightOffsetSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay()) - msecsInDay;
+                    routeStart.wedMidnightOffsetmSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay()) - msecsInDay;
                 }
                 else
                 {
-                    routeStart.wedMidnightOffsetSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
+                    routeStart.wedMidnightOffsetmSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
                 }
-                qDebug() << startTimeTuple.at(col).toString() << routeStart.wedMidnightOffsetSec;
+                qDebug() << startTimeTuple.at(col).toString() << routeStart.wedMidnightOffsetmSec;
             }
 
             if(startTimeColumns.at(thuStartTimeCol) == col)
@@ -317,14 +309,14 @@ void MasterRoute::buildRouteStartTimes()
 
                 if(routeStart.startsPrevDay[routeStart.thu])
                 {
-                    routeStart.thuMidnightOffsetSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
+                    routeStart.thuMidnightOffsetmSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
 
                 }
                 else
                 {
-                    routeStart.thuMidnightOffsetSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
+                    routeStart.thuMidnightOffsetmSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
                 }
-                qDebug() <<startTimeTuple.at(col).toString() << routeStart.monMidnightOffsetSec;
+                qDebug() <<startTimeTuple.at(col).toString() << routeStart.monMidnightOffsetmSec;
             }
 
             if(startTimeColumns.at(friStartTimeCol) == col)
@@ -333,13 +325,13 @@ void MasterRoute::buildRouteStartTimes()
 
                 if(routeStart.startsPrevDay[routeStart.fri])
                 {
-                    routeStart.friMidnightOffsetSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
+                    routeStart.friMidnightOffsetmSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
                 }
                 else
                 {
-                    routeStart.friMidnightOffsetSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
+                    routeStart.friMidnightOffsetmSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
                 }
-                qDebug() <<startTimeTuple.at(col).toString() << routeStart.friMidnightOffsetSec;
+                qDebug() <<startTimeTuple.at(col).toString() << routeStart.friMidnightOffsetmSec;
             }
 
             if(startTimeColumns.at(satStartTimeCol) == col)
@@ -348,13 +340,13 @@ void MasterRoute::buildRouteStartTimes()
 
                 if(routeStart.startsPrevDay[routeStart.sat])
                 {
-                    routeStart.satMidnightOffsetSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
+                    routeStart.satMidnightOffsetmSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
                 }
                 else
                 {
-                    routeStart.satMidnightOffsetSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
+                    routeStart.satMidnightOffsetmSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
                 }
-                qDebug() << startTimeTuple.at(col).toString() << routeStart.satMidnightOffsetSec;
+                qDebug() << startTimeTuple.at(col).toString() << routeStart.satMidnightOffsetmSec;
             }
 
             if(startTimeColumns.at(sunStartTimeCol) == col)
@@ -363,15 +355,16 @@ void MasterRoute::buildRouteStartTimes()
 
                 if(routeStart.startsPrevDay[routeStart.sun])
                 {
-                    routeStart.sunMidnightOffsetSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
+                    routeStart.sunMidnightOffsetmSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
                 }
                 else
                 {
-                    routeStart.sunMidnightOffsetSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
+                    routeStart.sunMidnightOffsetmSec = QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay();
                 }
-                qDebug() << startTimeTuple.at(col).toString() << routeStart.sunMidnightOffsetSec;
+                qDebug() << startTimeTuple.at(col).toString() << routeStart.sunMidnightOffsetmSec;
             }
         }
+
     }
 }
 
@@ -386,3 +379,4 @@ QByteArray MasterRoute::queryRouteStartTimes()
     oauthConn->buildOAuth(sheetsScope, sheetsStartTimeAddress, sheetsCredFilePath);
     return oauthConn->get();
 }
+

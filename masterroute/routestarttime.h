@@ -11,12 +11,12 @@ struct RouteStartTime
     //The days a route starts on a prev day vector
     //0 is sunday;
 
-    qint64 monMidnightOffsetSec;
-    qint64 tueMidnightOffsetSec;
-    qint64 wedMidnightOffsetSec;
-    qint64 thuMidnightOffsetSec;
-    qint64 friMidnightOffsetSec;
-    qint64 satMidnightOffsetSec;
-    qint64 sunMidnightOffsetSec;
+    qint64 monMidnightOffsetmSec;
+    qint64 tueMidnightOffsetmSec;
+    qint64 wedMidnightOffsetmSec;
+    qint64 thuMidnightOffsetmSec;
+    qint64 friMidnightOffsetmSec;
+    qint64 satMidnightOffsetmSec;
+    qint64 sunMidnightOffsetmSec;
 };
 #endif // ROUTESTARTTIME_H

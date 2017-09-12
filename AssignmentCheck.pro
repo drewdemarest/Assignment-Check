@@ -31,7 +31,8 @@ SOURCES += \
     gmTypes/gmorganization.cpp \
     netcode/netconnect.cpp \
     netcode/oauthnetconnect.cpp \
-    masterroute/masterroute.cpp
+    masterroute/masterroute.cpp \
+    masterroute/route.cpp
 
 HEADERS += \
     mainwindow.h \
