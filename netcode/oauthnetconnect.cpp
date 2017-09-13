@@ -4,19 +4,27 @@ OAuthNetConnect::OAuthNetConnect(QObject *parent) :
     QObject(parent),
     oauthSettings(new QSettings(QApplication::applicationDirPath() + "/oauth.ini", QSettings::IniFormat))
 {
+    responseTimer->setInterval(30000);
+    responseTimer->setSingleShot(true);
+
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::granted, this, &OAuthNetConnect::oauthGranted);
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailed);
+    connect(responseTimer, &QTimer::timeout, this, &OAuthNetConnect::oauthFailed);
 }
 
 OAuthNetConnect::OAuthNetConnect(const QString &scope, const QString &address, const QString &credentialFilePath, QObject *parent) :
     QObject(parent),
     oauthSettings(new QSettings(QApplication::applicationDirPath() + "/oauth.ini", QSettings::IniFormat))
 {
+    responseTimer->setInterval(30000);
+    responseTimer->setSingleShot(true);
+
     //connections
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::granted, this, &OAuthNetConnect::oauthGranted);
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailed);
+    connect(responseTimer, &QTimer::timeout, this, &OAuthNetConnect::oauthFailed);
     buildOAuth(scope, address, credentialFilePath);
 }
 
@@ -28,12 +36,10 @@ OAuthNetConnect::~OAuthNetConnect()
 void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, const QString &credentialFilePath)
 {
     loadSettings();
-    qDebug() << "build: token expires at" << tokenExpire.toString();
 
     while(waitingForOauth)
     {
         usleep(1000);
-        qDebug() << "beep";
         qApp->processEvents();
     }
 
@@ -73,22 +79,19 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
     }
 
     //check if the auth token from settings file is valid
-    qDebug() << "oauthTok null?"  << oauthToken.isNull() << "empty?" << oauthToken.isEmpty();
     if(oauthToken.isNull())
     {
-        qDebug() << "Here 1";
         waitingForOauth = true;
         oauth2NetworkAccess->grant();
     }
     else if(tokenExpire < QDateTime::currentDateTime())
     {
-        qDebug() << "Here 2";
         waitingForOauth = true;
         oauth2NetworkAccess->grant();
     }
     else
     {
-        qDebug() << "Here 3";
+        oauthValid = true;
         waitingForOauth = false;
         oauth2NetworkAccess->setToken(oauthToken);
     }
@@ -121,27 +124,30 @@ void OAuthNetConnect::loadSettings()
 {
     oauthToken = oauthSettings->value("oauth2/token").toString();
     tokenExpire = oauthSettings->value("oauth2/tokenExpire").toDateTime();
-    qDebug() << "null?" << tokenExpire.isNull() << "valid" << tokenExpire.isValid();
 }
 
 void OAuthNetConnect::saveSettings()
 {
-    qDebug() << "save: token expires at" << tokenExpire.toString();
     oauthSettings->setValue("oauth2/token", oauth2NetworkAccess->token());
     oauthSettings->setValue("oauth2/tokenExpire", QVariant(tokenExpire));
 }
 
 QByteArray OAuthNetConnect::get()
 {
-    qDebug() << "before oauth" << waitingForOauth;
-
+    responseTimer->start();
     while(waitingForOauth)
     {
         usleep(1000);
         qApp->processEvents();
-    }
 
-    qDebug() << "after oauth" << waitingForOauth;
+    }
+    responseTimer->stop();
+
+    if(!oauthValid)
+    {
+        qDebug() << "oauth failed in get";
+        return QByteArray();
+    }
 
     QNetworkReply *reply = oauth2NetworkAccess->get(QUrl(address));
     QByteArray replyCopy;
@@ -172,11 +178,21 @@ void OAuthNetConnect::debugReply()
     qDebug() << oauth2NetworkAccess->authorizationUrl();
     QNetworkReply *reply = oauth2NetworkAccess->get(QUrl(address));
 
+    responseTimer->start();
     while(waitingForOauth)
     {
         usleep(1000);
         qApp->processEvents();
+
     }
+    responseTimer->stop();
+
+    if(!oauthValid)
+    {
+        qDebug() << "oauth failed debug reply";
+        return;
+    }
+
     if(reply->errorString() == QNetworkReply::AuthenticationRequiredError)
     {
         qDebug() << reply->errorString();
@@ -195,6 +211,7 @@ void OAuthNetConnect::debugReply()
 void OAuthNetConnect::oauthGranted()
 {
     waitingForOauth = false;
+    oauthValid = true;
     oauthToken = oauth2NetworkAccess->token();
 
     tokenExpire = oauth2NetworkAccess->expirationAt();
@@ -205,6 +222,7 @@ void OAuthNetConnect::oauthGranted()
 void OAuthNetConnect::oauthFailed()
 {
     waitingForOauth = false;
+    oauthValid = false;
     qDebug() << "Failed.";
 }
 

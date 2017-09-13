@@ -1,29 +1,14 @@
 #include "route.h"
 
-
 Route::Route()
 {
 
 }
 
-//Route::Route(Route &other)
-//{
-
-//}
-
-//Route::~Route()
-//{
-
-//}
 
 int Route::whatIsThis(const QString &data)
 {
     int matchIdx = -1;
-    QString dateFormat = "d-MMM-yyyy";
-
-    bool foundDate = false;
-    bool foundMatch = false;
-
 
     for(int k = 0; k < regExpVector.size(); k++)
     {
@@ -33,76 +18,76 @@ int Route::whatIsThis(const QString &data)
         {
             switch(k)
             {
-            case matchSheetDate:
-                return matchSheetDate;
+            case routeEnum::matchSheetDate:
+                return routeEnum::matchSheetDate;
                 break;
 
-            case matchRouteKey:
-                return matchRouteKey;
+            case routeEnum::matchRouteKey:
+                return routeEnum::matchRouteKey;
                 break;
 
-            case matchDriverName:
-                return matchDriverName;
+            case routeEnum::matchDriverName:
+                return routeEnum::matchDriverName;
                 break;
 
-            case matchEquipment:
-                return matchEquipment;
+            case routeEnum::matchEquipment:
+                return routeEnum::matchEquipment;
                 break;
             }
         }
     }
     if(data.trimmed().isEmpty())
-        return matchEmpty;
+        return routeEnum::matchEmpty;
 
-    return matchMisc;
+    return routeEnum::matchMisc;
 }
 
 void Route::setField(const QString &data, int fieldEnum)
 {
     switch(fieldEnum)
     {
-    case mKey:
+    case routeEnum::key:
         key = data;
         break;
 
-    case mDate:
+    case routeEnum::date:
         date = QDateTime::fromString(data, dateFormat);
         break;
 
-    case mDriverName:
+    case routeEnum::driverName:
         driverName = data;
         break;
 
-    case mDriverId:
+    case routeEnum::driverId:
         driverId = data;
         break;
 
-    case mTruckNum:
+    case routeEnum::truckNum:
         truckNum = data;
         break;
 
-    case mTrailerNum:
+    case routeEnum::trailerNum:
         trailerNum = data;
         break;
 
-    case mMisc:
+    case routeEnum::misc:
         misc.append(data);
         break;
 
-    case mEmpty:
+    case routeEnum::empty:
         qDebug() << "Empty data, discarding";
         break;
     }
 }
 
-bool Route::build()
-{
-
-}
-
 void Route::setDateFormat(const QString &qs)
 {
     dateFormat = qs;
+}
+
+bool Route::isRouteValid()
+{
+
 }
 
 QDateTime Route::getRouteDate()
@@ -135,12 +120,12 @@ QString Route::getDriverId()
     return driverId;
 }
 
+QString Route::getDateFormat()
+{
+    return dateFormat;
+}
+
 QStringList Route::getMisc()
 {
     return misc;
-}
-
-bool Route::isRouteValid()
-{
-
 }

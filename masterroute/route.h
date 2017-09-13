@@ -4,27 +4,28 @@
 #include <QRegExp>
 #include <QtCore>
 
+namespace routeEnum
+{
+    enum {key, truckNum, trailerNum, driverName, driverId, date, misc, empty};
+    enum {matchSheetDate, matchRouteKey, matchDriverName, matchEquipment, matchTime, matchMisc, matchEmpty};
+}
+
 class Route
 {
 public:
-    enum {mKey, mTruckNum, mTrailerNum, mDriverName, mDriverId, mDate, mMisc, mEmpty};
-    enum {matchSheetDate, matchRouteKey, matchDriverName, matchEquipment, matchTime, matchMisc, matchEmpty};
     Route();
-    //Route(Route &other);
-    //~Route();
 
     int  whatIsThis(const QString &data);
-    bool isRouteValid();
-    bool build();
-
     void setField(const QString &data, int fieldEnum);
     void setDateFormat(const QString &qs);
+    bool isRouteValid();
     QDateTime getRouteDate();
     QString getKey();
     QString getTruckNumber();
     QString getTrailerNumber();
     QString getDriverName();
     QString getDriverId();
+    QString getDateFormat();
     QStringList getMisc();
 
 private:

@@ -121,9 +121,11 @@ private:
     //-------------------------------------------------------------------------
     //Route parsing utilities.
     //-------------------------------------------------------------------------
-
-
     QString dateFormat = "d-MMM-yyyy";
+
+
+    void whatRouteColIsMissing();
+    void whatRouteStartTimeColIsMissing(QVector<int> startTimeColumnsVerify);
 signals:
 
 public slots:

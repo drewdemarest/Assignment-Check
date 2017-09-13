@@ -27,27 +27,27 @@ public:
 
 private:
     //members
-    QOAuth2AuthorizationCodeFlow *oauth2NetworkAccess = new QOAuth2AuthorizationCodeFlow;
+    QTimer *responseTimer = new QTimer(this);
+    QOAuth2AuthorizationCodeFlow *oauth2NetworkAccess = new QOAuth2AuthorizationCodeFlow(this);
     QSettings *oauthSettings;
     QString oauthToken;
     QString address;
     QDateTime tokenExpire;
     bool waitingForOauth = false;
+    bool oauthValid = false;
 
     //functions
     QJsonObject readJsonCredentials(const QString &credentialFilePath);
     void loadSettings();
     void saveSettings();
 
-    void oauthGranted();
-    void oauthFailed();
-
     void debugReply();
 signals:
 
 
 public slots:
-
+    void oauthGranted();
+    void oauthFailed();
 };
 
 #endif // OAUTHNETCONNECT_H
