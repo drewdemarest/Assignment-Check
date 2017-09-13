@@ -41,8 +41,8 @@ private:
     QRegExp timeRegExp          = QRegExp("\\d+:\\d+)?(\\d){4,3}");
 
     //Added all regexp to vector allow for more succinct code.
-    QVector<QRegExp*> regExpVector = {&mrsSheetDateRegExp, &routeRegExp,
-                                     &driverRegExp, &equipmentRegExp};
+    QVector<QRegExp> regExpVector = {mrsSheetDateRegExp, routeRegExp,
+                                     driverRegExp, equipmentRegExp};
 
     QString dateFormat = "d-MMM-yyyy";
 

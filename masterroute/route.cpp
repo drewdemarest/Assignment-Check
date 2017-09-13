@@ -28,7 +28,7 @@ int Route::whatIsThis(const QString &data)
     for(int k = 0; k < regExpVector.size(); k++)
     {
         matchIdx = -1;
-        matchIdx = regExpVector.at(k)->indexIn(data);
+        matchIdx = regExpVector.at(k).indexIn(data);
         if(matchIdx != -1)
         {
             switch(k)
