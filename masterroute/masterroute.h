@@ -123,6 +123,7 @@ private:
     //-------------------------------------------------------------------------
 
 
+    QString dateFormat = "d-MMM-yyyy";
 signals:
 
 public slots:

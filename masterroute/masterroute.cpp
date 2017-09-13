@@ -7,84 +7,61 @@ MasterRoute::MasterRoute(QObject *parent) : QObject(parent)
 
 void MasterRoute::buildRoutes()
 {
-    QDate sheetDate;
-    QString dateFormat = "d-MMM-yyyy";
-
     Route route;
-    int matchIdx = -1;
-    bool foundDate = false;
-    bool foundMatch = false;
-
     QString dayOfWeekToQuery = "test";
+    bool foundDate;
 
     QJsonObject routeSheet = QJsonDocument::fromJson(queryRoutes(dayOfWeekToQuery)).object();
     QJsonArray routeArray = routeSheet["values"].toArray();
     QJsonArray routeTuple;
 
-    QVector<int> routeKeyFound;
-    QVector<int> equipmentFound;
-    QVector<int> driverFound;
-    QVector<int> miscFound;;
+    QVector<int> routeKeyFoundCol;
+    QVector<int> driverFoundCol;
+    QVector<int> equipmentFoundCol;
+    QVector<int> miscFoundCol;
+
+    QDateTime sheetDate;
+
 
     for(int row = 0; row < routeArray.size(); row++)
     {
-        routeKeyFound.clear();
-        equipmentFound.clear();
-        driverFound.clear();
-        miscFound.clear();
+        routeKeyFoundCol.clear();
+        driverFoundCol.clear();
+        equipmentFoundCol.clear();
+        miscFoundCol.clear();
 
         routeTuple = routeArray.at(row).toArray();
 
         for(int col = 0; col < routeTuple.size(); col++)
         {
-            foundMatch = false;
-
-            for(int k = 0; k < regExpVector.size(); k++)
+            //QString q = routeTuple.at(col).toString();
+            int i = route.whatIsThis(routeTuple.at(col).toString());
+            switch(i)
             {
-                if(foundMatch)
-                    break;
+            case route.matchSheetDate:
+                foundDate = true;
+                sheetDate = QDateTime::fromString(routeTuple.at(col).toString(), dateFormat);
+                break;
 
-                if(foundDate && k == matchSheetDate)
-                    continue;
+            case route.matchDriverName:
+                driverFoundCol.append(col);
+                break;
 
-                //qDebug() << k;
-                matchIdx = -1;
-                matchIdx = regExpVector.at(k)->indexIn(routeTuple.at(col).toString());
-                if(matchIdx != -1)
-                {
-                    switch(k)
-                    {
-                    case matchSheetDate:
-                        sheetDate = QDate::fromString(mrsSheetDateRegExp.cap(matchIdx), dateFormat);
-                        foundDate = true;
-                        foundMatch = true;
-                        break;
+            case route.matchEquipment:
+                equipmentFoundCol.append(col);
+                break;
 
-                    case matchRoute:
-                        routeKeyFound.append(col);
-                        foundMatch = true;
-                        break;
+            case route.matchMisc:
+                miscFoundCol.append(col);
+                break;
 
-                    case matchDriver:
-                        driverFound.append(col);
-                        foundMatch = true;
-                        break;
-
-                    case matchEquipment:
-                        equipmentFound.append(col);
-                        foundMatch = true;
-                        break;
-                    }
-                }
-            }
-            //It would just be foundmatch but... some poeple stick white space in the sheets
-            if(!foundMatch && !routeTuple.at(col).toString().trimmed().isEmpty()){
-                miscFound.append(col);
+            case route.matchRouteKey:
+                routeKeyFoundCol.append(col);
+                break;
             }
         }
 
-
-        for(auto expectedRouteKeyCol: routeKeyFound)
+        for(auto expectedRouteKeyCol: routeKeyFoundCol)
         {
             route = Route();
 
@@ -92,24 +69,24 @@ void MasterRoute::buildRoutes()
             int expectedPowerUnitCol = expectedRouteKeyCol + powerUnitOffset;
             int expectedTrailerCol = expectedRouteKeyCol + trailerOffset;
 
-            route.routeKey = routeTuple.at(expectedRouteKeyCol).toString();
+            route.setField(routeTuple.at(expectedRouteKeyCol).toString(), route.mKey);
 
-            if(driverFound.contains(expectedDriverCol))
-                route.driverName = routeTuple.at(expectedDriverCol).toString();
+            if(driverFoundCol.contains(expectedDriverCol))
+                route.setField(routeTuple.at(expectedDriverCol).toString(), route.mDriverName);
 
-            if(equipmentFound.contains(expectedPowerUnitCol))
-                route.truckNumber = routeTuple.at(expectedPowerUnitCol).toString();
+            if(equipmentFoundCol.contains(expectedPowerUnitCol))
+                route.setField(routeTuple.at(expectedPowerUnitCol).toString(), route.mTruckNum);
 
-            if(equipmentFound.contains(expectedTrailerCol))
-                route.trailerNumber = routeTuple.at(expectedTrailerCol).toString();
+            if(equipmentFoundCol.contains(expectedTrailerCol))
+                route.setField(routeTuple.at(expectedTrailerCol).toString(), route.mTrailerNum);
 
             if(foundDate)
             {
-                route.baselineDeparture = QDateTime(sheetDate);
+                route.setField(sheetDate.toString(), route.mDate);
             }
 
             routes.append(route);
-            qDebug() << route.baselineDeparture.toString() << route.routeKey <<  route.driverName << route.truckNumber << route.trailerNumber;
+            qDebug() << route.getRouteDate() << route.getKey() <<  route.getDriverName() << route.getTruckNumber() << route.getTrailerNumber();
         }
     }
 }
