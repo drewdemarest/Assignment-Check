@@ -271,13 +271,15 @@ void MasterRoute::buildRouteStartTimes()
 
 QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
 {
-    oauthConn->buildOAuth(sheetsScope, QString(sheetsAddressBase + dayOfWeekToQuery), sheetsCredFilePath);
+    if(!oauthConn->isWaitingForOauth())
+        oauthConn->buildOAuth(sheetsScope, QString(sheetsAddressBase + dayOfWeekToQuery), sheetsCredFilePath);
     return oauthConn->get();
 }
 
 QByteArray MasterRoute::queryRouteStartTimes()
 {
-    oauthConn->buildOAuth(sheetsScope, sheetsStartTimeAddress, sheetsCredFilePath);
+    if(!oauthConn->isWaitingForOauth())
+        oauthConn->buildOAuth(sheetsScope, sheetsStartTimeAddress, sheetsCredFilePath);
     return oauthConn->get();
 }
 

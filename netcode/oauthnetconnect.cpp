@@ -72,8 +72,6 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
     {
         //Seems like reply handler always exists within QOAuth2AuthorizationCodeFlow...
         //So I delete whatever is in there and then allocate on the stack.
-        //oauth2NetworkAccess->replyHandler()->deleteLater();
-
         auto replyHandler = new QOAuthHttpServerReplyHandler(port, this);
         oauth2NetworkAccess->setReplyHandler(replyHandler);
     }
@@ -134,14 +132,14 @@ void OAuthNetConnect::saveSettings()
 
 QByteArray OAuthNetConnect::get()
 {
-    responseTimer->start();
+    //responseTimer->start();
     while(waitingForOauth)
     {
         usleep(1000);
         qApp->processEvents();
 
     }
-    responseTimer->stop();
+    //responseTimer->stop();
 
     if(!oauthValid)
     {
@@ -178,14 +176,14 @@ void OAuthNetConnect::debugReply()
     qDebug() << oauth2NetworkAccess->authorizationUrl();
     QNetworkReply *reply = oauth2NetworkAccess->get(QUrl(address));
 
-    responseTimer->start();
+    //responseTimer->start();
     while(waitingForOauth)
     {
         usleep(1000);
         qApp->processEvents();
 
     }
-    responseTimer->stop();
+    //responseTimer->stop();
 
     if(!oauthValid)
     {
