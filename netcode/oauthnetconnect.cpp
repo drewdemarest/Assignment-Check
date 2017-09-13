@@ -4,7 +4,7 @@ OAuthNetConnect::OAuthNetConnect(QObject *parent) :
     QObject(parent),
     oauthSettings(new QSettings(QApplication::applicationDirPath() + "/oauth.ini", QSettings::IniFormat))
 {
-    responseTimer->setInterval(30000);
+    responseTimer->setInterval(5000);
     responseTimer->setSingleShot(true);
 
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
@@ -17,13 +17,14 @@ OAuthNetConnect::OAuthNetConnect(const QString &scope, const QString &address, c
     QObject(parent),
     oauthSettings(new QSettings(QApplication::applicationDirPath() + "/oauth.ini", QSettings::IniFormat))
 {
-    responseTimer->setInterval(30000);
+    responseTimer->setInterval(5000);
     responseTimer->setSingleShot(true);
 
     //connections
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::granted, this, &OAuthNetConnect::oauthGranted);
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailed);
+
     connect(responseTimer, &QTimer::timeout, this, &OAuthNetConnect::oauthFailed);
     buildOAuth(scope, address, credentialFilePath);
 }
@@ -35,13 +36,13 @@ OAuthNetConnect::~OAuthNetConnect()
 
 void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, const QString &credentialFilePath)
 {
-    loadSettings();
-
     while(waitingForOauth)
     {
         usleep(1000);
         qApp->processEvents();
     }
+
+    loadSettings();
 
     this->address = address;
     qDebug() << oauth2NetworkAccess->dynamicPropertyNames();
@@ -62,6 +63,7 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
     const auto redirectUris = settingsObject["redirect_uris"].toArray();
     const QUrl redirectUri(redirectUris[0].toString()); // Get the first URI
     const auto port = static_cast<quint16>(redirectUri.port()); // Get the port
+    qDebug() << port;
 
     oauth2NetworkAccess->setAuthorizationUrl(authUri);
     oauth2NetworkAccess->setClientIdentifier(clientId);
@@ -72,6 +74,7 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
     {
         //Seems like reply handler always exists within QOAuth2AuthorizationCodeFlow...
         //So I delete whatever is in there and then allocate on the stack.
+        qDebug() << "Making reply handle?";
         auto replyHandler = new QOAuthHttpServerReplyHandler(port, this);
         oauth2NetworkAccess->setReplyHandler(replyHandler);
     }
@@ -132,14 +135,14 @@ void OAuthNetConnect::saveSettings()
 
 QByteArray OAuthNetConnect::get()
 {
-    //responseTimer->start();
+    responseTimer->start();
     while(waitingForOauth)
     {
         usleep(1000);
         qApp->processEvents();
 
     }
-    //responseTimer->stop();
+    responseTimer->stop();
 
     if(!oauthValid)
     {
@@ -176,14 +179,14 @@ void OAuthNetConnect::debugReply()
     qDebug() << oauth2NetworkAccess->authorizationUrl();
     QNetworkReply *reply = oauth2NetworkAccess->get(QUrl(address));
 
-    //responseTimer->start();
+    responseTimer->start();
     while(waitingForOauth)
     {
         usleep(1000);
         qApp->processEvents();
 
     }
-    //responseTimer->stop();
+    responseTimer->stop();
 
     if(!oauthValid)
     {
@@ -219,6 +222,18 @@ void OAuthNetConnect::oauthGranted()
 
 void OAuthNetConnect::oauthFailed()
 {
+    auto rh = oauth2NetworkAccess->replyHandler();
+    delete rh;
+    rh = Q_NULLPTR;
+
+    delete oauth2NetworkAccess;
+    oauth2NetworkAccess = Q_NULLPTR;
+
+    oauth2NetworkAccess = new QOAuth2AuthorizationCodeFlow(this);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::granted, this, &OAuthNetConnect::oauthGranted);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailed);
+
     waitingForOauth = false;
     oauthValid = false;
     qDebug() << "Failed.";
@@ -228,4 +243,3 @@ bool OAuthNetConnect::isWaitingForOauth()
 {
     return waitingForOauth;
 }
-

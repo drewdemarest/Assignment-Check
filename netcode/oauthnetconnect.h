@@ -42,6 +42,8 @@ private:
     void saveSettings();
 
     void debugReply();
+
+    bool isDeleted = false;
 signals:
 
 
