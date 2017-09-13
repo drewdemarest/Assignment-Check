@@ -24,6 +24,7 @@ public:
     void buildOAuth(const QString &scope, const QString &address, const QString &credentialFilePath);
     QByteArray get();
     bool isWaitingForOauth();
+    void setTimerDuration(int timerDuration);
 
 private:
     //members
@@ -42,7 +43,7 @@ private:
     void saveSettings();
 
     void debugReply();
-
+    int timerDuration = 30000;
     bool isDeleted = false;
 signals:
 

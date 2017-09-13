@@ -4,7 +4,7 @@ OAuthNetConnect::OAuthNetConnect(QObject *parent) :
     QObject(parent),
     oauthSettings(new QSettings(QApplication::applicationDirPath() + "/oauth.ini", QSettings::IniFormat))
 {
-    responseTimer->setInterval(5000);
+    responseTimer->setInterval(timerDuration);
     responseTimer->setSingleShot(true);
 
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
@@ -17,7 +17,7 @@ OAuthNetConnect::OAuthNetConnect(const QString &scope, const QString &address, c
     QObject(parent),
     oauthSettings(new QSettings(QApplication::applicationDirPath() + "/oauth.ini", QSettings::IniFormat))
 {
-    responseTimer->setInterval(5000);
+    responseTimer->setInterval(timerDuration);
     responseTimer->setSingleShot(true);
 
     //connections
@@ -242,4 +242,9 @@ void OAuthNetConnect::oauthFailed()
 bool OAuthNetConnect::isWaitingForOauth()
 {
     return waitingForOauth;
+}
+
+void OAuthNetConnect::setTimerDuration(int timerDuration)
+{
+    this->timerDuration = timerDuration;
 }
