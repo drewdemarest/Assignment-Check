@@ -87,7 +87,7 @@ void Route::setDateFormat(const QString &qs)
 
 bool Route::isRouteValid()
 {
-
+    return true;
 }
 
 QDateTime Route::getRouteDate()

@@ -14,39 +14,51 @@ class OAuthNetConnect : public QObject
 {
     Q_OBJECT
 public:
-    //ctors
+    //-------------------------------------------------------------------------
+    // ctors & dtors
+    //-------------------------------------------------------------------------
     explicit OAuthNetConnect(QObject *parent);
-    explicit OAuthNetConnect(const QString &scope, const QString &address, const QString &credentialFilePath, QObject *parent);
-    //dtors
+
+    explicit OAuthNetConnect(
+            const QString &scope,
+            const QString &address,
+            const QString &credentialFilePath,
+            QObject *parent);
+
     ~OAuthNetConnect();
-    //members
-    //functions
-    void buildOAuth(const QString &scope, const QString &address, const QString &credentialFilePath);
+
+    //-------------------------------------------------------------------------
+    // Functions
+    //-------------------------------------------------------------------------
+    void buildOAuth(const QString &scope, const QString &address,
+                    const QString &credentialFilePath);
+
     QByteArray get();
-    bool isWaitingForOauth();
-    void setTimerDuration(int timerDuration);
+    void setResponseWaitTime(int timerDuration);
 
-private:
-    //members
-    QTimer *responseTimer = new QTimer(this);
-    QOAuth2AuthorizationCodeFlow *oauth2NetworkAccess = new QOAuth2AuthorizationCodeFlow(this);
-    QSettings *oauthSettings;
-    QString oauthToken;
-    QString address;
-    QDateTime tokenExpire;
-    bool waitingForOauth = false;
-    bool oauthValid = false;
-
-    //functions
+private:    
+    //-------------------------------------------------------------------------
+    // Functions
+    //-------------------------------------------------------------------------
     QJsonObject readJsonCredentials(const QString &credentialFilePath);
     void loadSettings();
     void saveSettings();
-
     void debugReply();
-    int timerDuration = 30000;
-    bool isDeleted = false;
-signals:
 
+    //-------------------------------------------------------------------------
+    // Members
+    //-------------------------------------------------------------------------
+    QOAuth2AuthorizationCodeFlow *oauth2NetworkAccess = new QOAuth2AuthorizationCodeFlow(this);
+    QTimer *responseTimer = new QTimer(this);
+    int timerDuration = 60000;
+    QSettings *oauthSettings;
+    QString oauthToken;
+    QDateTime tokenExpire;
+    QString address;
+    bool waitingForOauth = false;
+    bool oauthValid = false;
+
+signals:
 
 public slots:
     void oauthGranted();

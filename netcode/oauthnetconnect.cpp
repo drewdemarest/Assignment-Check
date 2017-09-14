@@ -24,8 +24,8 @@ OAuthNetConnect::OAuthNetConnect(const QString &scope, const QString &address, c
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::granted, this, &OAuthNetConnect::oauthGranted);
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailed);
-
     connect(responseTimer, &QTimer::timeout, this, &OAuthNetConnect::oauthFailed);
+
     buildOAuth(scope, address, credentialFilePath);
 }
 
@@ -45,11 +45,7 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
     loadSettings();
 
     this->address = address;
-    qDebug() << oauth2NetworkAccess->dynamicPropertyNames();
-    //temporary code-- for debuggin server replies
-    //connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::granted, this, &NetConnect::debugReply);
 
-    //google->setScope("https://www.googleapis.com/auth/spreadsheets.readonly");
     oauth2NetworkAccess->setScope(scope);
 
     const QJsonObject object = readJsonCredentials(credentialFilePath);
@@ -63,7 +59,6 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
     const auto redirectUris = settingsObject["redirect_uris"].toArray();
     const QUrl redirectUri(redirectUris[0].toString()); // Get the first URI
     const auto port = static_cast<quint16>(redirectUri.port()); // Get the port
-    qDebug() << port;
 
     oauth2NetworkAccess->setAuthorizationUrl(authUri);
     oauth2NetworkAccess->setClientIdentifier(clientId);
@@ -96,41 +91,6 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
         waitingForOauth = false;
         oauth2NetworkAccess->setToken(oauthToken);
     }
-    //oauth2NetworkAccess->requestFailed();
-    //debugReply();
-
-    //oauth2NetworkAccess->grant();
-    //oauth test end
-}
-
-
-
-QJsonObject OAuthNetConnect::readJsonCredentials(const QString &credentialFilePath)
-{
-    QByteArray credentials;
-
-    QFile jsonCredentialFile(credentialFilePath);
-    if(!jsonCredentialFile.open(QIODevice::ReadOnly | QIODevice::Text))
-        return QJsonObject();
-
-    while(!jsonCredentialFile.atEnd())
-    {
-        credentials.append(jsonCredentialFile.readLine());
-    }
-
-    return QJsonObject(QJsonDocument::fromJson(credentials).object());
-}
-
-void OAuthNetConnect::loadSettings()
-{
-    oauthToken = oauthSettings->value("oauth2/token").toString();
-    tokenExpire = oauthSettings->value("oauth2/tokenExpire").toDateTime();
-}
-
-void OAuthNetConnect::saveSettings()
-{
-    oauthSettings->setValue("oauth2/token", oauth2NetworkAccess->token());
-    oauthSettings->setValue("oauth2/tokenExpire", QVariant(tokenExpire));
 }
 
 QByteArray OAuthNetConnect::get()
@@ -169,6 +129,34 @@ QByteArray OAuthNetConnect::get()
 
     reply->deleteLater();
     return replyCopy;
+}
+
+QJsonObject OAuthNetConnect::readJsonCredentials(const QString &credentialFilePath)
+{
+    QByteArray credentials;
+
+    QFile jsonCredentialFile(credentialFilePath);
+    if(!jsonCredentialFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        return QJsonObject();
+
+    while(!jsonCredentialFile.atEnd())
+    {
+        credentials.append(jsonCredentialFile.readLine());
+    }
+
+    return QJsonObject(QJsonDocument::fromJson(credentials).object());
+}
+
+void OAuthNetConnect::loadSettings()
+{
+    oauthToken = oauthSettings->value("oauth2/token").toString();
+    tokenExpire = oauthSettings->value("oauth2/tokenExpire").toDateTime();
+}
+
+void OAuthNetConnect::saveSettings()
+{
+    oauthSettings->setValue("oauth2/token", oauth2NetworkAccess->token());
+    oauthSettings->setValue("oauth2/tokenExpire", QVariant(tokenExpire));
 }
 
 void OAuthNetConnect::debugReply()
@@ -239,12 +227,7 @@ void OAuthNetConnect::oauthFailed()
     qDebug() << "Failed.";
 }
 
-bool OAuthNetConnect::isWaitingForOauth()
-{
-    return waitingForOauth;
-}
-
-void OAuthNetConnect::setTimerDuration(int timerDuration)
+void OAuthNetConnect::setResponseWaitTime(int timerDuration)
 {
     this->timerDuration = timerDuration;
 }
