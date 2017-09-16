@@ -18,6 +18,7 @@ public:
     void buildRoutes();
     void setRouteInfoPrecedence(QStringList &routeInfoPrecedence);
     void setStartTimeInfoPrecedence(QStringList &startTimeInfoPrecedence);
+    void setEmployeeInfoPrecedence(QStringList &employeeInfoPrecedence);
 
 private:
     //-------------------------------------------------------------------------
@@ -37,9 +38,14 @@ private:
             "https://sheets.googleapis.com/v4/spreadsheets/"
             "10mbrfPlPiTi991BKM0nvFa2wDjM_0WHB7AO-xFn9U3c/values/";
 
+    const QString sheetsEmployeeAddress = "https://sheets.googleapis.com/v4/"
+                                          "spreadsheets/10mbrfPlPiTi991BKM0nvFa2wDjM_0WHB7AO-xFn9U3c/values/"
+                                          "Employees";
+
+
     const QString sheetsStartTimeAddress = "https://sheets.googleapis.com/v4/"
-            "spreadsheets/10mbrfPlPiTi991BKM0nvFa2wDjM_0WHB7AO-xFn9U3c/values/"
-            "Route Start Times";
+                                           "spreadsheets/10mbrfPlPiTi991BKM0nvFa2wDjM_0WHB7AO-xFn9U3c/values/"
+                                           "Route Start Times";
 
     const QString sheetsCredFilePath =
             QApplication::applicationDirPath() + "/client.json";
@@ -66,18 +72,33 @@ private:
      "tue", "wed", "thu", "fri","sat", "sun"};
 
     enum routeStartTimeCol {
-                            routeKeyStartTimeCol,
-                            startsPrevDayStartTimeCol,
-                            monStartTimeCol,
-                            tueStartTimeCol,
-                            wedStartTimeCol,
-                            thuStartTimeCol,
-                            friStartTimeCol,
-                            satStartTimeCol,
-                            sunStartTimeCol
-                           };
+        routeKeyStartTimeCol,
+        startsPrevDayStartTimeCol,
+        monStartTimeCol,
+        tueStartTimeCol,
+        wedStartTimeCol,
+        thuStartTimeCol,
+        friStartTimeCol,
+        satStartTimeCol,
+        sunStartTimeCol
+    };
 
-    QVector<int> startTimeColumns {1, 3, 4, 5, 6, 7, 8, 9, 10};
+    QVector<int> mandatoryStartTimeColumns {1, 3, 4, 5, 6, 7, 8, 9, 10};
+    //-------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------
+    // Employee sheet parsing data
+    //-------------------------------------------------------------------------
+
+    const QStringList defaultEmployeePrecedence =
+    {"blank", "employee", "blank", "employeeNum"};
+
+    enum employeeCol {
+        employeeNameCol,
+        employeeNumCol
+    };
+
+    QVector<int> mandatoryEmployeeColumns {1, 3};
 
     //-------------------------------------------------------------------------
 
@@ -100,32 +121,38 @@ private:
     QRegExp timeRegExp          = QRegExp("\\d+:\\d+)?(\\d){4,3}");
     //Added all regexp to vector allow for more succinct code.
     const QVector<QRegExp*> regExpVector = {&mrsSheetDateRegExp, &routeRegExp,
-                                     &driverRegExp, &equipmentRegExp};
+                                            &driverRegExp, &equipmentRegExp};
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
     // Functions
     //-------------------------------------------------------------------------
     void buildRouteStartTimes();
+    void applyStartTimeToRoutes();
+    void buildEmployees();
+    void applyEmployeeNumsToRoutes();
     QByteArray queryRoutes(QString& dayOfWeekToQuery);
     QByteArray queryRouteStartTimes();
+    QByteArray queryEmployees();
+
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
     // Once the sheets have been parsed they, are stored in these containers.
     //-------------------------------------------------------------------------
-    QMap<QString, QVector<QTime>>   routeStartTimes;
+    QVector<RouteStartTime>         routeStartTimes;
     QVector<Route>                  routes;
-
+    QMap<QString, QString>          employees;
 
     //-------------------------------------------------------------------------
     //Route parsing utilities.
     //-------------------------------------------------------------------------
     QString dateFormat = "d-MMM-yyyy";
 
-
     void whatRouteColIsMissing();
     void whatRouteStartTimeColIsMissing(QVector<int> startTimeColumnsVerify);
+    void whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify);
+
 signals:
 
 public slots:

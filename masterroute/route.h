@@ -8,7 +8,9 @@ namespace routeEnum
 {
     enum {key, truckNum, trailerNum, driverName, driverId, date, misc, empty};
     enum {matchSheetDate, matchRouteKey, matchDriverName, matchEquipment, matchTime, matchMisc, matchEmpty};
+    enum {mon, tue, wed, thu, fri, sat, sun};
 }
+#include "routestarttime.h"
 
 class Route
 {
@@ -17,6 +19,8 @@ public:
 
     int  whatIsThis(const QString &data);
     void setField(const QString &data, int fieldEnum);
+    void applyFullStartTimeOffset(RouteStartTime &rst);
+    void applySingleStartTimeOffset(qint64 &startTimeOffset, int dayOfWeek);
     void setDateFormat(const QString &qs);
     bool isRouteValid();
     QDateTime getRouteDate();
@@ -54,6 +58,15 @@ private:
     QString     driverName;
     QString     driverId;
     QStringList misc;
+
+    std::array<bool, 7> startsPrevDay;
+    qint64 monMidnightOffsetmSec;
+    qint64 tueMidnightOffsetmSec;
+    qint64 wedMidnightOffsetmSec;
+    qint64 thuMidnightOffsetmSec;
+    qint64 friMidnightOffsetmSec;
+    qint64 satMidnightOffsetmSec;
+    qint64 sunMidnightOffsetmSec;
 };
 
 #endif // ROUTE_H

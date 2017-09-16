@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QStringList empty =     {"name", "startsPrevDay", "mon",
                              "tue", "wed", "thu", "fri","sat", "sun"};;
     QStringList routePrec = {"route", "junk", "driver", "powerUnit", "trailer", "junk", "notes"};
+    QStringList employeePrec = {"employeeName", "employeeNum"};
+    mrs.setEmployeeInfoPrecedence(employeePrec);
     mrs.setRouteInfoPrecedence(routePrec);
     mrs.setStartTimeInfoPrecedence(empty);
     mrs.buildRoutes();

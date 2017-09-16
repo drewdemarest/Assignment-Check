@@ -80,6 +80,70 @@ void Route::setField(const QString &data, int fieldEnum)
     }
 }
 
+void Route::applyFullStartTimeOffset(RouteStartTime &rst)
+{
+    QMap<QString, int> dayOfWeek;
+    dayOfWeek["Monday"]     = routeEnum::mon;
+    dayOfWeek["Tuesday"]    = routeEnum::tue;
+    dayOfWeek["Wednesday"]  = routeEnum::wed;
+    dayOfWeek["Thursday"]   = routeEnum::thu;
+    dayOfWeek["Friday"]     = routeEnum::fri;
+    dayOfWeek["Saturday"]   = routeEnum::sat;
+    dayOfWeek["Sunday"]     = routeEnum::sun;
+
+    if(this->key == rst.routeKey)
+    {
+        startsPrevDay = rst.startsPrevDay;
+        this->monMidnightOffsetmSec = rst.monMidnightOffsetmSec;
+        this->tueMidnightOffsetmSec = rst.tueMidnightOffsetmSec;
+        this->wedMidnightOffsetmSec = rst.wedMidnightOffsetmSec;
+        this->thuMidnightOffsetmSec = rst.thuMidnightOffsetmSec;
+        this->friMidnightOffsetmSec = rst.friMidnightOffsetmSec;
+        this->satMidnightOffsetmSec = rst.satMidnightOffsetmSec;
+        this->sunMidnightOffsetmSec = rst.sunMidnightOffsetmSec;
+
+        if(!date.isNull())
+        {
+            switch(dayOfWeek.value(date.toString("dddd")))
+            {
+            case routeEnum::mon:
+                date = date.addMSecs(monMidnightOffsetmSec);
+                //qDebug() << key << date.toString();
+                break;
+            case routeEnum::tue:
+                date = date.addMSecs(tueMidnightOffsetmSec);
+                //qDebug() << key << date.toString();
+                break;
+            case routeEnum::wed:
+                date = date.addMSecs(wedMidnightOffsetmSec);
+                //qDebug() << key << date.toString();
+                break;
+            case routeEnum::thu:
+                date = date.addMSecs(thuMidnightOffsetmSec);
+                //qDebug() << key << date.toString();
+                break;
+            case routeEnum::fri:
+                date = date.addMSecs(friMidnightOffsetmSec);
+                //qDebug() << key << date.toString();
+                break;
+            case routeEnum::sat:
+                date = date.addMSecs(satMidnightOffsetmSec);
+                //qDebug() << key << date.toString();
+                break;
+            case routeEnum::sun:
+                date = date.addMSecs(sunMidnightOffsetmSec);
+                //qDebug() << key << date.toString();
+                break;
+            }
+        }
+    }
+}
+
+void Route::applySingleStartTimeOffset(qint64 &startTimeOffset, int dayOfWeek)
+{
+
+}
+
 void Route::setDateFormat(const QString &qs)
 {
     dateFormat = qs;

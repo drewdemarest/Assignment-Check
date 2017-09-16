@@ -32,6 +32,9 @@ OAuthNetConnect::OAuthNetConnect(const QString &scope, const QString &address, c
 OAuthNetConnect::~OAuthNetConnect()
 {
     oauthSettings->deleteLater();
+    responseTimer->deleteLater();
+    oauth2NetworkAccess->deleteLater();
+
 }
 
 void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, const QString &credentialFilePath)
@@ -67,9 +70,6 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
 
     if(tokenExpire < QDateTime(QDateTime::currentDateTime()))
     {
-        //Seems like reply handler always exists within QOAuth2AuthorizationCodeFlow...
-        //So I delete whatever is in there and then allocate on the stack.
-        qDebug() << "Making reply handle?";
         auto replyHandler = new QOAuthHttpServerReplyHandler(port, this);
         oauth2NetworkAccess->setReplyHandler(replyHandler);
     }
@@ -106,7 +106,7 @@ QByteArray OAuthNetConnect::get()
 
     if(!oauthValid)
     {
-        qDebug() << "oauth failed in get";
+        qDebug() << "OAuth2 failed in get";
         return QByteArray();
     }
 
@@ -178,7 +178,7 @@ void OAuthNetConnect::debugReply()
 
     if(!oauthValid)
     {
-        qDebug() << "oauth failed debug reply";
+        qDebug() << "OAuth2 failed in debug.";
         return;
     }
 
@@ -224,7 +224,7 @@ void OAuthNetConnect::oauthFailed()
 
     waitingForOauth = false;
     oauthValid = false;
-    qDebug() << "Failed.";
+    qDebug() << "OAuth2 Failed.";
 }
 
 void OAuthNetConnect::setResponseWaitTime(int timerDuration)
