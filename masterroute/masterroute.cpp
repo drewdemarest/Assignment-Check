@@ -66,43 +66,36 @@ void MasterRoute::buildSundayRoutes()
 
 QVector<Route> MasterRoute::getMondayRoutes()
 {
-    std::sort(mondayRoutes.begin(), mondayRoutes.end(), [](Route r1, Route r2) -> bool {return r1.getKey() < r2.getKey();});
     return mondayRoutes;
 }
 
 QVector<Route> MasterRoute::getTuesdayRoutes()
 {
-    std::sort(tuesdayRoutes.begin(), tuesdayRoutes.end(), [](Route r1, Route r2) -> bool {return r1.getKey() < r2.getKey();});
    return tuesdayRoutes;
 }
 
 QVector<Route> MasterRoute::getWednesdayRoutes()
 {
-    std::sort(wednesdayRoutes.begin(), wednesdayRoutes.end(), [](Route r1, Route r2) -> bool {return r1.getKey() < r2.getKey();});
     return wednesdayRoutes;
 }
 
 QVector<Route> MasterRoute::getThursdayRoutes()
 {
-    std::sort(thursdayRoutes.begin(), thursdayRoutes.end(), [](Route r1, Route r2) -> bool {return r1.getKey() < r2.getKey();});
     return thursdayRoutes;
 }
 
 QVector<Route> MasterRoute::getFridayRoutes()
 {
-    std::sort(fridayRoutes.begin(), fridayRoutes.end(), [](Route r1, Route r2) -> bool {return r1.getKey() < r2.getKey();});
     return fridayRoutes;
 }
 
 QVector<Route> MasterRoute::getSaturdayRoutes()
 {
-    std::sort(saturdayRoutes.begin(), saturdayRoutes.end(), [](Route r1, Route r2) -> bool {return r1.getKey() < r2.getKey();});
     return saturdayRoutes;
 }
 
 QVector<Route> MasterRoute::getSundayRoutes()
 {
-    std::sort(sundayRoutes.begin(), sundayRoutes.end(), [](Route r1, Route r2) -> bool {return r1.getKey() < r2.getKey();});
     return sundayRoutes;
 }
 
