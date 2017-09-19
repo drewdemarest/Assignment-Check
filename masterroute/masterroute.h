@@ -13,14 +13,41 @@ class MasterRoute : public QObject
 {
     Q_OBJECT
 public:
-    explicit MasterRoute(QObject *parent = nullptr);
+    explicit MasterRoute(QObject *parent = nullptr);   
 
-    void buildRoutes();
+    void buildAllRoutes();
+    void buildMondayRoutes();
+    void buildTuesdayRoutes();
+    void buildWednesdayRoutes();
+    void buildThursdayRoutes();
+    void buildFridayRoutes();
+    void buildSaturdayRoutes();
+    void buildSundayRoutes();
+
+    QVector<Route> getMondayRoutes();
+    QVector<Route> getTuesdayRoutes();
+    QVector<Route> getWednesdayRoutes();
+    QVector<Route> getThursdayRoutes();
+    QVector<Route> getFridayRoutes();
+    QVector<Route> getSaturdayRoutes();
+    QVector<Route> getSundayRoutes();
+
+    //QVector<Route> getRoutes();
+
     void setRouteInfoPrecedence(QStringList &routeInfoPrecedence);
     void setStartTimeInfoPrecedence(QStringList &startTimeInfoPrecedence);
     void setEmployeeInfoPrecedence(QStringList &employeeInfoPrecedence);
 
 private:
+
+    QString mondaySheetTitle = "Monday";
+    QString tuesdaySheetTitle = "Tuesday";
+    QString wednesdaySheetTitle = "Wednesday";
+    QString thursdaySheetTitle = "Thursday";
+    QString fridaySheetTitle = "Friday";
+    QString saturdaySheetTitle = "Saturday";
+    QString sundaySheetTitle = "Sunday";
+
     //-------------------------------------------------------------------------
     // OAuth2 Network connection. This is a pointer because it
     // needs to stick around.
@@ -36,15 +63,15 @@ private:
 
     const QString sheetsAddressBase =
             "https://sheets.googleapis.com/v4/spreadsheets/"
-            "10mbrfPlPiTi991BKM0nvFa2wDjM_0WHB7AO-xFn9U3c/values/";
+            "1KA7c9bbG2p4f8SFe5ibbkIycwt0wukRe2_xpTB3SI6A/values/";
 
     const QString sheetsEmployeeAddress = "https://sheets.googleapis.com/v4/"
-                                          "spreadsheets/10mbrfPlPiTi991BKM0nvFa2wDjM_0WHB7AO-xFn9U3c/values/"
+                                          "spreadsheets/1KA7c9bbG2p4f8SFe5ibbkIycwt0wukRe2_xpTB3SI6A/values/"
                                           "Employees";
 
 
     const QString sheetsStartTimeAddress = "https://sheets.googleapis.com/v4/"
-                                           "spreadsheets/10mbrfPlPiTi991BKM0nvFa2wDjM_0WHB7AO-xFn9U3c/values/"
+                                           "spreadsheets/1KA7c9bbG2p4f8SFe5ibbkIycwt0wukRe2_xpTB3SI6A/values/"
                                            "Route Start Times";
 
     const QString sheetsCredFilePath =
@@ -103,14 +130,6 @@ private:
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
-    // Useful info to know...
-    //-------------------------------------------------------------------------
-    const QStringList daysOfTheWeek =
-    {"Monday", "Tuesday", "Wednesday", "Thursday",
-     "Friday", "Saturday", "Sunday", "test"};
-    //-------------------------------------------------------------------------
-
-    //-------------------------------------------------------------------------
     // Prebuilt regex helpers
     //-------------------------------------------------------------------------
     enum regexType {matchSheetDate, matchRoute, matchDriver, matchEquipment, matchTime};
@@ -127,10 +146,11 @@ private:
     //-------------------------------------------------------------------------
     // Functions
     //-------------------------------------------------------------------------
+    QVector<Route> buildRoutes(QString dayOfWeek);
     void buildRouteStartTimes();
-    void applyStartTimeToRoutes();
+    QVector<Route> applyStartTimeToRoutes(QVector<Route> routes);
     void buildEmployees();
-    void applyEmployeeNumsToRoutes();
+    QVector<Route> applyEmployeeNumsToRoutes(QVector<Route> routes);
     QByteArray queryRoutes(QString& dayOfWeekToQuery);
     QByteArray queryRouteStartTimes();
     QByteArray queryEmployees();
@@ -140,9 +160,15 @@ private:
     //-------------------------------------------------------------------------
     // Once the sheets have been parsed they, are stored in these containers.
     //-------------------------------------------------------------------------
-    QVector<RouteStartTime>         routeStartTimes;
-    QVector<Route>                  routes;
-    QMap<QString, QString>          employees;
+    QVector<RouteStartTime> routeStartTimes;
+    QVector<Route>          mondayRoutes;
+    QVector<Route>          tuesdayRoutes;
+    QVector<Route>          wednesdayRoutes;
+    QVector<Route>          thursdayRoutes;
+    QVector<Route>          fridayRoutes;
+    QVector<Route>          saturdayRoutes;
+    QVector<Route>          sundayRoutes;
+    QMap<QString, QString>  employees;
 
     //-------------------------------------------------------------------------
     //Route parsing utilities.

@@ -32,7 +32,8 @@ SOURCES += \
     netcode/netconnect.cpp \
     netcode/oauthnetconnect.cpp \
     masterroute/masterroute.cpp \
-    masterroute/route.cpp
+    masterroute/route.cpp \
+    routewidget.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -43,7 +44,9 @@ HEADERS += \
     netcode/oauthnetconnect.h \
     masterroute/masterroute.h \
     masterroute/route.h \
-    masterroute/routestarttime.h
+    masterroute/routestarttime.h \
+    routewidget.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    routewidget.ui

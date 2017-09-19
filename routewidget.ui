@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RouteWidget</class>
+ <widget class="QWidget" name="RouteWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="3" column="0" colspan="2">
+    <widget class="QLineEdit" name="driverNumEdit"/>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QLabel" name="driverNumLabel">
+     <property name="text">
+      <string>Driver Number</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QLineEdit" name="routeEdit"/>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLineEdit" name="truckNumEdit"/>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLabel" name="trailerNumLabel">
+     <property name="text">
+      <string>Trailer Number</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="2">
+    <widget class="QLabel" name="driverNameLabel">
+     <property name="text">
+      <string>Driver Name</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="truckNumLabel">
+     <property name="text">
+      <string>Truck Number</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QLineEdit" name="trailerNumEdit"/>
+   </item>
+   <item row="7" column="0" colspan="2">
+    <widget class="QLineEdit" name="driverNameEdit"/>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="routeLabel">
+     <property name="text">
+      <string>Route Name</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

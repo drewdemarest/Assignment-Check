@@ -5,10 +5,92 @@ MasterRoute::MasterRoute(QObject *parent) : QObject(parent)
 
 }
 
-void MasterRoute::buildRoutes()
+void MasterRoute::buildAllRoutes()
 {
+    mondayRoutes = buildRoutes(mondaySheetTitle);
+    tuesdayRoutes = buildRoutes(tuesdaySheetTitle);
+    wednesdayRoutes = buildRoutes(wednesdaySheetTitle);
+    thursdayRoutes = buildRoutes(thursdaySheetTitle);
+    fridayRoutes = buildRoutes(fridaySheetTitle);
+    saturdayRoutes = buildRoutes(saturdaySheetTitle);
+    sundayRoutes = buildRoutes(sundaySheetTitle);
+}
+
+void MasterRoute::buildMondayRoutes()
+{
+    mondayRoutes = buildRoutes(mondaySheetTitle);
+}
+
+void MasterRoute::buildTuesdayRoutes()
+{
+    tuesdayRoutes = buildRoutes(tuesdaySheetTitle);
+}
+
+void MasterRoute::buildWednesdayRoutes()
+{
+    wednesdayRoutes = buildRoutes(wednesdaySheetTitle);
+}
+
+void MasterRoute::buildThursdayRoutes()
+{
+    thursdayRoutes = buildRoutes(thursdaySheetTitle);
+}
+
+void MasterRoute::buildFridayRoutes()
+{
+    fridayRoutes = buildRoutes(fridaySheetTitle);
+}
+
+void MasterRoute::buildSaturdayRoutes()
+{
+    saturdayRoutes = buildRoutes(saturdaySheetTitle);
+}
+
+void MasterRoute::buildSundayRoutes()
+{
+    sundayRoutes = buildRoutes(sundaySheetTitle);
+}
+
+QVector<Route> MasterRoute::getMondayRoutes()
+{
+    return mondayRoutes;
+}
+
+QVector<Route> MasterRoute::getTuesdayRoutes()
+{
+   return tuesdayRoutes;
+}
+
+QVector<Route> MasterRoute::getWednesdayRoutes()
+{
+    return wednesdayRoutes;
+}
+
+QVector<Route> MasterRoute::getThursdayRoutes()
+{
+    return thursdayRoutes;
+}
+
+QVector<Route> MasterRoute::getFridayRoutes()
+{
+    return fridayRoutes;
+}
+
+QVector<Route> MasterRoute::getSaturdayRoutes()
+{
+    return saturdayRoutes;
+}
+
+QVector<Route> MasterRoute::getSundayRoutes()
+{
+    return sundayRoutes;
+}
+
+QVector<Route> MasterRoute::buildRoutes(QString dayOfWeek)
+{
+    QVector<Route> routes;
     Route route;
-    QString dayOfWeekToQuery = "test";
+    QString dayOfWeekToQuery = dayOfWeek;
     bool foundDate;
 
     QVector<int> routeKeyFoundCol;
@@ -22,8 +104,11 @@ void MasterRoute::buildRoutes()
     QJsonArray routeArray = routeSheet["values"].toArray();
     QJsonArray routeTuple;
 
-    buildRouteStartTimes();
-    buildEmployees();
+    if(routeStartTimes.empty())
+        buildRouteStartTimes();
+
+    if(employees.empty())
+        buildEmployees();
 
     for(int row = 0; row < routeArray.size(); row++)
     {
@@ -89,12 +174,22 @@ void MasterRoute::buildRoutes()
 
         }
     }
-    applyStartTimeToRoutes();
-    applyEmployeeNumsToRoutes();
+    routes = applyStartTimeToRoutes(routes);
+    routes = applyEmployeeNumsToRoutes(routes);
 
-    for(auto t: routes)
-        qDebug() << t.getKey() << t.getRouteDate().toUTC().toString() << t.getDriverName() << t.getDriverId();
+        for(auto t: routes)
+            qDebug() << t.getKey() << t.getRouteDate().toUTC().toString() << t.getDriverName() << t.getDriverId();
+
+    return routes;
+
+
 }
+
+//QVector<Route> MasterRoute::getRoutes()
+//{
+//    std::sort(routes.begin(), routes.end(), [](Route r1, Route r2) -> bool {return r1.getKey() < r2.getKey();});
+//    return routes;
+//}
 
 void MasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPrecedence)
 {
@@ -288,7 +383,7 @@ void MasterRoute::buildRouteStartTimes()
     }
 }
 
-void MasterRoute::applyStartTimeToRoutes()
+QVector<Route> MasterRoute::applyStartTimeToRoutes(QVector<Route> routes)
 {
     QVector<Route>::iterator start = routes.begin();
     QVector<Route>::iterator end = routes.end();
@@ -306,6 +401,7 @@ void MasterRoute::applyStartTimeToRoutes()
         start = routes.begin();
         end = routes.end();
     }
+    return routes;
 }
 
 void MasterRoute::buildEmployees()
@@ -332,32 +428,31 @@ void MasterRoute::buildEmployees()
             }
 
         }
-        employees[employeeNumber] = employeeName;
+        employees[employeeName] = employeeNumber;
         employeeName = QString();
         employeeNumber = QString();
     }
 }
 
-void MasterRoute::applyEmployeeNumsToRoutes()
+QVector<Route> MasterRoute::applyEmployeeNumsToRoutes(QVector<Route> routes)
 {
-    QVector<Route>::iterator start = routes.begin();
-    QVector<Route>::iterator end = routes.end();
-    QMap<QString, QString>::const_iterator i = employees.constBegin();
-
-    while(i != employees.constEnd())
+    QVector<Route>::iterator routesIter = routes.begin();
+    while(routesIter != routes.constEnd())
     {
-        QString toFind = i.value();
-
-        start = std::find_if(start, end, [&toFind](Route &j) {return j.getDriverName() == toFind;});
-
-        if(start != end)
+        if(!routesIter->getDriverName().trimmed().isEmpty())
         {
-            start->setField(i.key(), routeEnum::driverId);
+            if(employees.contains(routesIter->getDriverName()))
+            {
+                routesIter->setField(employees[routesIter->getDriverName()], routeEnum::driverId);
+            }
+            else
+            {
+                qDebug() << routesIter->getKey() << "has an incorrect driver.";
+            }
         }
-        start = routes.begin();
-        end = routes.end();
-        ++i;
+        ++routesIter;
     }
+    return routes;
 }
 
 QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
