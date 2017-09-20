@@ -40,6 +40,21 @@ public:
 
 private:
 
+//    defaultRouteInfoPrecedence <<
+//        "route" << "driver" << "powerUnit" << "trailer";
+
+//    defaultRouteStartTimePrecedence << "building" << "route" << "name" << "startsPrevDay" << "mon" <<
+//         "tue" << "wed" << "thu" << "fri" << "sat" << "sun";
+
+//    mandatoryStartTimeColumns = {1, 3, 4, 5, 6, 7, 8, 9, 10};
+
+//    defaultEmployeePrecedence
+//         << "blank" << "employee" << "blank" << "employeeNum";
+
+//    regExpVector = {mrsSheetDateRegExp, routeRegExp, driverRegExp, equipmentRegExp};
+
+//    mandatoryEmployeeColumns =  {1, 3};
+
     QString mondaySheetTitle = "Monday";
     QString tuesdaySheetTitle = "Tuesday";
     QString wednesdaySheetTitle = "Wednesday";
@@ -81,7 +96,7 @@ private:
     //-------------------------------------------------------------------------
     // Offset data for the route sheets
     //-------------------------------------------------------------------------
-     QStringList defaultRouteInfoPrecedence;
+    const QStringList defaultRouteInfoPrecedence {"route", "driver", "powerUnit", "trailer"};
 
     int routeOffset = 0;
     int driverOffset = 1;
@@ -93,7 +108,8 @@ private:
     //-------------------------------------------------------------------------
     // Offset data for the route start time sheet
     //-------------------------------------------------------------------------
-     QStringList defaultRouteStartTimePrecedence;
+    const QStringList defaultRouteStartTimePrecedence {"building", "route", "name", "startsPrevDay", "mon",
+                                                             "tue", "wed", "thu", "fri", "sat", "sun"};
 
     enum routeStartTimeCol {
         routeKeyStartTimeCol,
@@ -107,21 +123,21 @@ private:
         sunStartTimeCol
     };
 
-    QVector<int> mandatoryStartTimeColumns;
+     QVector<int> mandatoryStartTimeColumns {1, 3, 4, 5, 6, 7, 8, 9, 10};
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
     // Employee sheet parsing data
     //-------------------------------------------------------------------------
 
-     QStringList defaultEmployeePrecedence;
+    const QStringList defaultEmployeePrecedence {"blank", "employee", "blank", "employeeNum"};
 
     enum employeeCol {
         employeeNameCol,
         employeeNumCol
     };
 
-    QVector<int> mandatoryEmployeeColumns;
+     QVector<int> mandatoryEmployeeColumns {1, 3};
 
     //-------------------------------------------------------------------------
 
@@ -135,7 +151,7 @@ private:
     QRegExp equipmentRegExp     = QRegExp("\\b\\d+\\b");
     QRegExp timeRegExp          = QRegExp("\\d+:\\d+)?(\\d){4,3}");
     //Added all regexp to vector allow for more succinct code.
-     QVector<QRegExp> regExpVector;
+    QVector<QRegExp> regExpVector {mrsSheetDateRegExp, routeRegExp, driverRegExp, equipmentRegExp};
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------

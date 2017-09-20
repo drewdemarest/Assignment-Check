@@ -2,20 +2,7 @@
 
 MasterRoute::MasterRoute(QObject *parent) : QObject(parent)
 {
-    defaultRouteInfoPrecedence <<
-        "route" << "driver" << "powerUnit" << "trailer";
 
-    defaultRouteStartTimePrecedence << "building" << "route" << "name" << "startsPrevDay" << "mon" <<
-         "tue" << "wed" << "thu" << "fri" << "sat" << "sun";
-
-    mandatoryStartTimeColumns = {1, 3, 4, 5, 6, 7, 8, 9, 10};
-
-    defaultEmployeePrecedence
-         << "blank" << "employee" << "blank" << "employeeNum";
-
-    regExpVector = {mrsSheetDateRegExp, routeRegExp, driverRegExp, equipmentRegExp};
-
-    mandatoryEmployeeColumns =  {1, 3};
 }
 
 void MasterRoute::buildAllRoutes()
@@ -193,6 +180,7 @@ QVector<Route> MasterRoute::buildRoutes(QString dayOfWeek)
         for(auto t: routes)
             qDebug() << t.getKey() << t.getRouteDate().toUTC().toString() << t.getDriverName() << t.getDriverId();
 
+    std::sort(routes.begin(), routes.end(), [](Route r1, Route r2) -> bool {return r1.getKey() < r2.getKey();});
     return routes;
 
 

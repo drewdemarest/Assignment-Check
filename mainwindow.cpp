@@ -6,17 +6,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    buildWidgets();
+    //buildWidgets();
 
-//    mrs.buildMondayRoutes();
-//    applyRoutesToWidgets(mrs.getMondayRoutes());
-    connect(ui->mondayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setMondayStackedIndex);
-    connect(ui->tuesdayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setTuesdayStackedIndex);
-    connect(ui->wednesdayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setWednesdayStackedIndex);
-    connect(ui->thursdayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setThursdayStackedIndex);
-    connect(ui->fridayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setFridayStackedIndex);
-    connect(ui->saturdayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setSaturdayStackedIndex);
-    connect(ui->sundayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setSundayStackedIndex);
+    connect(ui->loadRoutesButton, &QPushButton::clicked, this, &MainWindow::buildWidgets);
+    connect(ui->abortButton, &QPushButton::clicked, QApplication::instance(), &QCoreApplication::quit);
 }
 
 MainWindow::~MainWindow()
@@ -24,8 +17,35 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+bool MainWindow::isCurrentlycurrentlyBuildingWidgets()
+{
+    return currentlyBuildingWidgets;
+}
+
 void MainWindow::buildWidgets()
 {
+    ui->stackedWidget->setCurrentIndex(1);
+    buildRouteModels();
+
+    while(currentlyBuildingWidgets)
+    {
+       qApp->processEvents();
+    }
+
+    connect(ui->mondayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setMondayStackedIndex);
+    connect(ui->tuesdayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setTuesdayStackedIndex);
+    connect(ui->wednesdayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setWednesdayStackedIndex);
+    connect(ui->thursdayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setThursdayStackedIndex);
+    connect(ui->fridayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setFridayStackedIndex);
+    connect(ui->saturdayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setSaturdayStackedIndex);
+    connect(ui->sundayList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::setSundayStackedIndex);
+
+    ui->stackedWidget->setCurrentIndex(2);
+}
+
+void MainWindow::buildRouteModels()
+{
+    currentlyBuildingWidgets = true;
     QStringList routeKeys;
 
     mrs.buildAllRoutes();
@@ -103,20 +123,9 @@ void MainWindow::buildWidgets()
 
     sundayModel->setStringList(routeKeys);
     ui->sundayList->setModel(sundayModel);
-}
+    currentlyBuildingWidgets = false;
 
-void MainWindow::applyRoutesToWidgets(const QVector<Route> &routes)
-{
-    QStringList routeKeys;
-    for(auto t : routes)
-    {
-        routeKeys << t.getKey();
-        routeWidgets.append(new RouteWidget(t, this));
-        ui->mondayStacked->addWidget(routeWidgets.last());
-    }
-
-    mondayModel->setStringList(routeKeys);
-    ui->mondayList->setModel(mondayModel);
+    return;
 }
 
 void MainWindow::setMondayStackedIndex(const QModelIndex &mdlIdx)

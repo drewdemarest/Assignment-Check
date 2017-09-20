@@ -24,6 +24,7 @@ RouteWidget::~RouteWidget()
 
 void RouteWidget::setRoute(Route r)
 {
+    route = r;
     ui->driverNameEdit->setText(r.getDriverName());
     ui->driverNumEdit->setText(r.getDriverId());
     ui->routeEdit->setText(r.getKey());

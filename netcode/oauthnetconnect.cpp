@@ -42,7 +42,7 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
     while(waitingForOauth)
     {
 
-        _sleep(1000);
+        _sleep(10);
         qApp->processEvents();
     }
 
@@ -99,7 +99,7 @@ QByteArray OAuthNetConnect::get()
     responseTimer->start();
     while(waitingForOauth)
     {
-        _sleep(1000);
+        _sleep(10);
         qApp->processEvents();
 
     }
@@ -116,7 +116,7 @@ QByteArray OAuthNetConnect::get()
 
     while(!reply->isFinished())
     {
-                _sleep(1000);
+        _sleep(10);
         qApp->processEvents();
     }
 
@@ -171,7 +171,7 @@ void OAuthNetConnect::debugReply()
     responseTimer->start();
     while(waitingForOauth)
     {
-                _sleep(1000);
+        _sleep(10);
         qApp->processEvents();
 
     }
@@ -190,7 +190,7 @@ void OAuthNetConnect::debugReply()
     }
     if(reply->errorString() != QNetworkReply::NoError)
     {
-       qDebug() << reply->errorString();
+        qDebug() << reply->errorString();
     }
     else
         qDebug() << reply->readAll();

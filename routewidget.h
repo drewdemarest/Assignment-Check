@@ -20,6 +20,7 @@ public:
     void setRoute(Route r);
 
 private:
+    Route route;
     Ui::RouteWidget *ui;
 };
 

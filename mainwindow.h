@@ -18,6 +18,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    bool isCurrentlycurrentlyBuildingWidgets();
 private:
     Ui::MainWindow *ui;
     QStringListModel *mondayModel = new QStringListModel();
@@ -28,13 +29,15 @@ private:
     QStringListModel *saturdayModel = new QStringListModel();
     QStringListModel *sundayModel = new QStringListModel();
 
+    bool currentlyBuildingWidgets = false;
+
     QVector<RouteWidget*> routeWidgets;
     MasterRoute mrs;
 
-    void buildWidgets();
-    void applyRoutesToWidgets(const QVector<Route> &routes);
+    void buildRouteModels();
 
 private slots:
+    void buildWidgets();
     void setMondayStackedIndex(const QModelIndex &mdlIdx);
     void setTuesdayStackedIndex(const QModelIndex &mdlIdx);
     void setWednesdayStackedIndex(const QModelIndex &mdlIdx);
@@ -42,8 +45,6 @@ private slots:
     void setFridayStackedIndex(const QModelIndex &mdlIdx);
     void setSaturdayStackedIndex(const QModelIndex &mdlIdx);
     void setSundayStackedIndex(const QModelIndex &mdlIdx);
-
-    void abort();
     };
 
 #endif // MAINWINDOW_H
