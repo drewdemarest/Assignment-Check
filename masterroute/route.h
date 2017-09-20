@@ -46,8 +46,7 @@ private:
     QRegExp timeRegExp          = QRegExp("\\d+:\\d+)?(\\d){4,3}");
 
     //Added all regexp to vector allow for more succinct code.
-    QVector<QRegExp> regExpVector = {mrsSheetDateRegExp, routeRegExp,
-                                     driverRegExp, equipmentRegExp};
+    QVector<QRegExp> regExpVector;
 
     QString dateFormat = "d-MMM-yyyy";
 
@@ -59,7 +58,8 @@ private:
     QString     driverId;
     QStringList misc;
 
-    std::array<bool, 7> startsPrevDay;
+    //std::array<bool, 7> startsPrevDay;
+    QVector<bool> startsPrevDay;
     qint64 monMidnightOffsetmSec;
     qint64 tueMidnightOffsetmSec;
     qint64 wedMidnightOffsetmSec;

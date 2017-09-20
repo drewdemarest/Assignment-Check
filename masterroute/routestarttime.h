@@ -7,7 +7,8 @@ struct RouteStartTime
 {
     enum {mon, tue, wed, thu, fri, sat, sun};
 
-    std::array<bool, 7> startsPrevDay;
+    //std::array<bool, 7> startsPrevDay;
+    QVector<bool> startsPrevDay = QVector<bool>(7);
     QString     routeKey;
     //The days a route starts on a prev day vector
     //0 is sunday;

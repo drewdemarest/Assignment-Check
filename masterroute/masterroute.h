@@ -81,8 +81,7 @@ private:
     //-------------------------------------------------------------------------
     // Offset data for the route sheets
     //-------------------------------------------------------------------------
-    const QStringList defaultRouteInfoPrecedence =
-    {"route", "driver" , "powerUnit", "trailer"};
+     QStringList defaultRouteInfoPrecedence;
 
     int routeOffset = 0;
     int driverOffset = 1;
@@ -94,9 +93,7 @@ private:
     //-------------------------------------------------------------------------
     // Offset data for the route start time sheet
     //-------------------------------------------------------------------------
-    const QStringList defaultRouteStartTimePrecedence =
-    {"building", "route", "name", "startsPrevDay", "mon",
-     "tue", "wed", "thu", "fri","sat", "sun"};
+     QStringList defaultRouteStartTimePrecedence;
 
     enum routeStartTimeCol {
         routeKeyStartTimeCol,
@@ -110,22 +107,21 @@ private:
         sunStartTimeCol
     };
 
-    QVector<int> mandatoryStartTimeColumns {1, 3, 4, 5, 6, 7, 8, 9, 10};
+    QVector<int> mandatoryStartTimeColumns;
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
     // Employee sheet parsing data
     //-------------------------------------------------------------------------
 
-    const QStringList defaultEmployeePrecedence =
-    {"blank", "employee", "blank", "employeeNum"};
+     QStringList defaultEmployeePrecedence;
 
     enum employeeCol {
         employeeNameCol,
         employeeNumCol
     };
 
-    QVector<int> mandatoryEmployeeColumns {1, 3};
+    QVector<int> mandatoryEmployeeColumns;
 
     //-------------------------------------------------------------------------
 
@@ -139,8 +135,7 @@ private:
     QRegExp equipmentRegExp     = QRegExp("\\b\\d+\\b");
     QRegExp timeRegExp          = QRegExp("\\d+:\\d+)?(\\d){4,3}");
     //Added all regexp to vector allow for more succinct code.
-    const QVector<QRegExp*> regExpVector = {&mrsSheetDateRegExp, &routeRegExp,
-                                            &driverRegExp, &equipmentRegExp};
+     QVector<QRegExp> regExpVector;
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------

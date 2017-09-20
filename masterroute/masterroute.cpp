@@ -2,7 +2,20 @@
 
 MasterRoute::MasterRoute(QObject *parent) : QObject(parent)
 {
+    defaultRouteInfoPrecedence <<
+        "route" << "driver" << "powerUnit" << "trailer";
 
+    defaultRouteStartTimePrecedence << "building" << "route" << "name" << "startsPrevDay" << "mon" <<
+         "tue" << "wed" << "thu" << "fri" << "sat" << "sun";
+
+    mandatoryStartTimeColumns = {1, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    defaultEmployeePrecedence
+         << "blank" << "employee" << "blank" << "employeeNum";
+
+    regExpVector = {mrsSheetDateRegExp, routeRegExp, driverRegExp, equipmentRegExp};
+
+    mandatoryEmployeeColumns =  {1, 3};
 }
 
 void MasterRoute::buildAllRoutes()
@@ -315,7 +328,7 @@ void MasterRoute::buildRouteStartTimes()
 
             if(mandatoryStartTimeColumns.at(tueStartTimeCol) == col)
             {
-                if(routeStart.startsPrevDay[routeEnum::tue])
+                if(routeStart.startsPrevDay.at(routeEnum::tue))
                 {
                     routeStart.tueMidnightOffsetmSec = (QTime::fromString(startTimeTuple.at(col).toString(), timeFormat).msecsSinceStartOfDay() - msecsInDay);
                 }

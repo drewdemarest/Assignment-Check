@@ -2,6 +2,9 @@
 
 Route::Route()
 {
+    startsPrevDay = QVector<bool>(7);
+    regExpVector = {mrsSheetDateRegExp, routeRegExp,
+                                         driverRegExp, equipmentRegExp};
 
 }
 

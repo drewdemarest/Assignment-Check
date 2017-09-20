@@ -3,6 +3,18 @@
 
 GM_I18NLocale::GM_I18NLocale()
 {
+    knownKeys <<
+            "key" <<
+            "parentLocale" <<
+            "organizationId" <<
+            "language" <<
+            "country" <<
+            "description" <<
+            "dateFormat" <<
+            "timeFormat" <<
+            "currency" <<
+            "decimalSymbol" <<
+            "degitalGrouping";
 //    qDebug() << key.getKey();
 //    qDebug() << key.getVariantValue();
 //    QJsonObject tobj;
