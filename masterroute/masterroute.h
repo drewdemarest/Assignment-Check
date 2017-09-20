@@ -40,21 +40,6 @@ public:
 
 private:
 
-//    defaultRouteInfoPrecedence <<
-//        "route" << "driver" << "powerUnit" << "trailer";
-
-//    defaultRouteStartTimePrecedence << "building" << "route" << "name" << "startsPrevDay" << "mon" <<
-//         "tue" << "wed" << "thu" << "fri" << "sat" << "sun";
-
-//    mandatoryStartTimeColumns = {1, 3, 4, 5, 6, 7, 8, 9, 10};
-
-//    defaultEmployeePrecedence
-//         << "blank" << "employee" << "blank" << "employeeNum";
-
-//    regExpVector = {mrsSheetDateRegExp, routeRegExp, driverRegExp, equipmentRegExp};
-
-//    mandatoryEmployeeColumns =  {1, 3};
-
     QString mondaySheetTitle = "Monday";
     QString tuesdaySheetTitle = "Tuesday";
     QString wednesdaySheetTitle = "Wednesday";
@@ -123,7 +108,7 @@ private:
         sunStartTimeCol
     };
 
-     QVector<int> mandatoryStartTimeColumns {1, 3, 4, 5, 6, 7, 8, 9, 10};
+    QVector<int> mandatoryStartTimeColumns {1, 3, 4, 5, 6, 7, 8, 9, 10};
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
@@ -137,7 +122,7 @@ private:
         employeeNumCol
     };
 
-     QVector<int> mandatoryEmployeeColumns {1, 3};
+    QVector<int> mandatoryEmployeeColumns {1, 3};
 
     //-------------------------------------------------------------------------
 
