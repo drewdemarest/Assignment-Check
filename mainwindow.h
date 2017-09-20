@@ -43,6 +43,7 @@ private slots:
     void setSaturdayStackedIndex(const QModelIndex &mdlIdx);
     void setSundayStackedIndex(const QModelIndex &mdlIdx);
 
+    void abort();
     };
 
 #endif // MAINWINDOW_H

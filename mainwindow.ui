@@ -18,7 +18,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabPage">
        <layout class="QGridLayout" name="gridLayout_2">
@@ -153,9 +153,24 @@
       <widget class="QWidget" name="bufferPage">
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="bufferPleaseWaitLabel">
+          <property name="font">
+           <font>
+            <pointsize>22</pointsize>
+           </font>
+          </property>
           <property name="text">
-           <string>Waiting...</string>
+           <string>Please Wait</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="abortButton">
+          <property name="text">
+           <string>Abort</string>
           </property>
          </widget>
         </item>
