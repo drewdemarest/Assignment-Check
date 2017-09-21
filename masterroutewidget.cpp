@@ -44,6 +44,8 @@ void MasterRouteWidget::buildWidgets()
     connect(ui->saturdayMRSView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MasterRouteWidget::setSaturdayMRSStackIndex);
     connect(ui->sundayMRSView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MasterRouteWidget::setSundayMRSStackIndex);
 
+    connect(ui->mondayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::mondaySearch);
+
     ui->stackedWidget->setCurrentIndex(2);
 }
 
@@ -172,4 +174,14 @@ void MasterRouteWidget::setSundayMRSStackIndex(const QModelIndex &mdlIdx)
 {
     ui->sundayMRSStack->setCurrentIndex(mdlIdx.row());
     return;
+}
+
+void MasterRouteWidget::mondaySearch(const QString &toFind)
+{
+    auto found = mondayModel->match(mondayModel->index(0, 0), Qt::DisplayRole, QVariant::fromValue(toFind), -1, Qt::MatchStartsWith);
+    if(!found.isEmpty())
+    {
+        ui->mondayMRSView->selectionModel()->select(found.at(0), QItemSelectionModel::ClearAndSelect);
+        ui->mondayMRSView->scrollTo(found.at(0));
+    }
 }

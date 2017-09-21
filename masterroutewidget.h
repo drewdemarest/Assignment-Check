@@ -49,6 +49,8 @@ private slots:
     void setFridayMRSStackIndex(const QModelIndex &mdlIdx);
     void setSaturdayMRSStackIndex(const QModelIndex &mdlIdx);
     void setSundayMRSStackIndex(const QModelIndex &mdlIdx);
+
+    void mondaySearch(const QString &toFind);
 };
 
 #endif // MASTERROUTEWIDGET_H
