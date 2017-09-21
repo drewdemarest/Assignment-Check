@@ -68,11 +68,18 @@
            <string>Monday</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="1">
+           <item row="1" column="1">
             <widget class="QStackedWidget" name="mondayMRSStack"/>
            </item>
-           <item row="0" column="0">
+           <item row="1" column="0">
             <widget class="QListView" name="mondayMRSView"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLineEdit" name="mondayRouteSearch">
+             <property name="text">
+              <string>Route Search...</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -81,11 +88,18 @@
            <string>Tuesday</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
+           <item row="1" column="0">
             <widget class="QListView" name="tuesdayMRSView"/>
            </item>
-           <item row="0" column="1">
+           <item row="1" column="1">
             <widget class="QStackedWidget" name="tuesdayMRSStack"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLineEdit" name="tuesdayRouteSearch">
+             <property name="text">
+              <string>Route Search...</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -94,11 +108,18 @@
            <string>Wednesday</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_4">
-           <item row="0" column="0">
+           <item row="1" column="1">
+            <widget class="QStackedWidget" name="wednesdayMRSStack"/>
+           </item>
+           <item row="1" column="0">
             <widget class="QListView" name="wednesdayMRSView"/>
            </item>
-           <item row="0" column="1">
-            <widget class="QStackedWidget" name="wednesdayMRSStack"/>
+           <item row="0" column="0">
+            <widget class="QLineEdit" name="wednesdayRouteSearch">
+             <property name="text">
+              <string>Route Search...</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -107,11 +128,18 @@
            <string>Thursday</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_5">
-           <item row="0" column="0">
+           <item row="1" column="1">
+            <widget class="QStackedWidget" name="thursdayMRSStack"/>
+           </item>
+           <item row="1" column="0">
             <widget class="QListView" name="thursdayMRSView"/>
            </item>
-           <item row="0" column="1">
-            <widget class="QStackedWidget" name="thursdayMRSStack"/>
+           <item row="0" column="0">
+            <widget class="QLineEdit" name="thursdayRouteSearch">
+             <property name="text">
+              <string>Route Search...</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -120,11 +148,18 @@
            <string>Friday</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_6">
-           <item row="0" column="0">
+           <item row="1" column="0">
             <widget class="QListView" name="fridayMRSView"/>
            </item>
-           <item row="0" column="1">
+           <item row="1" column="1">
             <widget class="QStackedWidget" name="fridayMRSStack"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLineEdit" name="fridayRouteSearch">
+             <property name="text">
+              <string>Route Search...</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -133,11 +168,18 @@
            <string>Saturday</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_7">
-           <item row="0" column="0">
+           <item row="1" column="1">
+            <widget class="QStackedWidget" name="saturdayMRSStack"/>
+           </item>
+           <item row="1" column="0">
             <widget class="QListView" name="saturdayMRSView"/>
            </item>
-           <item row="0" column="1">
-            <widget class="QStackedWidget" name="saturdayMRSStack"/>
+           <item row="0" column="0">
+            <widget class="QLineEdit" name="saturdayRouteSearch">
+             <property name="text">
+              <string>Route Search...</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -146,11 +188,18 @@
            <string>Sunday</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_8">
-           <item row="0" column="0">
+           <item row="1" column="0">
             <widget class="QListView" name="sundayMRSView"/>
            </item>
-           <item row="0" column="1">
+           <item row="1" column="1">
             <widget class="QStackedWidget" name="sundayMRSStack"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLineEdit" name="sundayRouteSearch">
+             <property name="text">
+              <string>Route Search...</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
