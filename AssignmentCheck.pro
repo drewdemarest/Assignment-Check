@@ -33,7 +33,9 @@ SOURCES += \
     netcode/oauthnetconnect.cpp \
     masterroute/masterroute.cpp \
     masterroute/route.cpp \
-    routewidget.cpp
+    routewidget.cpp \
+    greenmilewidget.cpp \
+    masterroutewidget.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -45,8 +47,12 @@ HEADERS += \
     masterroute/masterroute.h \
     masterroute/route.h \
     masterroute/routestarttime.h \
-    routewidget.h
+    routewidget.h \
+    greenmilewidget.h \
+    masterroutewidget.h
 
 FORMS += \
         mainwindow.ui \
-    routewidget.ui
+    routewidget.ui \
+    greenmilewidget.ui \
+    masterroutewidget.ui

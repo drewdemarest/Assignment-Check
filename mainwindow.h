@@ -4,7 +4,8 @@
 #include <QMainWindow>
 #include "routewidget.h"
 #include <netcode/oauthnetconnect.h>
-#include <masterroute/masterroute.h>
+#include <masterroutewidget.h>
+#include <greenmilewidget.h>
 
 namespace Ui {
 class MainWindow;
@@ -17,34 +18,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-    bool isCurrentlycurrentlyBuildingWidgets();
 private:
     Ui::MainWindow *ui;
-    QStringListModel *mondayModel = new QStringListModel();
-    QStringListModel *tuesdayModel = new QStringListModel();
-    QStringListModel *wednesdayModel = new QStringListModel();
-    QStringListModel *thursdayModel = new QStringListModel();
-    QStringListModel *fridayModel = new QStringListModel();
-    QStringListModel *saturdayModel = new QStringListModel();
-    QStringListModel *sundayModel = new QStringListModel();
-
-    bool currentlyBuildingWidgets = false;
-
-    QVector<RouteWidget*> routeWidgets;
-    MasterRoute mrs;
-
-    void buildRouteModels();
-
-private slots:
-    void buildWidgets();
-    void setMondayStackedIndex(const QModelIndex &mdlIdx);
-    void setTuesdayStackedIndex(const QModelIndex &mdlIdx);
-    void setWednesdayStackedIndex(const QModelIndex &mdlIdx);
-    void setThursdayStackedIndex(const QModelIndex &mdlIdx);
-    void setFridayStackedIndex(const QModelIndex &mdlIdx);
-    void setSaturdayStackedIndex(const QModelIndex &mdlIdx);
-    void setSundayStackedIndex(const QModelIndex &mdlIdx);
-    };
+    MasterRouteWidget *truckKeyWidget = new MasterRouteWidget(this);
+    GreenmileWidget *greenMileValidator = new GreenmileWidget(this);
+};
 
 #endif // MAINWINDOW_H
