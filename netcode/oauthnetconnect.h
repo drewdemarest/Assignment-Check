@@ -1,7 +1,7 @@
 #ifndef OAUTHNETCONNECT_H
 #define OAUTHNETCONNECT_H
 
-#include <io.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <QtCore>
 #include <QObject>
