@@ -51,19 +51,22 @@ private:
     //-------------------------------------------------------------------------
     QOAuth2AuthorizationCodeFlow *oauth2NetworkAccess = new QOAuth2AuthorizationCodeFlow(this);
     QTimer *responseTimer = new QTimer(this);
-    int timerDuration = 60000;
+    int timerDuration = 10000;
     QSettings *oauthSettings;
     QString oauthToken;
     QDateTime tokenExpire;
     QString address;
     bool waitingForOauth = false;
     bool oauthValid = false;
+    bool aborted = false;
 
 signals:
-
+    void succeeded();
+    void failed();
 public slots:
     void oauthGranted();
     void oauthFailed();
+    void abort(bool abortStatus);
 };
 
 #endif // OAUTHNETCONNECT_H

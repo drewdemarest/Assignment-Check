@@ -14,6 +14,7 @@ class MasterRoute : public QObject
     Q_OBJECT
 public:
     explicit MasterRoute(QObject *parent = nullptr);   
+    ~MasterRoute();
 
     void buildAllRoutes();
     void buildMondayRoutes();
@@ -76,6 +77,8 @@ private:
 
     const QString sheetsCredFilePath =
             QApplication::applicationDirPath() + "/client.json";
+
+    bool networkProblem = false;
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
@@ -175,9 +178,8 @@ private:
     void whatRouteStartTimeColIsMissing(QVector<int> startTimeColumnsVerify);
     void whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify);
 
-signals:
-
 public slots:
+    void abort();
 };
 
 #endif // MASTERROUTE_H

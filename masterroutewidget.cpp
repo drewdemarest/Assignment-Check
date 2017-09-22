@@ -8,12 +8,28 @@ MasterRouteWidget::MasterRouteWidget(QWidget *parent) :
     ui->setupUi(this);
 
         connect(ui->loadRoutesButton, &QPushButton::clicked, this, &MasterRouteWidget::buildWidgets);
-        connect(ui->abortButton, &QPushButton::clicked, QApplication::instance(), &QCoreApplication::quit);
+        connect(ui->abortButton, &QPushButton::clicked, mrs, &MasterRoute::abort);
+        connect(ui->refreshMRSButton, &QPushButton::clicked, this, &MasterRouteWidget::refreshRoutes);
 }
 
 MasterRouteWidget::~MasterRouteWidget()
 {
     delete ui;
+    mondayModel->deleteLater();
+    tuesdayModel->deleteLater();
+    wednesdayModel->deleteLater();
+    thursdayModel->deleteLater();
+    fridayModel->deleteLater();
+    saturdayModel->deleteLater();
+    sundayModel->deleteLater();
+
+    for(auto rw : routeWidgets)
+    {
+        rw->deleteLater();
+    }
+    routeWidgets.clear();
+
+    mrs->deleteLater();
 }
 
 bool MasterRouteWidget::isCurrentlycurrentlyBuildingWidgets()
@@ -45,6 +61,12 @@ void MasterRouteWidget::buildWidgets()
     connect(ui->sundayMRSView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MasterRouteWidget::setSundayMRSStackIndex);
 
     connect(ui->mondayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::mondaySearch);
+    connect(ui->tuesdayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::tuesdaySearch);
+    connect(ui->wednesdayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::wednesdaySearch);
+    connect(ui->thursdayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::thursdaySearch);
+    connect(ui->fridayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::fridaySearch);
+    connect(ui->saturdayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::saturdaySearch);
+    connect(ui->sundayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::sundaySearch);
 
     ui->stackedWidget->setCurrentIndex(2);
 }
@@ -184,4 +206,105 @@ void MasterRouteWidget::mondaySearch(const QString &toFind)
         ui->mondayMRSView->selectionModel()->select(found.at(0), QItemSelectionModel::ClearAndSelect);
         ui->mondayMRSView->scrollTo(found.at(0));
     }
+}
+
+void MasterRouteWidget::tuesdaySearch(const QString &toFind)
+{
+    auto found = tuesdayModel->match(tuesdayModel->index(0, 0), Qt::DisplayRole, QVariant::fromValue(toFind), -1, Qt::MatchStartsWith);
+    if(!found.isEmpty())
+    {
+        ui->tuesdayMRSView->selectionModel()->select(found.at(0), QItemSelectionModel::ClearAndSelect);
+        ui->tuesdayMRSView->scrollTo(found.at(0));
+    }
+}
+
+void MasterRouteWidget::wednesdaySearch(const QString &toFind)
+{
+    auto found = wednesdayModel->match(wednesdayModel->index(0, 0), Qt::DisplayRole, QVariant::fromValue(toFind), -1, Qt::MatchStartsWith);
+    if(!found.isEmpty())
+    {
+        ui->wednesdayMRSView->selectionModel()->select(found.at(0), QItemSelectionModel::ClearAndSelect);
+        ui->wednesdayMRSView->scrollTo(found.at(0));
+    }
+}
+
+void MasterRouteWidget::thursdaySearch(const QString &toFind)
+{
+    auto found = thursdayModel->match(thursdayModel->index(0, 0), Qt::DisplayRole, QVariant::fromValue(toFind), -1, Qt::MatchStartsWith);
+    if(!found.isEmpty())
+    {
+        ui->thursdayMRSView->selectionModel()->select(found.at(0), QItemSelectionModel::ClearAndSelect);
+        ui->thursdayMRSView->scrollTo(found.at(0));
+    }
+}
+
+void MasterRouteWidget::fridaySearch(const QString &toFind)
+{
+    auto found = fridayModel->match(fridayModel->index(0, 0), Qt::DisplayRole, QVariant::fromValue(toFind), -1, Qt::MatchStartsWith);
+    if(!found.isEmpty())
+    {
+        ui->fridayMRSView->selectionModel()->select(found.at(0), QItemSelectionModel::ClearAndSelect);
+        ui->fridayMRSView->scrollTo(found.at(0));
+    }
+}
+
+void MasterRouteWidget::saturdaySearch(const QString &toFind)
+{
+    auto found = saturdayModel->match(saturdayModel->index(0, 0), Qt::DisplayRole, QVariant::fromValue(toFind), -1, Qt::MatchStartsWith);
+    if(!found.isEmpty())
+    {
+        ui->saturdayMRSView->selectionModel()->select(found.at(0), QItemSelectionModel::ClearAndSelect);
+        ui->saturdayMRSView->scrollTo(found.at(0));
+    }
+}
+
+
+void MasterRouteWidget::sundaySearch(const QString &toFind)
+{
+    auto found = sundayModel->match(sundayModel->index(0, 0), Qt::DisplayRole, QVariant::fromValue(toFind), -1, Qt::MatchStartsWith);
+    if(!found.isEmpty())
+    {
+        ui->sundayMRSView->selectionModel()->select(found.at(0), QItemSelectionModel::ClearAndSelect);
+        ui->sundayMRSView->scrollTo(found.at(0));
+    }
+}
+
+void MasterRouteWidget::refreshRoutes()
+{
+    for(int i = ui->mondayMRSStack->count(); i >= 0; i--)
+        ui->mondayMRSStack->removeWidget(ui->mondayMRSStack->widget(i));
+
+    for(int i = ui->tuesdayMRSStack->count(); i >= 0; i--)
+        ui->tuesdayMRSStack->removeWidget(ui->tuesdayMRSStack->widget(i));
+
+    for(int i = ui->wednesdayMRSStack->count(); i >= 0; i--)
+        ui->wednesdayMRSStack->removeWidget(ui->wednesdayMRSStack->widget(i));
+
+    for(int i = ui->thursdayMRSStack->count(); i >= 0; i--)
+        ui->thursdayMRSStack->removeWidget(ui->thursdayMRSStack->widget(i));
+
+    for(int i = ui->fridayMRSStack->count(); i >= 0; i--)
+        ui->fridayMRSStack->removeWidget(ui->fridayMRSStack->widget(i));
+
+    for(int i = ui->saturdayMRSStack->count(); i >= 0; i--)
+        ui->saturdayMRSStack->removeWidget(ui->saturdayMRSStack->widget(i));
+
+    for(int i = ui->sundayMRSStack->count(); i >= 0; i--)
+        ui->sundayMRSStack->removeWidget(ui->sundayMRSStack->widget(i));
+
+    for(auto rw: routeWidgets)
+    {
+        rw->deleteLater();
+    }
+    routeWidgets.clear();
+
+    mondayModel->setStringList(QStringList());
+    tuesdayModel->setStringList(QStringList());
+    wednesdayModel->setStringList(QStringList());
+    thursdayModel->setStringList(QStringList());
+    fridayModel->setStringList(QStringList());
+    saturdayModel->setStringList(QStringList());
+    sundayModel->setStringList(QStringList());
+
+    buildWidgets();
 }

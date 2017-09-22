@@ -39,97 +39,106 @@ OAuthNetConnect::~OAuthNetConnect()
 
 void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, const QString &credentialFilePath)
 {
-    while(waitingForOauth)
+    if(!aborted)
     {
+        while(waitingForOauth)
+        {
+            usleep(10);
+            qApp->processEvents();
+        }
 
-        usleep(10);
-        qApp->processEvents();
-    }
+        loadSettings();
 
-    loadSettings();
+        this->address = address;
 
-    this->address = address;
+        oauth2NetworkAccess->setScope(scope);
 
-    oauth2NetworkAccess->setScope(scope);
+        const QJsonObject object = readJsonCredentials(credentialFilePath);
 
-    const QJsonObject object = readJsonCredentials(credentialFilePath);
+        const auto settingsObject = object["web"].toObject();
 
-    const auto settingsObject = object["web"].toObject();
+        const QUrl authUri(settingsObject["auth_uri"].toString());
+        const auto clientId = settingsObject["client_id"].toString();
+        const QUrl tokenUri(settingsObject["token_uri"].toString());
+        const auto clientSecret(settingsObject["client_secret"].toString());
+        const auto redirectUris = settingsObject["redirect_uris"].toArray();
+        const QUrl redirectUri(redirectUris[0].toString()); // Get the first URI
+        const auto port = static_cast<quint16>(redirectUri.port()); // Get the port
 
-    const QUrl authUri(settingsObject["auth_uri"].toString());
-    const auto clientId = settingsObject["client_id"].toString();
-    const QUrl tokenUri(settingsObject["token_uri"].toString());
-    const auto clientSecret(settingsObject["client_secret"].toString());
-    const auto redirectUris = settingsObject["redirect_uris"].toArray();
-    const QUrl redirectUri(redirectUris[0].toString()); // Get the first URI
-    const auto port = static_cast<quint16>(redirectUri.port()); // Get the port
+        oauth2NetworkAccess->setAuthorizationUrl(authUri);
+        oauth2NetworkAccess->setClientIdentifier(clientId);
+        oauth2NetworkAccess->setAccessTokenUrl(tokenUri);
+        oauth2NetworkAccess->setClientIdentifierSharedKey(clientSecret);
 
-    oauth2NetworkAccess->setAuthorizationUrl(authUri);
-    oauth2NetworkAccess->setClientIdentifier(clientId);
-    oauth2NetworkAccess->setAccessTokenUrl(tokenUri);
-    oauth2NetworkAccess->setClientIdentifierSharedKey(clientSecret);
+        if(tokenExpire < QDateTime(QDateTime::currentDateTime()))
+        {
+            auto replyHandler = new QOAuthHttpServerReplyHandler(port, this);
+            oauth2NetworkAccess->setReplyHandler(replyHandler);
+        }
 
-    if(tokenExpire < QDateTime(QDateTime::currentDateTime()))
-    {
-        auto replyHandler = new QOAuthHttpServerReplyHandler(port, this);
-        oauth2NetworkAccess->setReplyHandler(replyHandler);
-    }
-
-    //check if the auth token from settings file is valid
-    if(oauthToken.isNull())
-    {
-        waitingForOauth = true;
-        oauth2NetworkAccess->grant();
-    }
-    else if(tokenExpire < QDateTime::currentDateTime())
-    {
-        waitingForOauth = true;
-        oauth2NetworkAccess->grant();
+        //check if the auth token from settings file is valid
+        if(oauthToken.isNull())
+        {
+            waitingForOauth = true;
+            oauth2NetworkAccess->grant();
+        }
+        else if(tokenExpire < QDateTime::currentDateTime())
+        {
+            waitingForOauth = true;
+            oauth2NetworkAccess->grant();
+        }
+        else
+        {
+            oauthValid = true;
+            waitingForOauth = false;
+            oauth2NetworkAccess->setToken(oauthToken);
+        }
     }
     else
-    {
-        oauthValid = true;
-        waitingForOauth = false;
-        oauth2NetworkAccess->setToken(oauthToken);
-    }
+        return;
 }
 
 QByteArray OAuthNetConnect::get()
 {
-    responseTimer->start();
-    while(waitingForOauth)
+    if(!aborted)
     {
-        usleep(10);
-        qApp->processEvents();
+        responseTimer->start();
+        while(waitingForOauth)
+        {
+            usleep(10);
+            qApp->processEvents();
 
-    }
-    responseTimer->stop();
+        }
+        responseTimer->stop();
 
-    if(!oauthValid)
-    {
-        qDebug() << "OAuth2 failed in get";
-        return QByteArray();
-    }
+        if(!oauthValid)
+        {
+            qDebug() << "OAuth2 failed in get";
+            return QByteArray();
+        }
 
-    QNetworkReply *reply = oauth2NetworkAccess->get(QUrl(address));
-    QByteArray replyCopy;
+        QNetworkReply *reply = oauth2NetworkAccess->get(QUrl(address));
+        QByteArray replyCopy;
 
-    while(!reply->isFinished())
-    {
-        usleep(10);
-        qApp->processEvents();
-    }
+        while(!reply->isFinished())
+        {
+            usleep(10);
+            qApp->processEvents();
+        }
 
-    if(reply->errorString() == QNetworkReply::AuthenticationRequiredError)
-    {
-        qDebug() << reply->errorString();
-        oauth2NetworkAccess->grant();
+        if(reply->errorString() == QNetworkReply::AuthenticationRequiredError)
+        {
+            qDebug() << reply->errorString();
+            oauth2NetworkAccess->grant();
+        }
+        else
+            replyCopy = reply->readAll();
+
+        reply->deleteLater();
+        return replyCopy;
     }
     else
-        replyCopy = reply->readAll();
-
-    reply->deleteLater();
-    return replyCopy;
+        return QByteArray();
 }
 
 QJsonObject OAuthNetConnect::readJsonCredentials(const QString &credentialFilePath)
@@ -207,6 +216,7 @@ void OAuthNetConnect::oauthGranted()
     tokenExpire = oauth2NetworkAccess->expirationAt();
     saveSettings();
     oauthSettings->sync();
+    emit succeeded();
 }
 
 void OAuthNetConnect::oauthFailed()
@@ -226,6 +236,13 @@ void OAuthNetConnect::oauthFailed()
     waitingForOauth = false;
     oauthValid = false;
     qDebug() << "OAuth2 Failed.";
+    emit failed();
+}
+
+void OAuthNetConnect::abort(bool abortStatus)
+{
+    qDebug() << "aborted?" << abortStatus;
+    aborted = abortStatus;
 }
 
 void OAuthNetConnect::setResponseWaitTime(int timerDuration)

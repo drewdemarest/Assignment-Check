@@ -2,11 +2,15 @@
 
 MasterRoute::MasterRoute(QObject *parent) : QObject(parent)
 {
+}
 
+MasterRoute::~MasterRoute()
+{
+    oauthConn->deleteLater();
 }
 
 void MasterRoute::buildAllRoutes()
-{
+{ 
     mondayRoutes = buildRoutes(mondaySheetTitle);
     tuesdayRoutes = buildRoutes(tuesdaySheetTitle);
     wednesdayRoutes = buildRoutes(wednesdaySheetTitle);
@@ -58,7 +62,7 @@ QVector<Route> MasterRoute::getMondayRoutes()
 
 QVector<Route> MasterRoute::getTuesdayRoutes()
 {
-   return tuesdayRoutes;
+    return tuesdayRoutes;
 }
 
 QVector<Route> MasterRoute::getWednesdayRoutes()
@@ -177,8 +181,8 @@ QVector<Route> MasterRoute::buildRoutes(QString dayOfWeek)
     routes = applyStartTimeToRoutes(routes);
     routes = applyEmployeeNumsToRoutes(routes);
 
-        for(auto t: routes)
-            qDebug() << t.getKey() << t.getRouteDate().toUTC().toString() << t.getDriverName() << t.getDriverId();
+    for(auto t: routes)
+        qDebug() << t.getKey() << t.getRouteDate().toUTC().toString() << t.getDriverName() << t.getDriverId();
 
     std::sort(routes.begin(), routes.end(), [](Route r1, Route r2) -> bool {return r1.getKey() < r2.getKey();});
     return routes;
@@ -458,20 +462,32 @@ QVector<Route> MasterRoute::applyEmployeeNumsToRoutes(QVector<Route> routes)
 
 QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
 {
-    oauthConn->buildOAuth(sheetsScope, QString(sheetsAddressBase + dayOfWeekToQuery), sheetsCredFilePath);
-    return oauthConn->get();
+//    if(!networkProblem){
+        oauthConn->buildOAuth(sheetsScope, QString(sheetsAddressBase + dayOfWeekToQuery), sheetsCredFilePath);
+        return oauthConn->get();
+//    }
+//    else
+//        return QByteArray();
 }
 
 QByteArray MasterRoute::queryRouteStartTimes()
 {
-    oauthConn->buildOAuth(sheetsScope, sheetsStartTimeAddress, sheetsCredFilePath);
-    return oauthConn->get();
+//    if(!networkProblem){
+        oauthConn->buildOAuth(sheetsScope, sheetsStartTimeAddress, sheetsCredFilePath);
+        return oauthConn->get();
+//    }
+//    else
+//        return QByteArray();
 }
 
 QByteArray MasterRoute::queryEmployees()
 {
-    oauthConn->buildOAuth(sheetsScope, sheetsEmployeeAddress, sheetsCredFilePath);
-    return oauthConn->get();
+//    if(!networkProblem){
+        oauthConn->buildOAuth(sheetsScope, sheetsEmployeeAddress, sheetsCredFilePath);
+        return oauthConn->get();
+//    }
+//    else
+//        return QByteArray();
 }
 
 void MasterRoute::whatRouteColIsMissing()
@@ -558,5 +574,12 @@ void MasterRoute::whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify)
         }
         start++;
     }
+}
+
+void MasterRoute::abort()
+{
+    qDebug() << "Network connection failed...";
+    oauthConn->abort(true);
+    //networkProblem = true;
 }
 

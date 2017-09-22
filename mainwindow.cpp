@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->truckKeyGridLayout->addWidget(truckKeyWidget);
     ui->greenmileGridLayout->addWidget(greenMileValidator);
+
+    connect(truckKeyWidget, &MasterRouteWidget::abort, QApplication::instance(), &QCoreApplication::quit);
 }
 
 MainWindow::~MainWindow()
