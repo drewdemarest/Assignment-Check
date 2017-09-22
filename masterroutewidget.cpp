@@ -272,6 +272,22 @@ void MasterRouteWidget::sundaySearch(const QString &toFind)
 
 void MasterRouteWidget::refreshRoutes()
 {
+    disconnect(ui->mondayMRSView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MasterRouteWidget::setMondayMRSStackIndex);
+    disconnect(ui->tuesdayMRSView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MasterRouteWidget::setTuesdayMRSStackIndex);
+    disconnect(ui->wednesdayMRSView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MasterRouteWidget::setWednesdayMRSStackIndex);
+    disconnect(ui->thursdayMRSView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MasterRouteWidget::setThursdayMRSStackIndex);
+    disconnect(ui->fridayMRSView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MasterRouteWidget::setFridayMRSStackIndex);
+    disconnect(ui->saturdayMRSView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MasterRouteWidget::setSaturdayMRSStackIndex);
+    disconnect(ui->sundayMRSView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MasterRouteWidget::setSundayMRSStackIndex);
+
+    disconnect(ui->mondayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::mondaySearch);
+    disconnect(ui->tuesdayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::tuesdaySearch);
+    disconnect(ui->wednesdayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::wednesdaySearch);
+    disconnect(ui->thursdayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::thursdaySearch);
+    disconnect(ui->fridayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::fridaySearch);
+    disconnect(ui->saturdayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::saturdaySearch);
+    disconnect(ui->sundayRouteSearch, &QLineEdit::textChanged, this, &MasterRouteWidget::sundaySearch);
+
     for(int i = ui->mondayMRSStack->count(); i >= 0; i--){
         ui->mondayMRSStack->removeWidget(ui->mondayMRSStack->widget(i));
     }
@@ -307,6 +323,8 @@ void MasterRouteWidget::refreshRoutes()
     fridayModel->setStringList(QStringList());
     saturdayModel->setStringList(QStringList());
     sundayModel->setStringList(QStringList());
+
+    mrs->tryNetworkAgain();
 
     buildWidgets();
 }
