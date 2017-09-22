@@ -10,6 +10,7 @@ MasterRouteWidget::MasterRouteWidget(QWidget *parent) :
         connect(ui->loadRoutesButton, &QPushButton::clicked, this, &MasterRouteWidget::buildWidgets);
         connect(ui->abortButton, &QPushButton::clicked, mrs, &MasterRoute::abort);
         connect(ui->refreshMRSButton, &QPushButton::clicked, this, &MasterRouteWidget::refreshRoutes);
+        connect(ui->refreshMRSButton, &QPushButton::clicked, mrs, &MasterRoute::tryNetworkAgain);
 }
 
 MasterRouteWidget::~MasterRouteWidget()
@@ -271,8 +272,9 @@ void MasterRouteWidget::sundaySearch(const QString &toFind)
 
 void MasterRouteWidget::refreshRoutes()
 {
-    for(int i = ui->mondayMRSStack->count(); i >= 0; i--)
+    for(int i = ui->mondayMRSStack->count(); i >= 0; i--){
         ui->mondayMRSStack->removeWidget(ui->mondayMRSStack->widget(i));
+    }
 
     for(int i = ui->tuesdayMRSStack->count(); i >= 0; i--)
         ui->tuesdayMRSStack->removeWidget(ui->tuesdayMRSStack->widget(i));

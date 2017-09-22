@@ -180,6 +180,7 @@ private:
 
 public slots:
     void abort();
+    void tryNetworkAgain();
 };
 
 #endif // MASTERROUTE_H

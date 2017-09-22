@@ -583,3 +583,9 @@ void MasterRoute::abort()
     //networkProblem = true;
 }
 
+void MasterRoute::tryNetworkAgain()
+{
+    qDebug() << "Network connection failed...";
+    oauthConn->abort(false);
+}
+
