@@ -30,4 +30,5 @@ void RouteWidget::setRoute(Route r)
     ui->routeEdit->setText(r.getKey());
     ui->trailerNumEdit->setText(r.getTrailerNumber());
     ui->truckNumEdit->setText(r.getTruckNumber());
+    ui->startTimeEdit->setText(r.getRouteDate().toString("dddd HHmm"));
 }
