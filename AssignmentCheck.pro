@@ -35,7 +35,8 @@ SOURCES += \
     masterroute/route.cpp \
     routewidget.cpp \
     greenmilewidget.cpp \
-    masterroutewidget.cpp
+    masterroutewidget.cpp \
+    greenmile/greenmile.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -49,7 +50,8 @@ HEADERS += \
     masterroute/routestarttime.h \
     routewidget.h \
     greenmilewidget.h \
-    masterroutewidget.h
+    masterroutewidget.h \
+    greenmile/greenmile.h
 
 FORMS += \
         mainwindow.ui \
