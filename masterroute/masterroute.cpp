@@ -108,11 +108,8 @@ QVector<Route> MasterRoute::buildRoutes(QString dayOfWeek)
     QJsonArray routeArray = routeSheet["values"].toArray();
     QJsonArray routeTuple;
 
-    if(routeStartTimes.empty())
-        buildRouteStartTimes();
-
-    if(employees.empty())
-        buildEmployees();
+    buildRouteStartTimes();
+    buildEmployees();
 
     for(int row = 0; row < routeArray.size(); row++)
     {
@@ -178,6 +175,7 @@ QVector<Route> MasterRoute::buildRoutes(QString dayOfWeek)
 
         }
     }
+
     routes = applyStartTimeToRoutes(routes);
     routes = applyEmployeeNumsToRoutes(routes);
 
@@ -189,12 +187,6 @@ QVector<Route> MasterRoute::buildRoutes(QString dayOfWeek)
 
 
 }
-
-//QVector<Route> MasterRoute::getRoutes()
-//{
-//    std::sort(routes.begin(), routes.end(), [](Route r1, Route r2) -> bool {return r1.getKey() < r2.getKey();});
-//    return routes;
-//}
 
 void MasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPrecedence)
 {
@@ -270,6 +262,7 @@ void MasterRoute::setEmployeeInfoPrecedence(QStringList &employeeInfoPrecedence)
 
 void MasterRoute::buildRouteStartTimes()
 {
+    routeStartTimes.clear();
     QJsonObject startTimes = QJsonDocument::fromJson(queryRouteStartTimes()).object();
     QJsonArray startTimeArray = startTimes["values"].toArray();
     QJsonArray startTimeTuple;
@@ -411,6 +404,7 @@ QVector<Route> MasterRoute::applyStartTimeToRoutes(QVector<Route> routes)
 
 void MasterRoute::buildEmployees()
 {
+    employees.clear();
     QString employeeName;
     QString employeeNumber;
     QJsonObject employeeSheet = QJsonDocument::fromJson(queryEmployees()).object();

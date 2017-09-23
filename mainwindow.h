@@ -6,6 +6,7 @@
 #include <netcode/oauthnetconnect.h>
 #include <masterroutewidget.h>
 #include <greenmilewidget.h>
+#include <greenmile/greenmile.h>
 
 namespace Ui {
 class MainWindow;

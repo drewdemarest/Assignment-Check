@@ -74,6 +74,9 @@
            <item row="0" column="0">
             <widget class="QLineEdit" name="mondayRouteSearch">
              <property name="text">
+              <string/>
+             </property>
+             <property name="placeholderText">
               <string>Search</string>
              </property>
             </widget>
@@ -97,6 +100,9 @@
            <item row="0" column="0">
             <widget class="QLineEdit" name="tuesdayRouteSearch">
              <property name="text">
+              <string/>
+             </property>
+             <property name="placeholderText">
               <string>Search</string>
              </property>
             </widget>
@@ -117,6 +123,9 @@
            <item row="0" column="0">
             <widget class="QLineEdit" name="wednesdayRouteSearch">
              <property name="text">
+              <string/>
+             </property>
+             <property name="placeholderText">
               <string>Search</string>
              </property>
             </widget>
@@ -137,6 +146,9 @@
            <item row="0" column="0">
             <widget class="QLineEdit" name="thursdayRouteSearch">
              <property name="text">
+              <string/>
+             </property>
+             <property name="placeholderText">
               <string>Search</string>
              </property>
             </widget>
@@ -157,6 +169,9 @@
            <item row="0" column="0">
             <widget class="QLineEdit" name="fridayRouteSearch">
              <property name="text">
+              <string/>
+             </property>
+             <property name="placeholderText">
               <string>Search</string>
              </property>
             </widget>
@@ -177,6 +192,9 @@
            <item row="0" column="0">
             <widget class="QLineEdit" name="saturdayRouteSearch">
              <property name="text">
+              <string/>
+             </property>
+             <property name="placeholderText">
               <string>Search</string>
              </property>
             </widget>
@@ -197,6 +215,9 @@
            <item row="0" column="0">
             <widget class="QLineEdit" name="sundayRouteSearch">
              <property name="text">
+              <string/>
+             </property>
+             <property name="placeholderText">
               <string>Search</string>
              </property>
             </widget>
