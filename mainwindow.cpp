@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->greenmileGridLayout->addWidget(greenMileValidator);
 
     connect(truckKeyWidget, &MasterRouteWidget::abort, QApplication::instance(), &QCoreApplication::quit);
-    Greenmile test;
+    //Greenmile test;
 }
 
 MainWindow::~MainWindow()

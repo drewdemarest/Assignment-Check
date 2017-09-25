@@ -14,21 +14,26 @@ public:
     explicit Greenmile(QObject *parent = nullptr);
     ~Greenmile();
 
-    QVector<Route> getRoutesForTimeInterval(const QDateTime &begin, const QDateTime &end);
+    QVector<Route> compareRoutesToGreenmileRoutes(const QVector<Route> &otherRoutes);
 
 private:
-    QByteArray queryGreenmile(const QDateTime &begin, const QDateTime &end);
+    void makeTimeIntervalForQuery(const QVector<Route> &r);
+    QByteArray queryGreenmile(const QDateTime &begin, const QDateTime &end); 
+    void buildRoutesFromGreenmileResponse(const QByteArray &gmResponse);
+
     void loadHeadersFromJson();
     void saveHeadersToJson();
 
     NetConnect *greenmileConnection = new NetConnect();
     QString headersFilePath = QApplication::applicationDirPath() + "/headers.json";
 
-    QString gmRouteIntervalAddress = "https://charliesproduce.greenmile.com/Route/restrictions?criteria={\"filters\":[\"key\", \"driverAssignments.driver.login\", \"equipmentAssignments.equipment.key\"]}";
+    QString gmRouteIntervalAddress = "https://charliesproduce.greenmile.com/Route/restrictions?criteria={\"filters\":[\"key\", \"driverAssignments.driver.key\", \"driverAssignments.driver.name\", \"equipmentAssignments.equipment.key\"]}";
     QString body;
     QStringList headers;
     QVector<Route> routes;
 
+    QDateTime minQueryDateTime;
+    QDateTime maxQueryDateTime;
 
 signals:
 

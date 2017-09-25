@@ -107,6 +107,11 @@ QByteArray OAuthNetConnect::get()
         {
             usleep(10);
             qApp->processEvents();
+            if(aborted){
+                responseTimer->stop();
+                oauthFailed();
+                return QByteArray();
+            }
 
         }
         responseTimer->stop();

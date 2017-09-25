@@ -6,6 +6,8 @@
 #include "routewidget.h"
 #include "masterroute/masterroute.h"
 
+#include <greenmile/greenmile.h>
+
 namespace Ui {
 class MasterRouteWidget;
 }
