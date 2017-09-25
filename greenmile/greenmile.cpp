@@ -55,7 +55,6 @@ void Greenmile::loadHeadersFromJson()
     headers.clear();
 
     QByteArray headersRaw;
-
     QFile jsonHeaderFile(headersFilePath);
     if(!jsonHeaderFile.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
@@ -71,6 +70,7 @@ void Greenmile::loadHeadersFromJson()
     {
         headers << t.toString();
     }
+    qDebug() << "headers" << headers;
 }
 
 void Greenmile::saveHeadersToJson()
