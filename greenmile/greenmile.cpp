@@ -133,7 +133,8 @@ QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes(const QVector
     }
 
     std::sort(routeDifferences.begin(), routeDifferences.end(), [](RouteDifference rd1, RouteDifference rd2) -> bool {return rd1.routeKey < rd2.routeKey;});
-
+    auto last = std::unique(routeDifferences.begin(), routeDifferences.end());
+    routeDifferences.erase(last, routeDifferences.end());
     for(auto t: routeDifferences)
     {
           t.printDebug();

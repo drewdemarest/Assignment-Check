@@ -34,6 +34,25 @@ struct RouteDifference
         qDebug() << "greenmileDriverID" << this->greenmileDriverID;
         qDebug() << "---------------";
     }
+
+    bool operator == (const RouteDifference &other)
+    {
+        if(this->hasDiscrepencies           == other.hasDiscrepencies           &&
+           this->routeExistsInGreenmile     == other.routeExistsInGreenmile     &&
+           this->routeExistsInMasterRoute   == other.routeExistsInMasterRoute   &&
+           this->driverMismatch             == other.driverMismatch             &&
+           this->truckMismatch              == other.truckMismatch              &&
+           this->routeKey                   == other.routeKey                   &&
+           this->masterRouteTruck           == other.masterRouteTruck           &&
+           this->masterRouteDriverID        == other.masterRouteDriverID        &&
+           this->greenmileTruck             == other.greenmileTruck             &&
+           this->greenmileDriverID          == other.greenmileDriverID)
+        {
+           return true;
+        }
+        else
+            return false;
+    }
 };
 
 #endif // ROUTEDIFFERENCE_H
