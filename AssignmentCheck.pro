@@ -51,7 +51,8 @@ HEADERS += \
     routewidget.h \
     greenmilewidget.h \
     masterroutewidget.h \
-    greenmile/greenmile.h
+    greenmile/greenmile.h \
+    greenmile/routedifference.h
 
 FORMS += \
         mainwindow.ui \

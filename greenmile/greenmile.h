@@ -5,6 +5,7 @@
 #include <QtCore>
 #include <QObject>
 #include "masterroute/route.h"
+#include "routedifference.h"
 #include "netcode/netconnect.h"
 
 class Greenmile : public QObject
@@ -14,7 +15,7 @@ public:
     explicit Greenmile(QObject *parent = nullptr);
     ~Greenmile();
 
-    QVector<Route> compareRoutesToGreenmileRoutes(const QVector<Route> &otherRoutes);
+    QVector<RouteDifference> compareRoutesToGreenmileRoutes(const QVector<Route> &otherRoutes);
 
 private:
     void makeTimeIntervalForQuery(const QVector<Route> &r);
@@ -31,6 +32,7 @@ private:
     QString body;
     QStringList headers;
     QVector<Route> routes;
+    QVector<RouteDifference> routeDifferences;
 
     QDateTime minQueryDateTime;
     QDateTime maxQueryDateTime;

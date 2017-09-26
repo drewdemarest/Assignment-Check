@@ -23,14 +23,14 @@ public:
     void applySingleStartTimeOffset(qint64 &startTimeOffset, int dayOfWeek);
     void setDateFormat(const QString &qs);
     bool isRouteValid();
-    QDateTime getRouteDate();
-    QString getKey();
-    QString getTruckNumber();
-    QString getTrailerNumber();
-    QString getDriverName();
-    QString getDriverId();
-    QString getDateFormat();
-    QStringList getMisc();
+    QDateTime getRouteDate() const;
+    QString getKey() const;
+    QString getTruckNumber() const;
+    QString getTrailerNumber() const;
+    QString getDriverName() const;
+    QString getDriverId() const;
+    QString getDateFormat() const;
+    QStringList getMisc() const;
 
 private:
     //-------------------------------------------------------------------------

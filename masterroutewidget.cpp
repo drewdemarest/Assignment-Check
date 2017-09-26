@@ -155,7 +155,7 @@ void MasterRouteWidget::buildRouteModels()
     currentlyBuildingWidgets = false;
 
     Greenmile test;
-    test.compareRoutesToGreenmileRoutes(mrs->getMondayRoutes());
+    test.compareRoutesToGreenmileRoutes(mrs->getTuesdayRoutes());
 
 
     return;

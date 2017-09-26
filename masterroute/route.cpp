@@ -157,42 +157,42 @@ bool Route::isRouteValid()
     return true;
 }
 
-QDateTime Route::getRouteDate()
+QDateTime Route::getRouteDate() const
 {
     return date;
 }
 
-QString Route::getKey()
+QString Route::getKey() const
 {
     return key;
 }
 
-QString Route::getTruckNumber()
+QString Route::getTruckNumber() const
 {
     return truckNum;
 }
 
-QString Route::getTrailerNumber()
+QString Route::getTrailerNumber() const
 {
     return trailerNum;
 }
 
-QString Route::getDriverName()
+QString Route::getDriverName() const
 {
     return driverName;
 }
 
-QString Route::getDriverId()
+QString Route::getDriverId() const
 {
     return driverId;
 }
 
-QString Route::getDateFormat()
+QString Route::getDateFormat() const
 {
     return dateFormat;
 }
 
-QStringList Route::getMisc()
+QStringList Route::getMisc() const
 {
     return misc;
 }

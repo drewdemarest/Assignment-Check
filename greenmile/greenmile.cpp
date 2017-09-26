@@ -10,24 +10,135 @@ Greenmile::~Greenmile()
 
 }
 
-QVector<Route> Greenmile::compareRoutesToGreenmileRoutes(const QVector<Route> &otherRoutes)
+QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes(const QVector<Route> &otherRoutes)
 {
+    //QVector<Route> otherRoutesCopy = otherRoutes;
     makeTimeIntervalForQuery(otherRoutes);
+
+    RouteDifference routeDiff;
 
     if(minQueryDateTime.isNull() || maxQueryDateTime.isNull())
     {
         qDebug() << "Greenmile query datetimes are null, returning empty route vector";
-         QVector<Route> emptyRouteVector;
-         return emptyRouteVector;
+         QVector<RouteDifference> emptyRouteDiffVector;
+         return emptyRouteDiffVector;
     }
 
     QByteArray response = queryGreenmile(minQueryDateTime.toUTC(),maxQueryDateTime.toUTC());
     buildRoutesFromGreenmileResponse(response);
+
+
     for(auto t: routes)
     {
-        qDebug() << t.getTruckNumber() << t.getKey() << t.getDriverId() << t.getDriverName();
+        routeDiff = RouteDifference();
+        routeDiff.routeKey = t.getKey();
+        routeDiff.greenmileTruck = t.getTruckNumber();
+        routeDiff.greenmileDriverID = t.getDriverId();
+        auto otherStart = otherRoutes.begin();
+        auto otherEnd = otherRoutes.end();
+
+        QString routeKeyToFind = t.getKey();
+        otherStart = std::find_if(otherStart, otherEnd, [&routeKeyToFind](Route u) {return routeKeyToFind == u.getKey();});
+        if(otherStart == otherEnd)
+        {
+            //qDebug() << "Master route does not contain" << t.getKey();
+            routeDiff.routeExistsInMasterRoute = false;
+            routeDiff.hasDiscrepencies = true;
+        }
+
+        while(otherStart < otherEnd)
+        {
+            otherStart = std::find_if(otherStart, otherEnd, [&routeKeyToFind](Route u) {return routeKeyToFind == u.getKey();});
+
+            if(otherStart != otherEnd)
+            {
+                if(t.getDriverId() != otherStart->getDriverId())
+                {
+                    //qDebug() << "ID mismatch tkey" << t.getKey() << "other key" << otherStart->getKey() << "gm id" << t.getDriverId() << "other id" << otherStart->getDriverId();
+                    routeDiff.greenmileTruck = t.getTruckNumber();
+                    routeDiff.masterRouteTruck = otherStart->getTruckNumber();
+                    routeDiff.greenmileDriverID = t.getDriverId();
+                    routeDiff.masterRouteDriverID = otherStart->getDriverId();
+                    routeDiff.hasDiscrepencies = true;
+                }
+                if(t.getTruckNumber() != otherStart->getTruckNumber())
+                {
+                    //qDebug() << "truck mismatch tkey" << t.getKey() << "other key" << otherStart->getKey() << "gm id" << t.getTruckNumber() << "other id" << otherStart->getTruckNumber();
+                    routeDiff.greenmileTruck = t.getTruckNumber();
+                    routeDiff.masterRouteTruck = otherStart->getTruckNumber();
+                    routeDiff.greenmileDriverID = t.getDriverId();
+                    routeDiff.masterRouteDriverID = otherStart->getDriverId();
+                    routeDiff.hasDiscrepencies = true;
+                }
+            }
+            otherStart++;
+        }
+        if(routeDiff.hasDiscrepencies)
+        {
+            routeDifferences.append(routeDiff);
+        }
     }
-    return routes;
+
+    for(auto t: otherRoutes)
+    {
+        routeDiff = RouteDifference();
+        routeDiff.routeKey = t.getKey();
+        routeDiff.masterRouteTruck = t.getTruckNumber();
+        routeDiff.masterRouteDriverID = t.getDriverId();
+        auto otherStart = routes.begin();
+        auto otherEnd = routes.end();
+
+        QString routeKeyToFind = t.getKey();
+        otherStart = std::find_if(otherStart, otherEnd, [&routeKeyToFind](Route u) {return routeKeyToFind == u.getKey();});
+        if(otherStart == otherEnd)
+        {
+            //qDebug() << "GM does not contain" << t.getKey();
+            routeDiff.routeExistsInGreenmile = false;
+            routeDiff.hasDiscrepencies = true;
+        }
+
+        while(otherStart < otherEnd)
+        {
+            otherStart = std::find_if(otherStart, otherEnd, [&routeKeyToFind](Route u) {return routeKeyToFind == u.getKey();});
+
+            if(otherStart != otherEnd)
+            {
+                if(t.getDriverId() != otherStart->getDriverId())
+                {
+                    //() << "ID mismatch mrs" << t.getKey() << "gm key" << otherStart->getKey() << "mrs id" << t.getDriverId() << "gm id" << otherStart->getDriverId();
+                    routeDiff.masterRouteDriverID = t.getDriverId();
+                    routeDiff.greenmileDriverID = otherStart->getDriverId();
+                    routeDiff.masterRouteTruck = t.getTruckNumber();
+                    routeDiff.greenmileTruck = otherStart->getTruckNumber();
+                    routeDiff.hasDiscrepencies = true;
+                }
+                if(t.getTruckNumber() != otherStart->getTruckNumber())
+                {
+                    //qDebug() << "truck mismatch mrs" << t.getKey() << "gm key" << otherStart->getKey() << "mrs id" << t.getTruckNumber() << "gm id" << otherStart->getTruckNumber();
+                    routeDiff.masterRouteDriverID = t.getDriverId();
+                    routeDiff.greenmileDriverID = otherStart->getDriverId();
+                    routeDiff.masterRouteTruck = t.getTruckNumber();
+                    routeDiff.greenmileTruck = otherStart->getTruckNumber();
+                    routeDiff.hasDiscrepencies = true;
+                }
+            }
+            otherStart++;
+        }
+
+        if(routeDiff.hasDiscrepencies)
+        {
+            routeDifferences.append(routeDiff);
+        }
+
+    }
+
+    std::sort(routeDifferences.begin(), routeDifferences.end(), [](RouteDifference rd1, RouteDifference rd2) -> bool {return rd1.routeKey < rd2.routeKey;});
+
+    for(auto t: routeDifferences)
+    {
+          t.printDebug();
+    }
+    return routeDifferences;
 }
 
 void Greenmile::makeTimeIntervalForQuery(const QVector<Route> &r)
