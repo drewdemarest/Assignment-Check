@@ -2,9 +2,11 @@
 #define GREENMILEWIDGET_H
 
 #include <QtCore>
+#include <QTableView>
 #include <QWidget>
 #include <greenmile/greenmile.h>
 #include <greenmile/routedifference.h>
+#include <greenmile/routedifferencemodel.h>
 #include <masterroute/masterroute.h>
 
 namespace gmWidgetPages
@@ -28,7 +30,9 @@ private:
     Ui::GreenmileWidget *ui;
     MasterRoute *mrs = new MasterRoute();
     Greenmile *gm = new Greenmile();
+    RouteDifferenceModel *routeDiffModel = new RouteDifferenceModel();
     QVector<RouteDifference> routeDifferences;
+
 
 private slots:
     void todayGMButtonPressed();

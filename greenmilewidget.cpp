@@ -16,6 +16,7 @@ GreenmileWidget::~GreenmileWidget()
     delete ui;
     mrs->deleteLater();
     gm->deleteLater();
+    routeDiffModel->deleteLater();
 }
 
 
@@ -57,6 +58,9 @@ void GreenmileWidget::todayGMButtonPressed()
         routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getSundayRoutes());
         break;
     }
+
+    routeDiffModel->addRouteDifferenceVector(routeDifferences);
+    ui->routeDiffTableView->setModel(routeDiffModel);
     ui->stackedWidget->setCurrentIndex(gmWidgetPages::reportPage);
 }
 

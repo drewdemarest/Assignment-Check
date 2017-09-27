@@ -36,6 +36,11 @@ QVariant RouteDifferenceModel::headerData(int section, Qt::Orientation orientati
     return QVariant();
 }
 
+void RouteDifferenceModel::addRouteDifferenceVector(const QVector<RouteDifference> &routeDiffs)
+{
+    routeDifferences = routeDiffs;
+}
+
 int RouteDifferenceModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
