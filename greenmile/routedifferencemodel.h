@@ -2,6 +2,7 @@
 #define ROUTEDIFFERENCEMODEL_H
 
 #include <QAbstractTableModel>
+#include "routedifference.h"
 
 class RouteDifferenceModel : public QAbstractTableModel
 {
@@ -12,7 +13,7 @@ public:
 
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-
+    void addRouteDifferenceVector(const QVector<RouteDifference> &routeDiffs);
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -20,6 +21,9 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
 private:
+    QVector<RouteDifference> routeDifferences;
+    int routeDifferenceMemberCount = 10;
+
 };
 
 #endif // ROUTEDIFFERENCEMODEL_H
