@@ -73,24 +73,39 @@ QVariant RouteDifferenceModel::data(const QModelIndex &index, int role) const
 
     RouteDifference routeDiffAtRow = routeDifferences.at(index.row());
 
-    switch(index.column())
+    if(role == Qt::TextAlignmentRole)
     {
-    case 0:
-        return routeDiffAtRow.routeExistsInGreenmile;
-    case 1:
-        return routeDiffAtRow.routeExistsInMasterRoute;
-    case 2:
-        return routeDiffAtRow.driverMismatch;
-    case 3:
-        return routeDiffAtRow.truckMismatch;
-    case 4:
-        return routeDiffAtRow.masterRouteTruck;
-    case 5:
-        return routeDiffAtRow.masterRouteDriverID;
-    case 6:
-        return routeDiffAtRow.greenmileTruck;
-    case 7:
-        return routeDiffAtRow.greenmileDriverID;
+        return int(Qt::AlignCenter | Qt::AlignVCenter);
+    }
+
+    if(role == Qt::CheckStateRole)
+    {
+        switch(index.column())
+        {
+        case 0:
+            return bool(routeDiffAtRow.routeExistsInGreenmile);
+        case 1:
+            return bool(routeDiffAtRow.routeExistsInMasterRoute);
+        case 2:
+            return bool(routeDiffAtRow.driverMismatch);
+        case 3:
+            return bool(routeDiffAtRow.truckMismatch);
+        }
+    }
+
+    if(role == Qt::DisplayRole)
+    {
+        switch(index.column())
+        {
+        case 4:
+            return QString(routeDiffAtRow.masterRouteTruck);
+        case 5:
+            return QString(routeDiffAtRow.masterRouteDriverID);
+        case 6:
+            return QString(routeDiffAtRow.greenmileTruck);
+        case 7:
+            return QString(routeDiffAtRow.greenmileDriverID);
+        }
     }
     // FIXME: Implement me!
 

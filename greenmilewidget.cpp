@@ -61,6 +61,7 @@ void GreenmileWidget::todayGMButtonPressed()
 
     routeDiffModel->addRouteDifferenceVector(routeDifferences);
     ui->routeDiffTableView->setModel(routeDiffModel);
+    ui->routeDiffTableView->resizeColumnsToContents();
     ui->stackedWidget->setCurrentIndex(gmWidgetPages::reportPage);
 }
 
