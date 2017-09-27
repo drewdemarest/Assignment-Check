@@ -11,26 +11,32 @@ QVariant RouteDifferenceModel::headerData(int section, Qt::Orientation orientati
     if( role != Qt::DisplayRole)
         return QVariant();
 
-    switch(section)
+    if(orientation == Qt::Horizontal)
     {
-    case 0:
-        return QString("Route Key");
-    case 1:
-        return QString("Uploaded to Greenmile");
-    case 2:
-        return QString("Exists in Master Route Sheet");
-    case 3:
-        return QString("Driver Mismatch");
-    case 4:
-        return QString("Truck Mismatch");
-    case 5:
-        return QString("Master Route Truck");
-    case 6:
-        return QString("Master Route Truck");
-    case 7:
-        return QString("Greenmile Truck");
-    case 8:
-        return QString("Greenmile Driver");
+        switch(section)
+        {
+        case 0:
+            return QString("Uploaded to Greenmile");
+        case 1:
+            return QString("Exists in Master Route Sheet");
+        case 2:
+            return QString("Driver Mismatch");
+        case 3:
+            return QString("Truck Mismatch");
+        case 4:
+            return QString("Master Route Truck");
+        case 5:
+            return QString("Master Route Truck");
+        case 6:
+            return QString("Greenmile Truck");
+        case 7:
+            return QString("Greenmile Driver");
+        }
+    }
+
+    if(orientation == Qt::Vertical)
+    {
+        return routeDifferences.at(section).routeKey;
     }
 
     return QVariant();
@@ -46,7 +52,7 @@ int RouteDifferenceModel::rowCount(const QModelIndex &parent) const
     if (parent.isValid())
         return 0;
 
-    return routeDifferenceMemberCount;
+    return routeDifferences.count();
     // FIXME: Implement me!
 }
 
@@ -55,7 +61,8 @@ int RouteDifferenceModel::columnCount(const QModelIndex &parent) const
     if (parent.isValid())
         return 0;
 
-    return routeDifferences.count();
+
+    return routeDifferenceMemberCount;
     // FIXME: Implement me!
 }
 
@@ -69,22 +76,20 @@ QVariant RouteDifferenceModel::data(const QModelIndex &index, int role) const
     switch(index.column())
     {
     case 0:
-        return routeDiffAtRow.routeKey;
-    case 1:
         return routeDiffAtRow.routeExistsInGreenmile;
-    case 2:
+    case 1:
         return routeDiffAtRow.routeExistsInMasterRoute;
-    case 3:
+    case 2:
         return routeDiffAtRow.driverMismatch;
-    case 4:
+    case 3:
         return routeDiffAtRow.truckMismatch;
-    case 5:
+    case 4:
         return routeDiffAtRow.masterRouteTruck;
-    case 6:
+    case 5:
         return routeDiffAtRow.masterRouteDriverID;
-    case 7:
+    case 6:
         return routeDiffAtRow.greenmileTruck;
-    case 8 :
+    case 7:
         return routeDiffAtRow.greenmileDriverID;
     }
     // FIXME: Implement me!

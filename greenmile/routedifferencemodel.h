@@ -22,7 +22,7 @@ public:
 
 private:
     QVector<RouteDifference> routeDifferences;
-    int routeDifferenceMemberCount = 10;
+    int routeDifferenceMemberCount = 8;
 
 };
 
