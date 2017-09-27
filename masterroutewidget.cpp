@@ -154,10 +154,6 @@ void MasterRouteWidget::buildRouteModels()
     ui->sundayMRSView->setModel(sundayModel);
     currentlyBuildingWidgets = false;
 
-    Greenmile test;
-    test.compareRoutesToGreenmileRoutes(mrs->getTuesdayRoutes());
-
-
     return;
 }
 

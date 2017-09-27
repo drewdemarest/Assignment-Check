@@ -8,7 +8,7 @@ GreenmileWidget::GreenmileWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->todayGMButton, &QPushButton::clicked, this, &GreenmileWidget::todayGMButtonPressed);
-    connect(ui->gmRunReportAgain, &QPushButton::clicked, this, &GreenmileWidget::todayGMButtonPressed);
+    connect(ui->gmRunReportAgain, &QPushButton::clicked, this, &GreenmileWidget::runReportAgain);
 }
 
 GreenmileWidget::~GreenmileWidget()
@@ -22,12 +22,12 @@ GreenmileWidget::~GreenmileWidget()
 
 void GreenmileWidget::todayGMButtonPressed()
 {
-    ui->stackedWidget->setCurrentIndex(gmWidgetPages::loadingPage);
+    ui->gmStackedWidget->setCurrentIndex(gmWidgetPages::loadingPage);
     switch(QDate::currentDate().dayOfWeek())
     {
     case 0:
         qDebug() << "Invalid date in todayGMButtonPressed, check system settings.";
-        ui->stackedWidget->setCurrentIndex(gmWidgetPages::reportPage);
+        ui->gmStackedWidget->setCurrentIndex(gmWidgetPages::reportPage);
         return;
     case 1:
         mrs->buildMondayRoutes();
@@ -62,10 +62,12 @@ void GreenmileWidget::todayGMButtonPressed()
     routeDiffModel->addRouteDifferenceVector(routeDifferences);
     ui->routeDiffTableView->setModel(routeDiffModel);
     ui->routeDiffTableView->resizeColumnsToContents();
-    ui->stackedWidget->setCurrentIndex(gmWidgetPages::reportPage);
+    ui->gmStackedWidget->setCurrentIndex(gmWidgetPages::reportPage);
 }
 
 void GreenmileWidget::runReportAgain()
-{
-    ui->stackedWidget->setCurrentIndex(gmWidgetPages::startPage);
+{ 
+    routeDiffModel->clear();
+    ui->routeDiffTableView->setModel(routeDiffModel);
+    ui->gmStackedWidget->setCurrentIndex(gmWidgetPages::startPage);
 }

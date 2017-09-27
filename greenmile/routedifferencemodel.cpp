@@ -44,7 +44,9 @@ QVariant RouteDifferenceModel::headerData(int section, Qt::Orientation orientati
 
 void RouteDifferenceModel::addRouteDifferenceVector(const QVector<RouteDifference> &routeDiffs)
 {
+    this->beginResetModel();
     routeDifferences = routeDiffs;
+    this->endResetModel();
 }
 
 int RouteDifferenceModel::rowCount(const QModelIndex &parent) const
@@ -110,4 +112,11 @@ QVariant RouteDifferenceModel::data(const QModelIndex &index, int role) const
     // FIXME: Implement me!
 
     return QVariant();
+}
+
+void RouteDifferenceModel::clear()
+{
+    this->beginResetModel();
+    routeDifferences.clear();
+    this->endResetModel();
 }
