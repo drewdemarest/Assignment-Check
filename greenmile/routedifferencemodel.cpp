@@ -28,9 +28,9 @@ QVariant RouteDifferenceModel::headerData(int section, Qt::Orientation orientati
         case 5:
             return QString("Master Route Driver");
         case 6:
-            return QString("Greenmile Driver");
-        case 7:
             return QString("Greenmile Truck");
+        case 7:
+            return QString("Greenmile Driver");
         }
     }
 
