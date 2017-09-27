@@ -42,17 +42,17 @@
      <x>0</x>
      <y>0</y>
      <width>683</width>
-     <height>20</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Fi&amp;le</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
-     <string>Settings</string>
+     <string>Setti&amp;ngs</string>
     </property>
     <addaction name="actionEdit_Route_Start_tImes"/>
    </widget>
@@ -70,7 +70,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionEdit_Route_Start_tImes">
    <property name="text">
-    <string>Edit Route Start Times</string>
+    <string>&amp;Edit Route Start Times</string>
    </property>
   </action>
  </widget>

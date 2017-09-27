@@ -1,7 +1,16 @@
 #ifndef GREENMILEWIDGET_H
 #define GREENMILEWIDGET_H
 
+#include <QtCore>
 #include <QWidget>
+#include <greenmile/greenmile.h>
+#include <greenmile/routedifference.h>
+#include <masterroute/masterroute.h>
+
+namespace gmWidgetPages
+{
+    enum {startPage, loadingPage, reportPage};
+}
 
 namespace Ui {
 class GreenmileWidget;
@@ -17,6 +26,13 @@ public:
 
 private:
     Ui::GreenmileWidget *ui;
+    MasterRoute *mrs = new MasterRoute();
+    Greenmile *gm = new Greenmile();
+    QVector<RouteDifference> routeDifferences;
+
+private slots:
+    void todayGMButtonPressed();
+    void runReportAgain();
 };
 
 #endif // GREENMILEWIDGET_H
