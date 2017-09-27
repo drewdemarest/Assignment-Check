@@ -10,10 +10,10 @@ Greenmile::~Greenmile()
 
 }
 
-QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes(const QVector<Route> &otherRoutes)
+QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes(const QVector<Route> &masterRouteRoutes)
 {
-    //QVector<Route> otherRoutesCopy = otherRoutes;
-    makeTimeIntervalForQuery(otherRoutes);
+    //QVector<Route> masterRouteRoutesCopy = masterRouteRoutes;
+    makeTimeIntervalForQuery(masterRouteRoutes);
 
     RouteDifference routeDiff;
 
@@ -27,114 +27,9 @@ QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes(const QVector
     QByteArray response = queryGreenmile(minQueryDateTime.toUTC(),maxQueryDateTime.toUTC());
     buildRoutesFromGreenmileResponse(response);
 
+    routeDifferences = compareRoutes(routes, masterRouteRoutes);
 
-    for(auto t: routes)
-    {
-        routeDiff = RouteDifference();
-        routeDiff.routeKey = t.getKey();
-        routeDiff.greenmileTruck = t.getTruckNumber();
-        routeDiff.greenmileDriverID = t.getDriverId();
-        auto otherStart = otherRoutes.begin();
-        auto otherEnd = otherRoutes.end();
 
-        QString routeKeyToFind = t.getKey();
-        otherStart = std::find_if(otherStart, otherEnd, [&routeKeyToFind](Route u) {return routeKeyToFind == u.getKey();});
-        if(otherStart == otherEnd)
-        {
-            //qDebug() << "Master route does not contain" << t.getKey();
-            routeDiff.routeExistsInMasterRoute = false;
-            routeDiff.hasDiscrepencies = true;
-        }
-
-        while(otherStart < otherEnd)
-        {
-            otherStart = std::find_if(otherStart, otherEnd, [&routeKeyToFind](Route u) {return routeKeyToFind == u.getKey();});
-
-            if(otherStart != otherEnd)
-            {
-                if(t.getDriverId() != otherStart->getDriverId())
-                {
-                    //qDebug() << "ID mismatch tkey" << t.getKey() << "other key" << otherStart->getKey() << "gm id" << t.getDriverId() << "other id" << otherStart->getDriverId();
-                    routeDiff.greenmileTruck = t.getTruckNumber();
-                    routeDiff.masterRouteTruck = otherStart->getTruckNumber();
-                    routeDiff.greenmileDriverID = t.getDriverId();
-                    routeDiff.masterRouteDriverID = otherStart->getDriverId();
-                    routeDiff.hasDiscrepencies = true;
-                }
-                if(t.getTruckNumber() != otherStart->getTruckNumber())
-                {
-                    //qDebug() << "truck mismatch tkey" << t.getKey() << "other key" << otherStart->getKey() << "gm id" << t.getTruckNumber() << "other id" << otherStart->getTruckNumber();
-                    routeDiff.greenmileTruck = t.getTruckNumber();
-                    routeDiff.masterRouteTruck = otherStart->getTruckNumber();
-                    routeDiff.greenmileDriverID = t.getDriverId();
-                    routeDiff.masterRouteDriverID = otherStart->getDriverId();
-                    routeDiff.hasDiscrepencies = true;
-                }
-            }
-            otherStart++;
-        }
-        if(routeDiff.hasDiscrepencies)
-        {
-            routeDifferences.append(routeDiff);
-        }
-    }
-
-    for(auto t: otherRoutes)
-    {
-        routeDiff = RouteDifference();
-        routeDiff.routeKey = t.getKey();
-        routeDiff.masterRouteTruck = t.getTruckNumber();
-        routeDiff.masterRouteDriverID = t.getDriverId();
-        auto otherStart = routes.begin();
-        auto otherEnd = routes.end();
-
-        QString routeKeyToFind = t.getKey();
-        otherStart = std::find_if(otherStart, otherEnd, [&routeKeyToFind](Route u) {return routeKeyToFind == u.getKey();});
-        if(otherStart == otherEnd)
-        {
-            //qDebug() << "GM does not contain" << t.getKey();
-            routeDiff.routeExistsInGreenmile = false;
-            routeDiff.hasDiscrepencies = true;
-        }
-
-        while(otherStart < otherEnd)
-        {
-            otherStart = std::find_if(otherStart, otherEnd, [&routeKeyToFind](Route u) {return routeKeyToFind == u.getKey();});
-
-            if(otherStart != otherEnd)
-            {
-                if(t.getDriverId() != otherStart->getDriverId())
-                {
-                    //() << "ID mismatch mrs" << t.getKey() << "gm key" << otherStart->getKey() << "mrs id" << t.getDriverId() << "gm id" << otherStart->getDriverId();
-                    routeDiff.masterRouteDriverID = t.getDriverId();
-                    routeDiff.greenmileDriverID = otherStart->getDriverId();
-                    routeDiff.masterRouteTruck = t.getTruckNumber();
-                    routeDiff.greenmileTruck = otherStart->getTruckNumber();
-                    routeDiff.hasDiscrepencies = true;
-                }
-                if(t.getTruckNumber() != otherStart->getTruckNumber())
-                {
-                    //qDebug() << "truck mismatch mrs" << t.getKey() << "gm key" << otherStart->getKey() << "mrs id" << t.getTruckNumber() << "gm id" << otherStart->getTruckNumber();
-                    routeDiff.masterRouteDriverID = t.getDriverId();
-                    routeDiff.greenmileDriverID = otherStart->getDriverId();
-                    routeDiff.masterRouteTruck = t.getTruckNumber();
-                    routeDiff.greenmileTruck = otherStart->getTruckNumber();
-                    routeDiff.hasDiscrepencies = true;
-                }
-            }
-            otherStart++;
-        }
-
-        if(routeDiff.hasDiscrepencies)
-        {
-            routeDifferences.append(routeDiff);
-        }
-
-    }
-
-    std::sort(routeDifferences.begin(), routeDifferences.end(), [](RouteDifference rd1, RouteDifference rd2) -> bool {return rd1.routeKey < rd2.routeKey;});
-    auto last = std::unique(routeDifferences.begin(), routeDifferences.end());
-    routeDifferences.erase(last, routeDifferences.end());
     for(auto t: routeDifferences)
     {
           t.printDebug();
@@ -227,6 +122,126 @@ void Greenmile::buildRoutesFromGreenmileResponse(const QByteArray &gmResponse)
     }
 
 
+}
+
+QVector<RouteDifference> Greenmile::compareRoutes(const QVector<Route> &greenmileRoutes, const QVector<Route> &masterRouteRoutes)
+{
+    RouteDifference  routeDiff;
+    QVector<RouteDifference> routeDiffs;
+
+    for(auto greenmileRoute: greenmileRoutes)
+    {
+        routeDiff = RouteDifference();
+        routeDiff.routeKey = greenmileRoute.getKey();
+        routeDiff.greenmileTruck = greenmileRoute.getTruckNumber();
+        routeDiff.greenmileDriverID = greenmileRoute.getDriverId();
+        auto greenmileRoutesStart = masterRouteRoutes.begin();
+        auto greenmileRoutesEnd = masterRouteRoutes.end();
+
+        QString routeKeyToFind = greenmileRoute.getKey();
+        greenmileRoutesStart = std::find_if(greenmileRoutesStart, greenmileRoutesEnd, [&routeKeyToFind](Route u) {return routeKeyToFind == u.getKey();});
+        if(greenmileRoutesStart == greenmileRoutesEnd)
+        {
+            //qDebug() << "Master route does not contain" << greenmileRoute.getKey();
+            routeDiff.routeExistsInMasterRoute = false;
+            routeDiff.hasDiscrepencies = true;
+        }
+
+        while(greenmileRoutesStart < greenmileRoutesEnd)
+        {
+            greenmileRoutesStart = std::find_if(greenmileRoutesStart, greenmileRoutesEnd, [&routeKeyToFind](Route u) {return routeKeyToFind == u.getKey();});
+
+            if(greenmileRoutesStart != greenmileRoutesEnd)
+            {
+                if(greenmileRoute.getDriverId() != greenmileRoutesStart->getDriverId())
+                {
+                    //qDebug() << "ID mismatch tkey" << greenmileRoute.getKey() << "other key" << greenmileRoutesStart->getKey() << "gm id" << greenmileRoute.getDriverId() << "other id" << greenmileRoutesStart->getDriverId();
+                    routeDiff.greenmileTruck = greenmileRoute.getTruckNumber();
+                    routeDiff.masterRouteTruck = greenmileRoutesStart->getTruckNumber();
+                    routeDiff.greenmileDriverID = greenmileRoute.getDriverId();
+                    routeDiff.masterRouteDriverID = greenmileRoutesStart->getDriverId();
+                    routeDiff.hasDiscrepencies = true;
+                    routeDiff.driverMismatch = true;
+                }
+                if(greenmileRoute.getTruckNumber() != greenmileRoutesStart->getTruckNumber())
+                {
+                    //qDebug() << "truck mismatch tkey" << greenmileRoute.getKey() << "other key" << greenmileRoutesStart->getKey() << "gm id" << greenmileRoute.getTruckNumber() << "other id" << greenmileRoutesStart->getTruckNumber();
+                    routeDiff.greenmileTruck = greenmileRoute.getTruckNumber();
+                    routeDiff.masterRouteTruck = greenmileRoutesStart->getTruckNumber();
+                    routeDiff.greenmileDriverID = greenmileRoute.getDriverId();
+                    routeDiff.masterRouteDriverID = greenmileRoutesStart->getDriverId();
+                    routeDiff.hasDiscrepencies = true;
+                    routeDiff.truckMismatch = true;
+                }
+            }
+            greenmileRoutesStart++;
+        }
+        if(routeDiff.hasDiscrepencies)
+        {
+            routeDiffs.append(routeDiff);
+        }
+    }
+
+    for(auto masterRouteRoute: masterRouteRoutes)
+    {
+        routeDiff = RouteDifference();
+        routeDiff.routeKey = masterRouteRoute.getKey();
+        routeDiff.masterRouteTruck = masterRouteRoute.getTruckNumber();
+        routeDiff.masterRouteDriverID = masterRouteRoute.getDriverId();
+        auto masterRouteRoutesStart = routes.begin();
+        auto masterRouteRoutesEnd = routes.end();
+
+        QString routeKeyToFind = masterRouteRoute.getKey();
+        masterRouteRoutesStart = std::find_if(masterRouteRoutesStart, masterRouteRoutesEnd, [&routeKeyToFind](Route u) {return routeKeyToFind == u.getKey();});
+        if(masterRouteRoutesStart == masterRouteRoutesEnd)
+        {
+            //qDebug() << "GM does not contain" << masterRouteRoute.getKey();
+            routeDiff.routeExistsInGreenmile = false;
+            routeDiff.hasDiscrepencies = true;
+        }
+
+        while(masterRouteRoutesStart < masterRouteRoutesEnd)
+        {
+            masterRouteRoutesStart = std::find_if(masterRouteRoutesStart, masterRouteRoutesEnd, [&routeKeyToFind](Route u) {return routeKeyToFind == u.getKey();});
+
+            if(masterRouteRoutesStart != masterRouteRoutesEnd)
+            {
+                if(masterRouteRoute.getDriverId() != masterRouteRoutesStart->getDriverId())
+                {
+                    //() << "ID mismatch mrs" << masterRouteRoute.getKey() << "gm key" << masterRouteRoutesStart->getKey() << "mrs id" << masterRouteRoute.getDriverId() << "gm id" << masterRouteRoutesStart->getDriverId();
+                    routeDiff.masterRouteDriverID = masterRouteRoute.getDriverId();
+                    routeDiff.greenmileDriverID = masterRouteRoutesStart->getDriverId();
+                    routeDiff.masterRouteTruck = masterRouteRoute.getTruckNumber();
+                    routeDiff.greenmileTruck = masterRouteRoutesStart->getTruckNumber();
+                    routeDiff.hasDiscrepencies = true;
+                    routeDiff.driverMismatch = true;
+                }
+                if(masterRouteRoute.getTruckNumber() != masterRouteRoutesStart->getTruckNumber())
+                {
+                    //qDebug() << "truck mismatch mrs" << masterRouteRoute.getKey() << "gm key" << masterRouteRoutesStart->getKey() << "mrs id" << masterRouteRoute.getTruckNumber() << "gm id" << masterRouteRoutesStart->getTruckNumber();
+                    routeDiff.masterRouteDriverID = masterRouteRoute.getDriverId();
+                    routeDiff.greenmileDriverID = masterRouteRoutesStart->getDriverId();
+                    routeDiff.masterRouteTruck = masterRouteRoute.getTruckNumber();
+                    routeDiff.greenmileTruck = masterRouteRoutesStart->getTruckNumber();
+                    routeDiff.hasDiscrepencies = true;
+                    routeDiff.truckMismatch = true;
+                }
+            }
+            masterRouteRoutesStart++;
+        }
+
+        if(routeDiff.hasDiscrepencies)
+        {
+            routeDiffs.append(routeDiff);
+        }
+
+    }
+
+    std::sort(routeDiffs.begin(), routeDiffs.end(), [](RouteDifference rd1, RouteDifference rd2) -> bool {return rd1.routeKey < rd2.routeKey;});
+    auto last = std::unique(routeDiffs.begin(), routeDiffs.end());
+    routeDiffs.erase(last, routeDiffs.end());
+
+    return routeDiffs;
 }
 
 void Greenmile::loadHeadersFromJson()

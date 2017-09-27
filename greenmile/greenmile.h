@@ -15,12 +15,13 @@ public:
     explicit Greenmile(QObject *parent = nullptr);
     ~Greenmile();
 
-    QVector<RouteDifference> compareRoutesToGreenmileRoutes(const QVector<Route> &otherRoutes);
+    QVector<RouteDifference> compareRoutesToGreenmileRoutes(const QVector<Route> &masterRouteRoutes);
 
 private:
     void makeTimeIntervalForQuery(const QVector<Route> &r);
     QByteArray queryGreenmile(const QDateTime &begin, const QDateTime &end); 
     void buildRoutesFromGreenmileResponse(const QByteArray &gmResponse);
+    QVector<RouteDifference> compareRoutes(const QVector<Route> &greenmileRoutes, const QVector<Route> &masterRouteRoutes);
 
     void loadHeadersFromJson();
     void saveHeadersToJson();
