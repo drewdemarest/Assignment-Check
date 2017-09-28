@@ -30,10 +30,10 @@ QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes(const QVector
     routeDifferences = compareRoutes(routes, masterRouteRoutes);
 
 
-    for(auto t: routeDifferences)
-    {
-          t.printDebug();
-    }
+//    for(auto t: routeDifferences)
+//    {
+//          t.printDebug();
+//    }
     return routeDifferences;
 }
 

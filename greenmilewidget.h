@@ -36,6 +36,14 @@ private:
 
 private slots:
     void todayGMButtonPressed();
+    void mondayGMButtonPressed();
+    void tuesdayGMButtonPressed();
+    void wednesdayGMButtonPressed();
+    void thursdayGMButtonPressed();
+    void fridayGMButtonPressed();
+    void saturdayGMButtonPressed();
+    void sundayGMButtonPressed();
+
     void runReportAgain();
 };
 

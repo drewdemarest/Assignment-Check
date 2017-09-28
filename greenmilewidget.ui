@@ -52,7 +52,7 @@
        <item row="0" column="4">
         <widget class="QPushButton" name="fridayGMButton">
          <property name="text">
-          <string>Firday</string>
+          <string>Friday</string>
          </property>
         </widget>
        </item>
