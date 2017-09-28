@@ -6,7 +6,7 @@
 
 namespace routeEnum
 {
-    enum {key, truckNum, trailerNum, driverName, driverId, date, misc, empty};
+    enum {key, truckNum, trailerNum, driverName, driverId, date, timeInOffice, timeOutOffice, lateRouteOutTime, misc, empty};
     enum {matchSheetDate, matchRouteKey, matchDriverName, matchEquipment, matchTime, matchMisc, matchEmpty};
     enum {mon, tue, wed, thu, fri, sat, sun};
 }
@@ -49,6 +49,7 @@ private:
     QVector<QRegExp> regExpVector;
 
     QString dateFormat = "d-MMM-yyyy";
+    QString timeFormat = "h:mm";
 
     QDateTime   date;
     QString     key;

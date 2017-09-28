@@ -16,11 +16,13 @@ GreenmileWidget::GreenmileWidget(QWidget *parent) :
     connect(ui->saturdayGMButton, &QPushButton::clicked, this, &GreenmileWidget::saturdayGMButtonPressed);
     connect(ui->sundayGMButton, &QPushButton::clicked, this, &GreenmileWidget::sundayGMButtonPressed);
     connect(ui->gmRunReportAgain, &QPushButton::clicked, this, &GreenmileWidget::runReportAgain);
+    connect(ui->gmAbortButton, &QPushButton::clicked, mrs, &MasterRoute::abort);
 }
 
 GreenmileWidget::~GreenmileWidget()
 {
     delete ui;
+
     mrs->deleteLater();
     gm->deleteLater();
     routeDiffModel->deleteLater();
@@ -30,41 +32,44 @@ GreenmileWidget::~GreenmileWidget()
 void GreenmileWidget::todayGMButtonPressed()
 {
     ui->gmStackedWidget->setCurrentIndex(gmWidgetPages::loadingPage);
-    switch(QDate::currentDate().dayOfWeek())
-    {
-    case 0:
-        qDebug() << "Invalid date in todayGMButtonPressed, check system settings.";
-        ui->gmStackedWidget->setCurrentIndex(gmWidgetPages::reportPage);
-        return;
-    case 1:
-        mrs->buildMondayRoutes();
-        routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getMondayRoutes());
-        break;
-    case 2:
-        mrs->buildTuesdayRoutes();
-        routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getTuesdayRoutes());
-        break;
-    case 3:
-        mrs->buildWednesdayRoutes();
-        routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getWednesdayRoutes());
-        break;
-    case 4:
-        mrs->buildThursdayRoutes();
-        routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getThursdayRoutes());
-        break;
-    case 5:
-        mrs->buildFridayRoutes();
-        routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getFridayRoutes());
-        break;
-    case 6:
-        mrs->buildSaturdayRoutes();
-        routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getSaturdayRoutes());
-        break;
-    case 7:
-        mrs->buildSundayRoutes();
-        routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getSundayRoutes());
-        break;
-    }
+        switch(QDate::currentDate().dayOfWeek())
+        {
+        case 0:
+            qDebug() << "Invalid date in todayGMButtonPressed, check system settings.";
+            ui->gmStackedWidget->setCurrentIndex(gmWidgetPages::reportPage);
+            return;
+        case 1:
+            mrs->buildMondayRoutes();
+            routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getMondayRoutes());
+            break;
+        case 2:
+            mrs->buildTuesdayRoutes();
+            routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getTuesdayRoutes());
+            break;
+        case 3:
+            mrs->buildWednesdayRoutes();
+            routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getWednesdayRoutes());
+            break;
+        case 4:
+            mrs->buildThursdayRoutes();
+            routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getThursdayRoutes());
+            break;
+        case 5:
+            mrs->buildFridayRoutes();
+            routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getFridayRoutes());
+            break;
+        case 6:
+            mrs->buildSaturdayRoutes();
+            routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getSaturdayRoutes());
+            break;
+        case 7:
+            mrs->buildSundayRoutes();
+            routeDifferences = gm->compareRoutesToGreenmileRoutes(mrs->getSundayRoutes());
+            break;
+        }
+
+//    dlmrs->buildRoutes();
+//    routeDifferences = gm->compareRoutesToGreenmileRoutes(dlmrs->getRoutes());
 
     routeDiffModel->addRouteDifferenceVector(routeDifferences);
     ui->routeDiffTableView->setModel(routeDiffModel);

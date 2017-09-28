@@ -36,6 +36,10 @@ int Route::whatIsThis(const QString &data)
             case routeEnum::matchEquipment:
                 return routeEnum::matchEquipment;
                 break;
+
+            case routeEnum::matchTime:
+                return routeEnum::matchTime;
+                break;
             }
         }
     }
@@ -55,6 +59,11 @@ void Route::setField(const QString &data, int fieldEnum)
 
     case routeEnum::date:
         date = QDateTime::fromString(data, dateFormat);
+        break;
+
+    case routeEnum::lateRouteOutTime:
+        date = QDateTime::currentDateTime();
+        date.setTime(QTime::fromString(data, timeFormat));
         break;
 
     case routeEnum::driverName:

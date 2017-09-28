@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "routewidget.h"
+#include "dailylategreenmilewidget.h"
 #include <netcode/oauthnetconnect.h>
 #include <masterroutewidget.h>
 #include <greenmilewidget.h>
@@ -23,6 +24,7 @@ private:
     Ui::MainWindow *ui;
     MasterRouteWidget *truckKeyWidget = new MasterRouteWidget(this);
     GreenmileWidget *greenMileValidator = new GreenmileWidget(this);
+    DailyLateGreenmileWidget *dailyLateGreenmileValidator = new DailyLateGreenmileWidget(this);
 };
 
 #endif // MAINWINDOW_H

@@ -14,9 +14,11 @@ struct RouteDifference
     QString routeKey;
 
     QString masterRouteTruck;
+    QString masterRouteDriverName;
     QString masterRouteDriverID;
 
     QString greenmileTruck;
+    QString greenmileDriverName;
     QString greenmileDriverID;
 
     void printDebug() const
@@ -29,8 +31,10 @@ struct RouteDifference
         qDebug() << "driverMismatch" << this->driverMismatch;
         qDebug() << "truckMismatch" << this->truckMismatch;
         qDebug() << "masterRouteTruck" << this->masterRouteTruck;
+        qDebug() << "masterRouteDriverName" << this->masterRouteDriverName;
         qDebug() << "masterRouteDriverID" << this->masterRouteDriverID;
         qDebug() << "greenmileTruck" << this->greenmileTruck;
+        qDebug() << "greenmileDriverName" << this->greenmileDriverName;
         qDebug() << "greenmileDriverID" << this->greenmileDriverID;
         qDebug() << "---------------";
     }
@@ -44,8 +48,10 @@ struct RouteDifference
            this->truckMismatch              == other.truckMismatch              &&
            this->routeKey                   == other.routeKey                   &&
            this->masterRouteTruck           == other.masterRouteTruck           &&
+           this->masterRouteDriverName      == other.masterRouteDriverName      &&
            this->masterRouteDriverID        == other.masterRouteDriverID        &&
            this->greenmileTruck             == other.greenmileTruck             &&
+           this->greenmileDriverName        == other.greenmileDriverName        &&
            this->greenmileDriverID          == other.greenmileDriverID)
         {
            return true;

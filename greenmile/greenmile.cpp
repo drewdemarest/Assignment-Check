@@ -15,8 +15,6 @@ QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes(const QVector
     //QVector<Route> masterRouteRoutesCopy = masterRouteRoutes;
     makeTimeIntervalForQuery(masterRouteRoutes);
 
-    RouteDifference routeDiff;
-
     if(minQueryDateTime.isNull() || maxQueryDateTime.isNull())
     {
         qDebug() << "Greenmile query datetimes are null, returning empty route vector";
@@ -29,7 +27,6 @@ QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes(const QVector
 
     routeDifferences = compareRoutes(routes, masterRouteRoutes);
 
-
 //    for(auto t: routeDifferences)
 //    {
 //          t.printDebug();
@@ -39,6 +36,8 @@ QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes(const QVector
 
 void Greenmile::makeTimeIntervalForQuery(const QVector<Route> &r)
 {
+    minQueryDateTime = QDateTime();
+    maxQueryDateTime = QDateTime();
     QVector<Route> rte = r;
     if(rte.isEmpty())
     {
@@ -46,8 +45,8 @@ void Greenmile::makeTimeIntervalForQuery(const QVector<Route> &r)
         return;
     }
     std::sort(rte.begin(), rte.end(), [](Route r1, Route r2) -> bool {return r1.getRouteDate() < r2.getRouteDate();});
-    minQueryDateTime = rte.first().getRouteDate();
-    maxQueryDateTime = rte.last().getRouteDate();
+    minQueryDateTime = rte.first().getRouteDate().addMSecs(-timeIntervalPaddingMsec);
+    maxQueryDateTime = rte.last().getRouteDate().addMSecs(timeIntervalPaddingMsec);
     qDebug() << minQueryDateTime.toString(Qt::ISODate);
     qDebug() << maxQueryDateTime.toString(Qt::ISODate);
 }
@@ -132,6 +131,7 @@ QVector<RouteDifference> Greenmile::compareRoutes(const QVector<Route> &greenmil
         routeDiff.routeKey = greenmileRoute.getKey();
         routeDiff.greenmileTruck = greenmileRoute.getTruckNumber();
         routeDiff.greenmileDriverID = greenmileRoute.getDriverId();
+        routeDiff.greenmileDriverName = greenmileRoute.getDriverName();
         auto masterRouteRouteStart = masterRouteRoutes.begin();
         auto masterRouteRouteEnd = masterRouteRoutes.end();
 
@@ -156,6 +156,8 @@ QVector<RouteDifference> Greenmile::compareRoutes(const QVector<Route> &greenmil
                     routeDiff.greenmileTruck = greenmileRoute.getTruckNumber();
                     routeDiff.masterRouteTruck = masterRouteRouteStart->getTruckNumber();
                     routeDiff.greenmileDriverID = greenmileRoute.getDriverId();
+                    routeDiff.greenmileDriverName = greenmileRoute.getDriverName();
+                    routeDiff.masterRouteDriverName = masterRouteRouteStart->getDriverName();
                     routeDiff.masterRouteDriverID = masterRouteRouteStart->getDriverId();
                     routeDiff.hasDiscrepencies = true;
                     routeDiff.driverMismatch = true;
@@ -165,6 +167,8 @@ QVector<RouteDifference> Greenmile::compareRoutes(const QVector<Route> &greenmil
                     routeDiff.greenmileTruck = greenmileRoute.getTruckNumber();
                     routeDiff.masterRouteTruck = masterRouteRouteStart->getTruckNumber();
                     routeDiff.greenmileDriverID = greenmileRoute.getDriverId();
+                    routeDiff.greenmileDriverName = greenmileRoute.getDriverName();
+                    routeDiff.masterRouteDriverName = masterRouteRouteStart->getDriverName();
                     routeDiff.masterRouteDriverID = masterRouteRouteStart->getDriverId();
                     routeDiff.hasDiscrepencies = true;
                     routeDiff.truckMismatch = true;
@@ -190,6 +194,7 @@ QVector<RouteDifference> Greenmile::compareRoutes(const QVector<Route> &greenmil
         routeDiff.routeKey = masterRouteRoute.getKey();
         routeDiff.masterRouteTruck = masterRouteRoute.getTruckNumber();
         routeDiff.masterRouteDriverID = masterRouteRoute.getDriverId();
+        routeDiff.masterRouteDriverName = masterRouteRoute.getDriverName();
         auto greenmileRoutesStart = greenmileRoutes.begin();
         auto greenmileRoutesEnd = greenmileRoutes.end();
 
@@ -212,7 +217,9 @@ QVector<RouteDifference> Greenmile::compareRoutes(const QVector<Route> &greenmil
                 if(masterRouteRoute.getDriverId() != greenmileRoutesStart->getDriverId())
                 {
                     routeDiff.masterRouteDriverID = masterRouteRoute.getDriverId();
+                    routeDiff.masterRouteDriverName = masterRouteRoute.getDriverName();
                     routeDiff.greenmileDriverID = greenmileRoutesStart->getDriverId();
+                    routeDiff.greenmileDriverName  = greenmileRoutesStart->getDriverName();
                     routeDiff.masterRouteTruck = masterRouteRoute.getTruckNumber();
                     routeDiff.greenmileTruck = greenmileRoutesStart->getTruckNumber();
                     routeDiff.hasDiscrepencies = true;
@@ -221,7 +228,9 @@ QVector<RouteDifference> Greenmile::compareRoutes(const QVector<Route> &greenmil
                 if(masterRouteRoute.getTruckNumber() != greenmileRoutesStart->getTruckNumber())
                 {
                     routeDiff.masterRouteDriverID = masterRouteRoute.getDriverId();
+                    routeDiff.masterRouteDriverName = masterRouteRoute.getDriverName();
                     routeDiff.greenmileDriverID = greenmileRoutesStart->getDriverId();
+                    routeDiff.greenmileDriverName  = greenmileRoutesStart->getDriverName();
                     routeDiff.masterRouteTruck = masterRouteRoute.getTruckNumber();
                     routeDiff.greenmileTruck = greenmileRoutesStart->getTruckNumber();
                     routeDiff.hasDiscrepencies = true;

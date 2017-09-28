@@ -26,11 +26,15 @@ QVariant RouteDifferenceModel::headerData(int section, Qt::Orientation orientati
         case 4:
             return QString("Master Route Truck");
         case 5:
-            return QString("Master Route Driver");
+            return QString("Master Route Driver Name");
         case 6:
-            return QString("Greenmile Truck");
+            return QString("Master Route Driver ID");
         case 7:
-            return QString("Greenmile Driver");
+            return QString("Greenmile Truck");
+        case 8:
+            return QString("Greenmile Driver Name");
+        case 9:
+            return QString("Greenmile Driver ID");
         }
     }
 
@@ -102,10 +106,14 @@ QVariant RouteDifferenceModel::data(const QModelIndex &index, int role) const
         case 4:
             return QString(routeDiffAtRow.masterRouteTruck);
         case 5:
-            return QString(routeDiffAtRow.masterRouteDriverID);
+            return QString(routeDiffAtRow.masterRouteDriverName);
         case 6:
-            return QString(routeDiffAtRow.greenmileTruck);
+            return QString(routeDiffAtRow.masterRouteDriverID);
         case 7:
+            return QString(routeDiffAtRow.greenmileTruck);
+        case 8:
+            return QString(routeDiffAtRow.greenmileDriverName);
+        case 9:
             return QString(routeDiffAtRow.greenmileDriverID);
         }
     }

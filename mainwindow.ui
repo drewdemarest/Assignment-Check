@@ -20,6 +20,12 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
+      <widget class="QWidget" name="dailyLateGreenmileTab">
+       <attribute name="title">
+        <string>Late Route Greenmile Assignment Check</string>
+       </attribute>
+       <layout class="QGridLayout" name="dailyLateGreenmileTabLayout"/>
+      </widget>
       <widget class="QWidget" name="greenmileTab">
        <attribute name="title">
         <string>Greenmile Assignment Check</string>

@@ -6,9 +6,36 @@ DailyLateGreenmileWidget::DailyLateGreenmileWidget(QWidget *parent) :
     ui(new Ui::DailyLateGreenmileWidget)
 {
     ui->setupUi(this);
+    connect(ui->todayGMButton, &QPushButton::clicked, this, &DailyLateGreenmileWidget::todayGMButtonPressed);
+    connect(ui->gmRunReportAgain, &QPushButton::clicked, this, &DailyLateGreenmileWidget::runReportAgain);
+    connect(ui->gmAbortButton, &QPushButton::clicked, dlmrs, &DailyLateMasterRoute::abort);
 }
 
 DailyLateGreenmileWidget::~DailyLateGreenmileWidget()
 {
     delete ui;
+
+    dlmrs->deleteLater();
+    gm->deleteLater();
+    routeDiffModel->deleteLater();
+}
+
+void DailyLateGreenmileWidget::todayGMButtonPressed()
+{
+    ui->gmStackedWidget->setCurrentIndex(dailyLateGMWidgetPages::loadingPage);
+
+    dlmrs->buildRoutes();
+    routeDifferences = gm->compareRoutesToGreenmileRoutes(dlmrs->getRoutes());
+
+    routeDiffModel->addRouteDifferenceVector(routeDifferences);
+    ui->routeDiffTableView->setModel(routeDiffModel);
+    ui->routeDiffTableView->resizeColumnsToContents();
+    ui->gmStackedWidget->setCurrentIndex(dailyLateGMWidgetPages::reportPage);
+}
+
+void DailyLateGreenmileWidget::runReportAgain()
+{
+    routeDiffModel->clear();
+    ui->routeDiffTableView->setModel(routeDiffModel);
+    ui->gmStackedWidget->setCurrentIndex(dailyLateGMWidgetPages::startPage);
 }

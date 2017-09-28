@@ -456,36 +456,25 @@ QVector<Route> MasterRoute::applyEmployeeNumsToRoutes(QVector<Route> routes)
 
 QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
 {
-//    if(!networkProblem){
-        oauthConn->buildOAuth(sheetsScope, QString(sheetsAddressBase + dayOfWeekToQuery), sheetsCredFilePath);
-        return oauthConn->get();
-//    }
-//    else
-//        return QByteArray();
+    oauthConn->buildOAuth(sheetsScope, QString(sheetsAddressBase + dayOfWeekToQuery), sheetsCredFilePath);
+    return oauthConn->get();
 }
 
 QByteArray MasterRoute::queryRouteStartTimes()
 {
-//    if(!networkProblem){
-        oauthConn->buildOAuth(sheetsScope, sheetsStartTimeAddress, sheetsCredFilePath);
-        return oauthConn->get();
-//    }
-//    else
-//        return QByteArray();
+    oauthConn->buildOAuth(sheetsScope, sheetsStartTimeAddress, sheetsCredFilePath);
+    return oauthConn->get();
 }
 
 QByteArray MasterRoute::queryEmployees()
 {
-//    if(!networkProblem){
-        oauthConn->buildOAuth(sheetsScope, sheetsEmployeeAddress, sheetsCredFilePath);
-        return oauthConn->get();
-//    }
-//    else
-//        return QByteArray();
+    oauthConn->buildOAuth(sheetsScope, sheetsEmployeeAddress, sheetsCredFilePath);
+    return oauthConn->get();
 }
 
 void MasterRoute::whatRouteColIsMissing()
 {
+    //Hmm
 }
 
 void MasterRoute::whatRouteStartTimeColIsMissing(QVector<int> startTimeColumnsVerify)
