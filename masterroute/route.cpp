@@ -4,7 +4,7 @@ Route::Route()
 {
     startsPrevDay = QVector<bool>(7);
     regExpVector = {mrsSheetDateRegExp, routeRegExp,
-                                         driverRegExp, equipmentRegExp};
+                                         driverRegExp, equipmentRegExp, timeRegExp};
 
 }
 
@@ -17,27 +17,33 @@ int Route::whatIsThis(const QString &data)
     {
         matchIdx = -1;
         matchIdx = regExpVector.at(k).indexIn(data);
-        if(matchIdx != -1)
+
+        if(matchIdx != -1 && (regExpVector.at(k).captureCount() == 0) && (regExpVector.at(k).cap().length() == data.length()))
         {
             switch(k)
             {
             case routeEnum::matchSheetDate:
+                qDebug() << "matchSheetDate" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
                 return routeEnum::matchSheetDate;
                 break;
 
             case routeEnum::matchRouteKey:
+                qDebug() << "matchRouteKey" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
                 return routeEnum::matchRouteKey;
                 break;
 
             case routeEnum::matchDriverName:
+                qDebug() <<  "matchDriverName" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
                 return routeEnum::matchDriverName;
                 break;
 
             case routeEnum::matchEquipment:
+                qDebug() << "matchEquipment" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
                 return routeEnum::matchEquipment;
                 break;
 
             case routeEnum::matchTime:
+                qDebug() << "matchTime" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
                 return routeEnum::matchTime;
                 break;
             }

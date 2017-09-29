@@ -55,6 +55,7 @@ void DailyLateMasterRoute::buildRoutes()
                 break;
 
             case routeEnum::matchEquipment:
+                qDebug() << routeTuple.at(col).toString();
                 equipmentFoundCol.append(col);
                 break;
 
@@ -63,6 +64,7 @@ void DailyLateMasterRoute::buildRoutes()
                 break;
 
             case routeEnum::matchRouteKey:
+
                 routeKeyFoundCol.append(col);
                 break;
 
@@ -89,12 +91,14 @@ void DailyLateMasterRoute::buildRoutes()
             if(equipmentFoundCol.contains(expectedPowerUnitCol))
                 route.setField(routeTuple.at(expectedPowerUnitCol).toString(), routeEnum::truckNum);
 
-            if(equipmentFoundCol.contains(expectedTimeOutCol))
-                route.setField(routeTuple.at(expectedTimeOutCol).toString(), routeEnum::lateRouteOutTime);
-
-            if(!route.getKey().isEmpty(), !route.getDriverName().isEmpty() && !route.getTruckNumber().isEmpty())
+            if(timeFoundCol.contains(expectedTimeOutCol))
             {
-                if(route.getRouteDate().isNull())
+                //qDebug() << routeTuple.at(expectedTimeOutCol).toString();
+                route.setField(routeTuple.at(expectedTimeOutCol).toString(), routeEnum::lateRouteOutTime);
+            }
+            if(!route.getKey().isEmpty()&& !route.getDriverName().isEmpty() && !route.getTruckNumber().isEmpty())
+            {
+                if(route.getRouteDate().isNull() || !route.getRouteDate().isValid())
                 {
                     route.setField(QTime::currentTime().toString("h:mm"), routeEnum::lateRouteOutTime);
                 }
