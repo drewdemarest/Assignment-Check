@@ -150,13 +150,15 @@ private:
     //-------------------------------------------------------------------------
     // Functions
     //-------------------------------------------------------------------------
-    QDateTime extractSheetDate(const QJsonArray &sheet);
+    QDateTime extractSheetDate(const QJsonArray &sheetValues);
     QVector<Route> buildRoutes(QString dayOfWeek);
-    QVector<Route> extractRoutesFromSheet(const QJsonArray &routeArray);
-    void buildRouteStartTimes();
-    RouteStartTime buildRouteStartTimeFromRow(const QJsonArray &row);
+    QVector<Route> extractRoutesFromSheetValues
+        (const QJsonArray &sheetValues);
+    QVector<RouteStartTime> buildRouteStartTimes();
+    QVector<RouteStartTime> extractRouteStartTimesFromSheetValues
+        (const QJsonArray &sheetValues);
     QVector<Route> applyStartTimeToRoutes(QVector<Route> routes);
-    void buildEmployees();
+    QMap<QString, QString> buildEmployees();
     QVector<Route> applyEmployeeNumsToRoutes(QVector<Route> routes);
     QByteArray queryRoutes(QString& dayOfWeekToQuery);
     QByteArray queryRouteStartTimes();
@@ -167,15 +169,13 @@ private:
     //-------------------------------------------------------------------------
     // Once the sheets have been parsed they, are stored in these containers.
     //-------------------------------------------------------------------------
-    QVector<RouteStartTime> routeStartTimes;
-    QVector<Route>          mondayRoutes;
-    QVector<Route>          tuesdayRoutes;
-    QVector<Route>          wednesdayRoutes;
-    QVector<Route>          thursdayRoutes;
-    QVector<Route>          fridayRoutes;
-    QVector<Route>          saturdayRoutes;
-    QVector<Route>          sundayRoutes;
-    QMap<QString, QString>  employees;
+    QVector<Route>          mondayRoutes_;
+    QVector<Route>          tuesdayRoutes_;
+    QVector<Route>          wednesdayRoutes_;
+    QVector<Route>          thursdayRoutes_;
+    QVector<Route>          fridayRoutes_;
+    QVector<Route>          saturdayRoutes_;
+    QVector<Route>          sundayRoutes_;
 
     //-------------------------------------------------------------------------
     //Route parsing utilities.
