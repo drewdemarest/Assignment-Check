@@ -33,14 +33,11 @@ public:
     QVector<Route> getSaturdayRoutes();
     QVector<Route> getSundayRoutes();
 
-    //QVector<Route> getRoutes();
-
     void setRouteInfoPrecedence(QStringList &routeInfoPrecedence);
     void setStartTimeInfoPrecedence(QStringList &startTimeInfoPrecedence);
     void setEmployeeInfoPrecedence(QStringList &employeeInfoPrecedence);
 
 private:
-
     QString mondaySheetTitle = "Monday";
     QString tuesdaySheetTitle = "Tuesday";
     QString wednesdaySheetTitle = "Wednesday";
@@ -67,12 +64,14 @@ private:
             "1KA7c9bbG2p4f8SFe5ibbkIycwt0wukRe2_xpTB3SI6A/values/";
 
     const QString sheetsEmployeeAddress = "https://sheets.googleapis.com/v4/"
-                                          "spreadsheets/1KA7c9bbG2p4f8SFe5ibbkIycwt0wukRe2_xpTB3SI6A/values/"
+                                          "spreadsheets/1KA7c9bbG2p4f8SFe5ibb"
+                                          "kIycwt0wukRe2_xpTB3SI6A/values/"
                                           "Employees";
 
 
     const QString sheetsStartTimeAddress = "https://sheets.googleapis.com/v4/"
-                                           "spreadsheets/1KA7c9bbG2p4f8SFe5ibbkIycwt0wukRe2_xpTB3SI6A/values/"
+                                           "spreadsheets/1KA7c9bbG2p4f8SFe5ibb"
+                                           "kIycwt0wukRe2_xpTB3SI6A/values/"
                                            "Route Start Times";
 
     const QString sheetsCredFilePath =
@@ -84,7 +83,8 @@ private:
     //-------------------------------------------------------------------------
     // Offset data for the route sheets
     //-------------------------------------------------------------------------
-    const QStringList defaultRouteInfoPrecedence {"route", "driver", "powerUnit", "trailer"};
+    const QStringList defaultRouteInfoPrecedence {"route", "driver",
+                                                  "powerUnit", "trailer"};
 
     int routeOffset = 0;
     int driverOffset = 1;
@@ -96,8 +96,11 @@ private:
     //-------------------------------------------------------------------------
     // Offset data for the route start time sheet
     //-------------------------------------------------------------------------
-    const QStringList defaultRouteStartTimePrecedence {"building", "route", "name", "startsPrevDay", "mon",
-                                                             "tue", "wed", "thu", "fri", "sat", "sun"};
+    const QStringList defaultRouteStartTimePrecedence {"building", "route",
+                                                       "name", "startsPrevDay",
+                                                       "mon", "tue", "wed",
+                                                       "thu", "fri", "sat",
+                                                       "sun"};
 
     enum routeStartTimeCol {
         routeKeyStartTimeCol,
@@ -132,14 +135,16 @@ private:
     //-------------------------------------------------------------------------
     // Prebuilt regex helpers
     //-------------------------------------------------------------------------
-    enum regexType {matchSheetDate, matchRoute, matchDriver, matchEquipment, matchTime};
+    enum regexType {matchSheetDate, matchRoute, matchDriver, matchEquipment,
+                    matchTime};
     QRegExp mrsSheetDateRegExp  = QRegExp("\\d+-[A-Z,a-z]{3}-\\d+");
     QRegExp routeRegExp         = QRegExp("^[A-Z]-[A-Z,0-9]{3}");
     QRegExp driverRegExp        = QRegExp("(?:\\w+-)?\\w+'?\\w+,\\s[A-Z]");
     QRegExp equipmentRegExp     = QRegExp("\\b\\d+\\b");
     QRegExp timeRegExp          = QRegExp("\\d+:\\d+|\\d{3,4}");
     //Added all regexp to vector allow for more succinct code.
-    QVector<QRegExp> regExpVector {mrsSheetDateRegExp, routeRegExp, driverRegExp, equipmentRegExp};
+    QVector<QRegExp> regExpVector {mrsSheetDateRegExp, routeRegExp,
+                driverRegExp, equipmentRegExp};
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
@@ -147,6 +152,8 @@ private:
     //-------------------------------------------------------------------------
     QVector<Route> buildRoutes(QString dayOfWeek);
     void buildRouteStartTimes();
+    RouteStartTime buildRouteStartTimeFromJson\
+        (const QJsonArray &startTimeTuple);
     QVector<Route> applyStartTimeToRoutes(QVector<Route> routes);
     void buildEmployees();
     QVector<Route> applyEmployeeNumsToRoutes(QVector<Route> routes);
