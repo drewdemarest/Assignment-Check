@@ -92,123 +92,110 @@ QVector<Route> MasterRoute::getSundayRoutes()
 
 QVector<Route> MasterRoute::buildRoutes(QString dayOfWeek)
 {
-    QVector<Route> routes;
-    Route route;
-    QString dayOfWeekToQuery = dayOfWeek;
-    bool foundDate;
-
-    QVector<int> routeKeyFoundCol;
-    QVector<int> driverFoundCol;
-    QVector<int> equipmentFoundCol;
-    QVector<int> miscFoundCol;
-
     QDateTime sheetDate;
+    QVector<Route> routes;
 
     QJsonObject routeSheet = QJsonDocument::fromJson\
-            (queryRoutes(dayOfWeekToQuery)).object();
+            (queryRoutes(dayOfWeek)).object();
 
     QJsonArray routeArray = routeSheet["values"].toArray();
     QJsonArray routeTuple;
 
     buildRouteStartTimes();
     buildEmployees();
-
+    sheetDate = extractSheetDate(routeArray);
     for(int row = 0; row < routeArray.size(); row++)
     {
-        routeKeyFoundCol.clear();
-        driverFoundCol.clear();
-        equipmentFoundCol.clear();
-        miscFoundCol.clear();
-
         routeTuple = routeArray.at(row).toArray();
-
-        for(int col = 0; col < routeTuple.size(); col++)
-        {
-            //-----------------------------------------------------------------
-            // Asks the route what this cell is. If enough of these columns
-            // are populated with data then a potential route has been
-            // located.
-            //-----------------------------------------------------------------
-            switch(route.whatIsThis(routeTuple.at(col).toString()))
-            {
-            case routeEnum::matchSheetDate:
-                foundDate = true;
-                sheetDate = QDateTime::fromString(routeTuple.at(col)\
-                                                  .toString(), dateFormat);
-                break;
-
-            case routeEnum::matchDriverName:
-                driverFoundCol.append(col);
-                break;
-
-            case routeEnum::matchEquipment:
-                equipmentFoundCol.append(col);
-                break;
-
-            case routeEnum::matchMisc:
-                miscFoundCol.append(col);
-                break;
-
-            case routeEnum::matchRouteKey:
-                routeKeyFoundCol.append(col);
-                break;
-            }
-        }
-        //---------------------------------------------------------------------
-        // For all the route keys that have been found, the rest of the
-        // columns for supporting route information are determined by
-        // using the expected offsets.
-        // This allows a route to exist anywhere in a sheet but we're still
-        // able to assemble it based to where the rest of the route info
-        // should be relative to the key itself.
-        //---------------------------------------------------------------------
-        for(auto expectedRouteKeyCol: routeKeyFoundCol)
-        {
-            route = Route();
-
-            int expectedDriverCol = expectedRouteKeyCol +  driverOffset;
-            int expectedPowerUnitCol = expectedRouteKeyCol + powerUnitOffset;
-            int expectedTrailerCol = expectedRouteKeyCol + trailerOffset;
-
-            route.setField(routeTuple.at(expectedRouteKeyCol)\
-                           .toString(), routeEnum::key);
-
-            if(driverFoundCol.contains(expectedDriverCol))
-            {
-                route.setField(routeTuple.at(expectedDriverCol)\
-                               .toString(), routeEnum::driverName);
-            }
-
-            if(equipmentFoundCol.contains(expectedPowerUnitCol))
-            {
-                route.setField(routeTuple.at(expectedPowerUnitCol)\
-                               .toString(), routeEnum::truckNum);
-            }
-
-            if(equipmentFoundCol.contains(expectedTrailerCol))
-            {
-                route.setField(routeTuple.at(expectedTrailerCol)\
-                               .toString(), routeEnum::trailerNum);
-            }
-
-            if(foundDate)
-            {
-                route.setField(sheetDate.toString(route.getDateFormat()),\
-                               routeEnum::date);
-            }
-            routes.append(route);
-        }
+        routes.append(extractRoutesFromSheet(routeTuple));
     }
 
     routes = applyStartTimeToRoutes(routes);
-    routes = applyEmployeeNumsToRoutes(routes);
+    routes = applyEmployeeNumsToRoutes(routes);  
+
+    std::sort(routes.begin(), routes.end(), [](Route r1, Route r2) ->\
+            bool {return r1.getKey() < r2.getKey();});
 
     for(auto t: routes)
         qDebug() << t.getKey() << t.getRouteDate().toUTC().toString()\
                  << t.getDriverName() << t.getDriverId();
 
-    std::sort(routes.begin(), routes.end(), [](Route r1, Route r2) ->\
-            bool {return r1.getKey() < r2.getKey();});
+    return routes;
+}
+
+QVector<Route> MasterRoute::extractRoutesFromSheet(const QJsonArray &sheetValues)
+{
+    Route route;
+    QVector<Route> routes;
+    QVector<int> routeKeyFoundCol;
+    QVector<int> driverFoundCol;
+    QVector<int> equipmentFoundCol;
+    QVector<int> miscFoundCol;
+
+    for(int col = 0; col < row.size(); col++)
+    {
+        //-----------------------------------------------------------------
+        // Asks the route what this cell is. If enough of these columns
+        // are populated with data then a potential route has been
+        // located.
+        //-----------------------------------------------------------------
+        switch(route.whatIsThis(row.at(col).toString()))
+        {
+        case routeEnum::matchDriverName:
+            driverFoundCol.append(col);
+            break;
+
+        case routeEnum::matchEquipment:
+            equipmentFoundCol.append(col);
+            break;
+
+        case routeEnum::matchMisc:
+            miscFoundCol.append(col);
+            break;
+
+        case routeEnum::matchRouteKey:
+            routeKeyFoundCol.append(col);
+            break;
+        }
+    }
+
+    //---------------------------------------------------------------------
+    // For all the route keys that have been found, the rest of the
+    // columns for supporting route information are determined by
+    // using the expected offsets.
+    // This allows a route to exist anywhere in a sheet but we're still
+    // able to assemble it based to where the rest of the route info
+    // should be relative to the key itself.
+    //---------------------------------------------------------------------
+    for(auto expectedRouteKeyCol: routeKeyFoundCol)
+    {
+        route = Route();
+
+        int expectedDriverCol = expectedRouteKeyCol +  driverOffset;
+        int expectedPowerUnitCol = expectedRouteKeyCol + powerUnitOffset;
+        int expectedTrailerCol = expectedRouteKeyCol + trailerOffset;
+
+        route.setField(row.at(expectedRouteKeyCol)\
+                       .toString(), routeEnum::key);
+
+        if(driverFoundCol.contains(expectedDriverCol))
+        {
+            route.setField(row.at(expectedDriverCol).toString(), routeEnum::driverName);
+        }
+
+        if(equipmentFoundCol.contains(expectedPowerUnitCol))
+        {
+            route.setField(row.at(expectedPowerUnitCol).toString(), routeEnum::truckNum);
+        }
+
+        if(equipmentFoundCol.contains(expectedTrailerCol))
+        {
+            route.setField(row.at(expectedTrailerCol).toString(), routeEnum::trailerNum);;
+        }
+
+        route.setField(sheetDate.toString(route.getDateFormat()), routeEnum::date);
+        routes.append(route);
+    }
 
     return routes;
 }
@@ -288,6 +275,27 @@ void MasterRoute::setEmployeeInfoPrecedence(QStringList &employeeInfoPrecedence)
     }
 }
 
+QDateTime MasterRoute::extractSheetDate(const QJsonArray &sheetValues)
+{
+    QDateTime sheetDate;
+    Route route;
+    for(int rowCount = 0; rowCount < sheetValues.size(); rowCount++)
+    {
+        QJsonArray row = sheetValues.at(rowCount).toArray();
+        for(int colCount = 0; colCount < row.size(); colCount++)
+        {
+            switch(route.whatIsThis(row.at(colCount).toString()))
+            {
+            case routeEnum::matchSheetDate:
+                sheetDate = QDateTime::fromString(row.at(colCount)\
+                                                  .toString(), dateFormat);
+               return sheetDate;
+            }
+        }
+    }
+    return QDateTime();
+}
+
 void MasterRoute::buildRouteStartTimes()
 {
     routeStartTimes.clear();
@@ -298,38 +306,39 @@ void MasterRoute::buildRouteStartTimes()
 
     for(int row = 1; row < startTimeArray.size(); row++)
     {
-       routeStartTimes.append(buildRouteStartTime(startTimeTuple));
+       startTimeTuple = startTimeArray.at(row).toArray();
+       routeStartTimes.append(buildRouteStartTimeFromRow(startTimeTuple));
     }
 }
 
-RouteStartTime MasterRoute::buildRouteStartTime(const QJsonArray &tuple)
+RouteStartTime MasterRoute::buildRouteStartTimeFromRow(const QJsonArray &row)
 {
     RouteStartTime routeStart;
 
     QString timeFormat  = "h:mm";
     int msecsInDay = 86400000;
 
-    for(int col = 0; col < tuple.size(); col++)
+    for(int col = 0; col < row.size(); col++)
     {
         if(mandatoryStartTimeColumns.at(routeKeyStartTimeCol) == col)
-            routeStart.routeKey = tuple.at(col).toString();
+            routeStart.routeKey = row.at(col).toString();
 
         if(mandatoryStartTimeColumns.at(startsPrevDayStartTimeCol) == col)
         {
             routeStart.startsPrevDay[routeEnum::mon] =
-                    tuple.at(col).toString().contains("M");
+                    row.at(col).toString().contains("M");
             routeStart.startsPrevDay[routeEnum::tue] =
-                    tuple.at(col).toString().contains("T");
+                    row.at(col).toString().contains("T");
             routeStart.startsPrevDay[routeEnum::wed] =
-                    tuple.at(col).toString().contains("W");
+                    row.at(col).toString().contains("W");
             routeStart.startsPrevDay[routeEnum::thu] =
-                    tuple.at(col).toString().contains("R");
+                    row.at(col).toString().contains("R");
             routeStart.startsPrevDay[routeEnum::fri] =
-                    tuple.at(col).toString().contains("F");
+                    row.at(col).toString().contains("F");
             routeStart.startsPrevDay[routeEnum::sat] =
-                    tuple.at(col).toString().contains("S");
+                    row.at(col).toString().contains("S");
             routeStart.startsPrevDay[routeEnum::sun] =
-                    tuple.at(col).toString().contains("U");
+                    row.at(col).toString().contains("U");
         }
 
         if(mandatoryStartTimeColumns.at(monStartTimeCol) == col)
@@ -337,13 +346,13 @@ RouteStartTime MasterRoute::buildRouteStartTime(const QJsonArray &tuple)
             if(routeStart.startsPrevDay[routeEnum::mon])
             {
                 routeStart.monMidnightOffsetmSec =
-                        (QTime::fromString(tuple.at(col).toString(),\
+                        (QTime::fromString(row.at(col).toString(),\
                             timeFormat).msecsSinceStartOfDay() - msecsInDay);
             }
             else
             {
                 routeStart.monMidnightOffsetmSec =
-                        QTime::fromString(tuple.at(col).toString(),\
+                        QTime::fromString(row.at(col).toString(),\
                             timeFormat).msecsSinceStartOfDay();
             }
         }
@@ -353,13 +362,13 @@ RouteStartTime MasterRoute::buildRouteStartTime(const QJsonArray &tuple)
             if(routeStart.startsPrevDay.at(routeEnum::tue))
             {
                 routeStart.tueMidnightOffsetmSec =
-                        (QTime::fromString(tuple.at(col).toString(),\
+                        (QTime::fromString(row.at(col).toString(),\
                             timeFormat).msecsSinceStartOfDay() - msecsInDay);
             }
             else
             {
                 routeStart.tueMidnightOffsetmSec =
-                        QTime::fromString(tuple.at(col).toString(),\
+                        QTime::fromString(row.at(col).toString(),\
                             timeFormat).msecsSinceStartOfDay();
             }
         }
@@ -369,13 +378,13 @@ RouteStartTime MasterRoute::buildRouteStartTime(const QJsonArray &tuple)
             if(routeStart.startsPrevDay[routeEnum::wed])
             {
                 routeStart.wedMidnightOffsetmSec =
-                        (QTime::fromString(tuple.at(col).toString(),\
+                        (QTime::fromString(row.at(col).toString(),\
                             timeFormat).msecsSinceStartOfDay()) - msecsInDay;
             }
             else
             {
                 routeStart.wedMidnightOffsetmSec =
-                        QTime::fromString(tuple.at(col).toString(),
+                        QTime::fromString(row.at(col).toString(),
                             timeFormat).msecsSinceStartOfDay();
             }
         }
@@ -385,14 +394,14 @@ RouteStartTime MasterRoute::buildRouteStartTime(const QJsonArray &tuple)
             if(routeStart.startsPrevDay[routeEnum::thu])
             {
                 routeStart.thuMidnightOffsetmSec =
-                        (QTime::fromString(tuple.at(col).toString(),\
+                        (QTime::fromString(row.at(col).toString(),\
                             timeFormat).msecsSinceStartOfDay() - msecsInDay);
 
             }
             else
             {
                 routeStart.thuMidnightOffsetmSec =
-                        QTime::fromString(tuple.at(col).toString(),\
+                        QTime::fromString(row.at(col).toString(),\
                             timeFormat).msecsSinceStartOfDay();
             }
         }
@@ -402,13 +411,13 @@ RouteStartTime MasterRoute::buildRouteStartTime(const QJsonArray &tuple)
             if(routeStart.startsPrevDay[routeEnum::fri])
             {
                 routeStart.friMidnightOffsetmSec =
-                        (QTime::fromString(tuple.at(col).toString(),\
+                        (QTime::fromString(row.at(col).toString(),\
                             timeFormat).msecsSinceStartOfDay() - msecsInDay);
             }
             else
             {
                 routeStart.friMidnightOffsetmSec =
-                        QTime::fromString(tuple.at(col).toString(),\
+                        QTime::fromString(row.at(col).toString(),\
                             timeFormat).msecsSinceStartOfDay();
             }
         }
@@ -418,13 +427,13 @@ RouteStartTime MasterRoute::buildRouteStartTime(const QJsonArray &tuple)
             if(routeStart.startsPrevDay[routeEnum::sat])
             {
                 routeStart.satMidnightOffsetmSec =
-                        (QTime::fromString(tuple.at(col).toString(),\
+                        (QTime::fromString(row.at(col).toString(),\
                             timeFormat).msecsSinceStartOfDay() - msecsInDay);
             }
             else
             {
                 routeStart.satMidnightOffsetmSec =
-                        QTime::fromString(tuple.at(col).toString(),\
+                        QTime::fromString(row.at(col).toString(),\
                               timeFormat).msecsSinceStartOfDay();
             }
         }
@@ -434,17 +443,18 @@ RouteStartTime MasterRoute::buildRouteStartTime(const QJsonArray &tuple)
             if(routeStart.startsPrevDay[routeEnum::sun])
             {
                 routeStart.sunMidnightOffsetmSec =
-                        (QTime::fromString(tuple.at(col).toString(),\
+                        (QTime::fromString(row.at(col).toString(),\
                             timeFormat).msecsSinceStartOfDay() - msecsInDay);
             }
             else
             {
                 routeStart.sunMidnightOffsetmSec =
-                        QTime::fromString(tuple.at(col).toString(),\
+                        QTime::fromString(row.at(col).toString(),\
                             timeFormat).msecsSinceStartOfDay();
             }
         }
     }
+
     return routeStart;
 }
 

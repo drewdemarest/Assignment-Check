@@ -23,27 +23,27 @@ int Route::whatIsThis(const QString &data)
             switch(k)
             {
             case routeEnum::matchSheetDate:
-                qDebug() << "matchSheetDate" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
+                //qDebug() << "matchSheetDate" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
                 return routeEnum::matchSheetDate;
                 break;
 
             case routeEnum::matchRouteKey:
-                qDebug() << "matchRouteKey" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
+               //qDebug() << "matchRouteKey" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
                 return routeEnum::matchRouteKey;
                 break;
 
             case routeEnum::matchDriverName:
-                qDebug() <<  "matchDriverName" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
+                //qDebug() <<  "matchDriverName" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
                 return routeEnum::matchDriverName;
                 break;
 
             case routeEnum::matchEquipment:
-                qDebug() << "matchEquipment" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
+                //qDebug() << "matchEquipment" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
                 return routeEnum::matchEquipment;
                 break;
 
             case routeEnum::matchTime:
-                qDebug() << "matchTime" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
+                //qDebug() << "matchTime" << data <<  "reg cap len == data len?" << (regExpVector.at(k).cap().length() == data.length());
                 return routeEnum::matchTime;
                 break;
             }
@@ -98,7 +98,7 @@ void Route::setField(const QString &data, int fieldEnum)
     }
 }
 
-void Route::applyFullStartTimeOffset(RouteStartTime &rst)
+void Route::applyFullStartTimeOffset(const RouteStartTime &rst)
 {
     QMap<QString, int> dayOfWeek;
     dayOfWeek["Monday"]     = routeEnum::mon;

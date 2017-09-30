@@ -150,10 +150,11 @@ private:
     //-------------------------------------------------------------------------
     // Functions
     //-------------------------------------------------------------------------
+    QDateTime extractSheetDate(const QJsonArray &sheet);
     QVector<Route> buildRoutes(QString dayOfWeek);
+    QVector<Route> extractRoutesFromSheet(const QJsonArray &routeArray);
     void buildRouteStartTimes();
-    RouteStartTime buildRouteStartTimeFromJson\
-        (const QJsonArray &startTimeTuple);
+    RouteStartTime buildRouteStartTimeFromRow(const QJsonArray &row);
     QVector<Route> applyStartTimeToRoutes(QVector<Route> routes);
     void buildEmployees();
     QVector<Route> applyEmployeeNumsToRoutes(QVector<Route> routes);
