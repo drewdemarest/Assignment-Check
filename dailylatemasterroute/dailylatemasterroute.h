@@ -41,8 +41,8 @@ private:
             "1EVbo82066Xlan6AYMlEONAaKkuwr-ejRH0f__djDpNQ/values/Today";
 
     const QString sheetsEmployeeAddress_ = "https://sheets.googleapis.com/v4/"
-                                          "spreadsheets/1EVbo82066Xlan6AYMlEONAaKkuwr-ejRH0f__djDpNQ/values/"
-                                          "Employees";
+            "spreadsheets/1EVbo82066Xlan6AYMlEONAaKkuwr-ejRH0f__djDpNQ/values/"
+            "Employees";
 
     const QString sheetsCredFilePath_ =
             QApplication::applicationDirPath() + "/client.json";
@@ -52,7 +52,11 @@ private:
     //-------------------------------------------------------------------------
     // Offset data for the route sheets
     //-------------------------------------------------------------------------
-    const QStringList defaultRouteInfoPrecedence_ {"route", "driver", "timeIn", "timeOut", "powerUnit"};
+    const QStringList defaultRouteInfoPrecedence_ {"route",
+                                                   "driver",
+                                                   "timeIn",
+                                                   "timeOut",
+                                                   "powerUnit"};
 
     enum mandatoryRouteFields {
         routeField,
@@ -72,7 +76,10 @@ private:
     // Employee sheet parsing data
     //-------------------------------------------------------------------------
 
-    const QStringList defaultEmployeePrecedence_ {"blank", "employee", "blank", "employeeNum"};
+    const QStringList defaultEmployeePrecedence_ {"blank",
+                                                  "employee",
+                                                  "blank",
+                                                  "employeeNum"};
 
     enum employeeCol {
         employeeNameCol,

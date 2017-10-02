@@ -40,7 +40,8 @@ QVector<Route> DailyLateMasterRoute::getRoutes()
     return routes_;
 }
 
-void DailyLateMasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPrecedence)
+void DailyLateMasterRoute::setRouteInfoPrecedence
+(QStringList &routeInfoPrecedence)
 {
     const QVector<int> routeIndexVector
     {
@@ -48,7 +49,7 @@ void DailyLateMasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPreceden
         routeInfoPrecedence.indexOf("driver"),
         routeInfoPrecedence.indexOf("timeIn"),
         routeInfoPrecedence.indexOf("timeOut"),
-        routeInfoPrecedence.indexOf("prowerUnit")
+        routeInfoPrecedence.indexOf("powerUnit")
     };
 
     if(!routeIndexVector.contains(-1))
@@ -72,7 +73,8 @@ void DailyLateMasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPreceden
 }
 
 
-void DailyLateMasterRoute::setEmployeeInfoPrecedence(QStringList &employeeInfoPrecedence)
+void DailyLateMasterRoute::setEmployeeInfoPrecedence
+(QStringList &employeeInfoPrecedence)
 {
     QVector<int> employeeColumnsVerify =
     {
@@ -91,7 +93,8 @@ void DailyLateMasterRoute::setEmployeeInfoPrecedence(QStringList &employeeInfoPr
 }
 
 
-QVector<Route> DailyLateMasterRoute::extractRoutesFromSheetValues(const QJsonArray &sheetValues)
+QVector<Route> DailyLateMasterRoute::extractRoutesFromSheetValues
+(const QJsonArray &sheetValues)
 {
     Route route;
     QVector<Route> routes;
@@ -116,11 +119,6 @@ QVector<Route> DailyLateMasterRoute::extractRoutesFromSheetValues(const QJsonArr
 
         for(int colCount = 0; colCount < row.size(); colCount++)
         {
-            //-----------------------------------------------------------------
-            // Asks the route what this cell is. If enough of these columns
-            // are populated with data then a potential route has been
-            // located.
-            //-----------------------------------------------------------------
             switch(route.whatIsThis(row.at(colCount).toString()))
             {
             case routeEnum::matchDriverName:
@@ -145,14 +143,6 @@ QVector<Route> DailyLateMasterRoute::extractRoutesFromSheetValues(const QJsonArr
             }
         }
 
-        //---------------------------------------------------------------------
-        // For all the route keys that have been found, the rest of the
-        // columns for supporting route information are determined by
-        // using the expected offsets.
-        // This allows a route to exist anywhere in a sheet but we're still
-        // able to assemble it based to where the rest of the route info
-        // should be relative to the key itself.
-        //---------------------------------------------------------------------
         for(auto expectedRouteKeyCol: routeKeyFoundCol)
         {
             route = Route();
@@ -189,9 +179,11 @@ QVector<Route> DailyLateMasterRoute::extractRoutesFromSheetValues(const QJsonArr
                !route.getDriverName().isEmpty() &&
                !route.getTruckNumber().isEmpty())
             {
-                if(route.getRouteDate().isNull() || !route.getRouteDate().isValid())
+                if(route.getRouteDate().isNull() ||
+                   !route.getRouteDate().isValid())
                 {
-                    route.setField(QTime::currentTime().toString("hh:mm"), routeEnum::lateRouteOutTime);
+                    route.setField(QTime::currentTime().toString("hh:mm"),
+                                   routeEnum::lateRouteOutTime);
                 }
                 routes.append(route);
             }
@@ -235,7 +227,8 @@ QMap<QString, QString> DailyLateMasterRoute::buildEmployees()
     return employees;
 }
 
-QVector<Route> DailyLateMasterRoute::applyEmployeeNumsToRoutes(QVector<Route> routes)
+QVector<Route> DailyLateMasterRoute::applyEmployeeNumsToRoutes\
+(QVector<Route> routes)
 {
     QMap<QString, QString> employees = buildEmployees();
     QVector<Route>::iterator routesIter = routes.begin();
@@ -260,17 +253,24 @@ QVector<Route> DailyLateMasterRoute::applyEmployeeNumsToRoutes(QVector<Route> ro
 
 QByteArray DailyLateMasterRoute::queryRoutes()
 {
-    oauthConn_->buildOAuth(sheetsScope_, QString(sheetsRouteAddress_), sheetsCredFilePath_);
+    oauthConn_->buildOAuth(sheetsScope_,
+                           QString(sheetsRouteAddress_),
+                           sheetsCredFilePath_);
+
     return oauthConn_->get();
 }
 
 QByteArray DailyLateMasterRoute::queryEmployees()
 {
-    oauthConn_->buildOAuth(sheetsScope_, sheetsEmployeeAddress_, sheetsCredFilePath_);
+    oauthConn_->buildOAuth(sheetsScope_,
+                           sheetsEmployeeAddress_,
+                           sheetsCredFilePath_);
+
     return oauthConn_->get();
 }
 
-void DailyLateMasterRoute::whatRouteFieldIsMissing(QVector<int> routeFieldVerify)
+void DailyLateMasterRoute::whatRouteFieldIsMissing
+(QVector<int> routeFieldVerify)
 {
     //iterates through vector and provides the indexes of all duplicates.
     //This is then mapped to the enum type regarding what vector idx applies
@@ -308,26 +308,34 @@ void DailyLateMasterRoute::whatRouteFieldIsMissing(QVector<int> routeFieldVerify
 }
 
 
-void DailyLateMasterRoute::whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify)
+void DailyLateMasterRoute::whatEmployeeColIsMissing
+(QVector<int> employeeColumnsVerify)
 {
-    //iterates through vector and provides the indexes of all duplicates. This is then mapped to
-    //the enum type regarding what vector idx applies to what column.
+    //iterates through vector and provides the indexes of all duplicates.
+    //This is then mapped to the enum type regarding what vector
+    //idx applies to what column.
+
     int matchNotFound = -1;
     QVector<int>::iterator start = employeeColumnsVerify.begin();
     QVector<int>::iterator end = employeeColumnsVerify.end();
 
     while(end > start){
-        start = std::find_if(start, end, [&matchNotFound](const int& j) {return j == matchNotFound;});
+
+        start = std::find_if(start, end, [&matchNotFound](const int& j)\
+            {return j == matchNotFound;});
+
         if(start != end)
         {
             switch(start - employeeColumnsVerify.begin())
             {
             case(employeeNameCol):
-                qDebug() << "employeeNameCol missing. Reverting to default precedence.";
+                qDebug() << "employeeNameCol missing. "
+                            "Reverting to default precedence.";
                 break;
 
             case(employeeNumCol):
-                qDebug() << "employeeNumCol missing. Reverting to default precedence.";
+                qDebug() << "employeeNumCol missing. "
+                            "Reverting to default precedence.";
                 break;
             }
         }
