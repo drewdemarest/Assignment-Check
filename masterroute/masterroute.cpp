@@ -346,14 +346,14 @@ QVector<RouteStartTime> MasterRoute::extractRouteStartTimesFromSheetValues(const
                 if(routeStart.startsPrevDay[routeEnum::mon])
                 {
                     routeStart.monMidnightOffsetmSec =
-                            (QTime::fromString(row.at(colCount).toString(),\
-                                               timeFormat).msecsSinceStartOfDay() - msecsInDay);
+                        (QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay() - msecsInDay);
                 }
                 else
                 {
                     routeStart.monMidnightOffsetmSec =
-                            QTime::fromString(row.at(colCount).toString(),\
-                                              timeFormat).msecsSinceStartOfDay();
+                        QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay();
                 }
             }
 
@@ -362,14 +362,14 @@ QVector<RouteStartTime> MasterRoute::extractRouteStartTimesFromSheetValues(const
                 if(routeStart.startsPrevDay.at(routeEnum::tue))
                 {
                     routeStart.tueMidnightOffsetmSec =
-                            (QTime::fromString(row.at(colCount).toString(),\
-                                               timeFormat).msecsSinceStartOfDay() - msecsInDay);
+                        (QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay() - msecsInDay);
                 }
                 else
                 {
                     routeStart.tueMidnightOffsetmSec =
-                            QTime::fromString(row.at(colCount).toString(),\
-                                              timeFormat).msecsSinceStartOfDay();
+                        QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay();
                 }
             }
 
@@ -378,14 +378,14 @@ QVector<RouteStartTime> MasterRoute::extractRouteStartTimesFromSheetValues(const
                 if(routeStart.startsPrevDay[routeEnum::wed])
                 {
                     routeStart.wedMidnightOffsetmSec =
-                            (QTime::fromString(row.at(colCount).toString(),\
-                                               timeFormat).msecsSinceStartOfDay()) - msecsInDay;
+                        (QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay()) - msecsInDay;
                 }
                 else
                 {
                     routeStart.wedMidnightOffsetmSec =
-                            QTime::fromString(row.at(colCount).toString(),
-                                              timeFormat).msecsSinceStartOfDay();
+                        QTime::fromString(row.at(colCount).toString(),
+                            timeFormat).msecsSinceStartOfDay();
                 }
             }
 
@@ -394,15 +394,15 @@ QVector<RouteStartTime> MasterRoute::extractRouteStartTimesFromSheetValues(const
                 if(routeStart.startsPrevDay[routeEnum::thu])
                 {
                     routeStart.thuMidnightOffsetmSec =
-                            (QTime::fromString(row.at(colCount).toString(),\
-                                               timeFormat).msecsSinceStartOfDay() - msecsInDay);
+                        (QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay() - msecsInDay);
 
                 }
                 else
                 {
                     routeStart.thuMidnightOffsetmSec =
-                            QTime::fromString(row.at(colCount).toString(),\
-                                              timeFormat).msecsSinceStartOfDay();
+                        QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay();
                 }
             }
 
@@ -411,14 +411,14 @@ QVector<RouteStartTime> MasterRoute::extractRouteStartTimesFromSheetValues(const
                 if(routeStart.startsPrevDay[routeEnum::fri])
                 {
                     routeStart.friMidnightOffsetmSec =
-                            (QTime::fromString(row.at(colCount).toString(),\
-                                               timeFormat).msecsSinceStartOfDay() - msecsInDay);
+                        (QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay() - msecsInDay);
                 }
                 else
                 {
                     routeStart.friMidnightOffsetmSec =
-                            QTime::fromString(row.at(colCount).toString(),\
-                                              timeFormat).msecsSinceStartOfDay();
+                        QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay();
                 }
             }
 
@@ -427,14 +427,14 @@ QVector<RouteStartTime> MasterRoute::extractRouteStartTimesFromSheetValues(const
                 if(routeStart.startsPrevDay[routeEnum::sat])
                 {
                     routeStart.satMidnightOffsetmSec =
-                            (QTime::fromString(row.at(colCount).toString(),\
-                                               timeFormat).msecsSinceStartOfDay() - msecsInDay);
+                        (QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay() - msecsInDay);
                 }
                 else
                 {
                     routeStart.satMidnightOffsetmSec =
-                            QTime::fromString(row.at(colCount).toString(),\
-                                              timeFormat).msecsSinceStartOfDay();
+                        QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay();
                 }
             }
 
@@ -443,14 +443,14 @@ QVector<RouteStartTime> MasterRoute::extractRouteStartTimesFromSheetValues(const
                 if(routeStart.startsPrevDay[routeEnum::sun])
                 {
                     routeStart.sunMidnightOffsetmSec =
-                            (QTime::fromString(row.at(colCount).toString(),\
-                                               timeFormat).msecsSinceStartOfDay() - msecsInDay);
+                        (QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay() - msecsInDay);
                 }
                 else
                 {
                     routeStart.sunMidnightOffsetmSec =
-                            QTime::fromString(row.at(colCount).toString(),\
-                                              timeFormat).msecsSinceStartOfDay();
+                        QTime::fromString(row.at(colCount).toString(),\
+                            timeFormat).msecsSinceStartOfDay();
                 }
             }
         }

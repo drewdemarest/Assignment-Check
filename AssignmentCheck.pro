@@ -26,9 +26,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    gmTypes/gm_i18nlocale.cpp \
-    gmTypes/gm_organization.cpp \
-    gmTypes/gmorganization.cpp \
     netcode/netconnect.cpp \
     netcode/oauthnetconnect.cpp \
     masterroute/masterroute.cpp \
@@ -43,9 +40,6 @@ SOURCES += \
 
 HEADERS += \
     mainwindow.h \
-    gmTypes/gm_i18nlocale.h \
-    gmTypes/gm_organization.h \
-    jsonTypes/jsonType.hpp \
     netcode/netconnect.h \
     netcode/oauthnetconnect.h \
     masterroute/masterroute.h \
