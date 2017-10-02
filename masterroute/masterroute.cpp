@@ -55,37 +55,37 @@ void MasterRoute::buildSundayRoutes()
     sundayRoutes_ = buildRoutes(sundaySheetTitle);
 }
 
-QVector<Route> MasterRoute::getMondayRoutes()
+QVector<Route> MasterRoute::getMondayRoutes() const
 {
     return mondayRoutes_;
 }
 
-QVector<Route> MasterRoute::getTuesdayRoutes()
+QVector<Route> MasterRoute::getTuesdayRoutes() const
 {
     return tuesdayRoutes_;
 }
 
-QVector<Route> MasterRoute::getWednesdayRoutes()
+QVector<Route> MasterRoute::getWednesdayRoutes() const
 {
     return wednesdayRoutes_;
 }
 
-QVector<Route> MasterRoute::getThursdayRoutes()
+QVector<Route> MasterRoute::getThursdayRoutes() const
 {
     return thursdayRoutes_;
 }
 
-QVector<Route> MasterRoute::getFridayRoutes()
+QVector<Route> MasterRoute::getFridayRoutes() const
 {
     return fridayRoutes_;
 }
 
-QVector<Route> MasterRoute::getSaturdayRoutes()
+QVector<Route> MasterRoute::getSaturdayRoutes() const
 {
     return saturdayRoutes_;
 }
 
-QVector<Route> MasterRoute::getSundayRoutes()
+QVector<Route> MasterRoute::getSundayRoutes() const
 {
     return sundayRoutes_;
 }
@@ -199,26 +199,25 @@ QVector<Route> MasterRoute::extractRoutesFromSheetValues(const QJsonArray &sheet
             routes.append(route);
         }
     }
-
     return routes;
 }
 
 void MasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPrecedence)
 {
-    const QVector<int> routeIndexVector
+    const QVector<int> routeColumnsVerify
     {
         routeInfoPrecedence.indexOf("route"),
-                routeInfoPrecedence.indexOf("driver"),
-                routeInfoPrecedence.indexOf("powerUnit"),
-                routeInfoPrecedence.indexOf("trailer"),
+        routeInfoPrecedence.indexOf("driver"),
+        routeInfoPrecedence.indexOf("powerUnit"),
+        routeInfoPrecedence.indexOf("trailer"),
     };
 
-    if(!routeIndexVector.contains(-1))
+    if(!routeColumnsVerify.contains(-1))
     {
-        const int routeIndex        = routeIndexVector.at(0);
-        const int driverIndex       = routeIndexVector.at(1);
-        const int powerUnitIndex    = routeIndexVector.at(2);
-        const int trailerIndex      = routeIndexVector.at(3);
+        const int routeIndex        = routeColumnsVerify.at(0);
+        const int driverIndex       = routeColumnsVerify.at(1);
+        const int powerUnitIndex    = routeColumnsVerify.at(2);
+        const int trailerIndex      = routeColumnsVerify.at(3);
 
         routeOffset     = routeIndex - routeIndex;
         driverOffset    = driverIndex - routeIndex;
@@ -227,10 +226,7 @@ void MasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPrecedence)
     }
     else
     {
-        qDebug() << "Error with routeInfoPrecidence.\
-                    There is a missing field.\
-                    Check for route, driver,\
-                powerUnit, and trailer";
+        whatRouteFieldIsMissing(routeColumnsVerify);
     }
 }
 
@@ -568,9 +564,46 @@ QByteArray MasterRoute::queryEmployees()
     return oauthConn->get();
 }
 
-void MasterRoute::whatRouteColIsMissing()
+void MasterRoute::whatRouteFieldIsMissing(QVector<int> routeFieldVerify)
 {
-    //Hmm
+    //iterates through vector and provides the indexes of all duplicates.
+    //This is then mapped to the enum type regarding what vector idx applies
+    //to what column.
+    int matchNotFound = -1;
+    QVector<int>::iterator start = routeFieldVerify.begin();
+    QVector<int>::iterator end = routeFieldVerify.end();
+
+    while(end > start){
+        start = std::find_if(start, end, [&matchNotFound](const int& j)\
+        {return j == matchNotFound;});
+
+        if(start != end)
+        {
+            switch(start - routeFieldVerify.begin())
+            {
+            case(routeField):
+                qDebug() << "routeField missing.\
+                            Reverting to default precedence.";
+                            break;
+
+            case(driverField):
+                qDebug() << "driverField missing.\
+                            Reverting to default precedence.";
+                            break;
+
+            case(powerUnitField):
+                qDebug() << "powerUnitField missing. \
+                            Reverting to default precedence.";
+                            break;
+
+            case(trailerField):
+                qDebug() << "trailerField missing.\
+                            Reverting to default precedence.";
+                            break;
+            }
+        }
+        start++;
+    }
 }
 
 void MasterRoute::whatRouteStartTimeColIsMissing\

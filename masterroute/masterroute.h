@@ -9,6 +9,12 @@
 #include <QtCore>
 #include <QObject>
 
+//namespace mandatoryDataCol
+//{}
+
+//namespace manadatoryRouteField
+//{}
+
 class MasterRoute : public QObject
 {
     Q_OBJECT
@@ -25,13 +31,13 @@ public:
     void buildSaturdayRoutes();
     void buildSundayRoutes();
 
-    QVector<Route> getMondayRoutes();
-    QVector<Route> getTuesdayRoutes();
-    QVector<Route> getWednesdayRoutes();
-    QVector<Route> getThursdayRoutes();
-    QVector<Route> getFridayRoutes();
-    QVector<Route> getSaturdayRoutes();
-    QVector<Route> getSundayRoutes();
+    QVector<Route> getMondayRoutes() const;
+    QVector<Route> getTuesdayRoutes() const;
+    QVector<Route> getWednesdayRoutes() const;
+    QVector<Route> getThursdayRoutes() const;
+    QVector<Route> getFridayRoutes() const;
+    QVector<Route> getSaturdayRoutes() const;
+    QVector<Route> getSundayRoutes() const;
 
     void setRouteInfoPrecedence(QStringList &routeInfoPrecedence);
     void setStartTimeInfoPrecedence(QStringList &startTimeInfoPrecedence);
@@ -86,11 +92,18 @@ private:
     const QStringList defaultRouteInfoPrecedence {"route", "driver",
                                                   "powerUnit", "trailer"};
 
+    enum mandatoryRouteFields {
+        routeField,
+        driverField,
+        powerUnitField,
+        trailerField
+    };
+
     int routeOffset = 0;
     int driverOffset = 1;
     int powerUnitOffset = 2;
     int trailerOffset = 3;
-    int notesOffset = 4;
+    int notesOffset = 4;   
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
@@ -120,7 +133,6 @@ private:
     //-------------------------------------------------------------------------
     // Employee sheet parsing data
     //-------------------------------------------------------------------------
-
     const QStringList defaultEmployeePrecedence {"blank", "employee", "blank", "employeeNum"};
 
     enum employeeCol {
@@ -133,30 +145,17 @@ private:
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
-    // Prebuilt regex helpers
-    //-------------------------------------------------------------------------
-    enum regexType {matchSheetDate, matchRoute, matchDriver, matchEquipment,
-                    matchTime};
-    QRegExp mrsSheetDateRegExp  = QRegExp("\\d+-[A-Z,a-z]{3}-\\d+");
-    QRegExp routeRegExp         = QRegExp("^[A-Z]-[A-Z,0-9]{3}");
-    QRegExp driverRegExp        = QRegExp("(?:\\w+-)?\\w+'?\\w+,\\s[A-Z]");
-    QRegExp equipmentRegExp     = QRegExp("\\b\\d+\\b");
-    QRegExp timeRegExp          = QRegExp("\\d+:\\d+|\\d{3,4}");
-    //Added all regexp to vector allow for more succinct code.
-    QVector<QRegExp> regExpVector {mrsSheetDateRegExp, routeRegExp,
-                driverRegExp, equipmentRegExp};
-    //-------------------------------------------------------------------------
-
-    //-------------------------------------------------------------------------
     // Functions
     //-------------------------------------------------------------------------
     QDateTime extractSheetDate(const QJsonArray &sheetValues);
     QVector<Route> buildRoutes(QString dayOfWeek);
     QVector<Route> extractRoutesFromSheetValues
         (const QJsonArray &sheetValues);
+
     QVector<RouteStartTime> buildRouteStartTimes();
     QVector<RouteStartTime> extractRouteStartTimesFromSheetValues
         (const QJsonArray &sheetValues);
+
     QVector<Route> applyStartTimeToRoutes(QVector<Route> routes);
     QMap<QString, QString> buildEmployees();
     QVector<Route> applyEmployeeNumsToRoutes(QVector<Route> routes);
@@ -169,20 +168,20 @@ private:
     //-------------------------------------------------------------------------
     // Once the sheets have been parsed they, are stored in these containers.
     //-------------------------------------------------------------------------
-    QVector<Route>          mondayRoutes_;
-    QVector<Route>          tuesdayRoutes_;
-    QVector<Route>          wednesdayRoutes_;
-    QVector<Route>          thursdayRoutes_;
-    QVector<Route>          fridayRoutes_;
-    QVector<Route>          saturdayRoutes_;
-    QVector<Route>          sundayRoutes_;
+    QVector<Route> mondayRoutes_;
+    QVector<Route> tuesdayRoutes_;
+    QVector<Route> wednesdayRoutes_;
+    QVector<Route> thursdayRoutes_;
+    QVector<Route> fridayRoutes_;
+    QVector<Route> saturdayRoutes_;
+    QVector<Route> sundayRoutes_;
 
     //-------------------------------------------------------------------------
     //Route parsing utilities.
     //-------------------------------------------------------------------------
     QString dateFormat = "d-MMM-yyyy";
 
-    void whatRouteColIsMissing();
+    void whatRouteFieldIsMissing(QVector<int> routeFieldVerify);
     void whatRouteStartTimeColIsMissing(QVector<int> startTimeColumnsVerify);
     void whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify);
 
