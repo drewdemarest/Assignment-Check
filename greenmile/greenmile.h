@@ -29,7 +29,6 @@ private:
     NetConnect *greenmileConnection = new NetConnect();
     QString headersFilePath = QApplication::applicationDirPath() + "/headers.json";
 
-
     qint64 timeIntervalPaddingMsec = 0;
     QString gmRouteIntervalAddress = "https://charliesproduce.greenmile.com/Route/restrictions?criteria={\"filters\":[\"key\", \"driverAssignments.driver.key\", \"driverAssignments.driver.name\", \"equipmentAssignments.equipment.key\"]}";
     QString body;

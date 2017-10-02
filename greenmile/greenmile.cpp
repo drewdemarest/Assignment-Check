@@ -44,7 +44,9 @@ void Greenmile::makeTimeIntervalForQuery(const QVector<Route> &r)
         qDebug() << "Greenmile: cannot create query interval from empty vector";
         return;
     }
-    std::sort(rte.begin(), rte.end(), [](Route r1, Route r2) -> bool {return r1.getRouteDate() < r2.getRouteDate();});
+    std::sort(rte.begin(), rte.end(), [](Route r1, Route r2) ->\
+            bool {return r1.getRouteDate() < r2.getRouteDate();});
+
     minQueryDateTime = rte.first().getRouteDate().addMSecs(-timeIntervalPaddingMsec);
     maxQueryDateTime = rte.last().getRouteDate().addMSecs(timeIntervalPaddingMsec);
     qDebug() << minQueryDateTime.toString(Qt::ISODate);

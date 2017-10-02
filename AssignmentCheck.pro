@@ -36,7 +36,8 @@ SOURCES += \
     greenmile/greenmile.cpp \
     greenmile/routedifferencemodel.cpp \
     dailylatemasterroute/dailylatemasterroute.cpp \
-    dailylategreenmilewidget.cpp
+    dailylategreenmilewidget.cpp \
+    greenmile/routedifference.cpp
 
 HEADERS += \
     mainwindow.h \
