@@ -23,66 +23,71 @@ public:
     void setEmployeeInfoPrecedence(QStringList &employeeInfoPrecedence);
 
 private:
-    bool ignoreEmptyRoutes = false;
-    QString todaySheetTitle = "Today";
-
     //-------------------------------------------------------------------------
     // OAuth2 Network connection. This is a pointer because it
     // needs to stick around.
     //-------------------------------------------------------------------------
-    OAuthNetConnect *oauthConn = new OAuthNetConnect(this);
+    OAuthNetConnect *oauthConn_ = new OAuthNetConnect(this);
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
     // Network settings.
     //-------------------------------------------------------------------------
-    const QString sheetsScope =
+    const QString sheetsScope_ =
             "https://www.googleapis.com/auth/spreadsheets.readonly";
 
-    const QString sheetsRouteAddress =
+    const QString sheetsRouteAddress_ =
             "https://sheets.googleapis.com/v4/spreadsheets/"
             "1EVbo82066Xlan6AYMlEONAaKkuwr-ejRH0f__djDpNQ/values/Today";
 
-    const QString sheetsEmployeeAddress = "https://sheets.googleapis.com/v4/"
+    const QString sheetsEmployeeAddress_ = "https://sheets.googleapis.com/v4/"
                                           "spreadsheets/1EVbo82066Xlan6AYMlEONAaKkuwr-ejRH0f__djDpNQ/values/"
                                           "Employees";
 
-    const QString sheetsCredFilePath =
+    const QString sheetsCredFilePath_ =
             QApplication::applicationDirPath() + "/client.json";
 
-    bool networkProblem = false;
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
     // Offset data for the route sheets
     //-------------------------------------------------------------------------
-    const QStringList defaultRouteInfoPrecedence {"route", "driver", "timeIn", "timeOut", "powerUnit"};
+    const QStringList defaultRouteInfoPrecedence_ {"route", "driver", "timeIn", "timeOut", "powerUnit"};
 
-    int routeOffset = 0;
-    int driverOffset = 1;
-    int timeInOffset = 2;
-    int timeOutOffset = 3;
-    int powerUnitOffset = 4;
+    enum mandatoryRouteFields {
+        routeField,
+        driverField,
+        powerUnitField,
+        trailerField
+    };
+
+    int routeOffset_ = 0;
+    int driverOffset_ = 1;
+    int timeInOffset_ = 2;
+    int timeOutOffset_ = 3;
+    int powerUnitOffset_ = 4;
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
     // Employee sheet parsing data
     //-------------------------------------------------------------------------
 
-    const QStringList defaultEmployeePrecedence {"blank", "employee", "blank", "employeeNum"};
+    const QStringList defaultEmployeePrecedence_ {"blank", "employee", "blank", "employeeNum"};
 
     enum employeeCol {
         employeeNameCol,
         employeeNumCol
     };
 
-    QVector<int> mandatoryEmployeeColumns {1, 3};
+    QVector<int> mandatoryEmployeeColumns_ {1, 3};
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
     // Functions
     //-------------------------------------------------------------------------
-    void buildEmployees();
+    QVector<Route> buildTodaysRoutes();
+    QVector<Route> extractRoutesFromSheetValues(const QJsonArray &sheetValues);
+    QMap<QString, QString> buildEmployees();
     QVector<Route> applyEmployeeNumsToRoutes(QVector<Route> routes);
     QByteArray queryRoutes();
     QByteArray queryEmployees();
@@ -91,16 +96,16 @@ private:
     //-------------------------------------------------------------------------
     // Once the sheets have been parsed they, are stored in these containers.
     //-------------------------------------------------------------------------
-    QVector<RouteStartTime> routeStartTimes;
-    QVector<Route> routes;
-    QMap<QString, QString>  employees;
+    QVector<RouteStartTime> routeStartTimes_;
+    QVector<Route> routes_;
+    QMap<QString, QString>  employees_;
 
     //-------------------------------------------------------------------------
     //Route parsing utilities.
     //-------------------------------------------------------------------------
-    QString dateFormat = "d-MMM-yyyy";
+    QString dateFormat_ = "d-MMM-yyyy";
 
-    void whatRouteColIsMissing();
+    void whatRouteFieldIsMissing(QVector<int> employeeColumnsVerify);
     void whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify);
 
 public slots:

@@ -7,118 +7,37 @@ DailyLateMasterRoute::DailyLateMasterRoute(QObject *parent) : QObject(parent)
 
 DailyLateMasterRoute::~DailyLateMasterRoute()
 {
-    oauthConn->deleteLater();
+    oauthConn_->deleteLater();
 }
 
 void DailyLateMasterRoute::buildRoutes()
 {
-    //QVector<Route> routes;
-    routes.clear();
-    Route route;
+    routes_ = buildTodaysRoutes();
+}
 
-    QVector<int> routeKeyFoundCol;
-    QVector<int> driverFoundCol;
-    QVector<int> equipmentFoundCol;
-    QVector<int> miscFoundCol;
-    QVector<int> timeFoundCol;
+QVector<Route> DailyLateMasterRoute::buildTodaysRoutes()
+{
+    QVector<Route> routes;
+    QJsonObject routeSheet = QJsonDocument::fromJson\
+            (queryRoutes()).object();
+    QJsonArray sheetValues = routeSheet["values"].toArray();
 
-    QDateTime sheetDate;
-
-    QJsonObject routeSheet = QJsonDocument::fromJson(queryRoutes()).object();
-    QJsonArray routeArray = routeSheet["values"].toArray();
-    QJsonArray routeTuple;
-
-    buildEmployees();
-
-    for(int row = 0; row < routeArray.size(); row++)
-    {
-        routeKeyFoundCol.clear();
-        driverFoundCol.clear();
-        equipmentFoundCol.clear();
-        miscFoundCol.clear();
-        timeFoundCol.clear();
-
-        routeTuple = routeArray.at(row).toArray();
-
-        for(int col = 0; col < routeTuple.size(); col++)
-        {
-            switch(route.whatIsThis(routeTuple.at(col).toString()))
-            {
-            case routeEnum::matchSheetDate:
-                sheetDate = QDateTime::fromString(routeTuple.at(col).toString(), dateFormat);
-                break;
-
-            case routeEnum::matchDriverName:
-                driverFoundCol.append(col);
-                break;
-
-            case routeEnum::matchEquipment:
-                qDebug() << routeTuple.at(col).toString();
-                equipmentFoundCol.append(col);
-                break;
-
-            case routeEnum::matchMisc:
-                miscFoundCol.append(col);
-                break;
-
-            case routeEnum::matchRouteKey:
-
-                routeKeyFoundCol.append(col);
-                break;
-
-            case routeEnum::matchTime:
-                timeFoundCol.append(col);
-                break;
-            }
-        }
-
-        for(auto expectedRouteKeyCol: routeKeyFoundCol)
-        {
-            route = Route();
-
-            int expectedDriverCol = expectedRouteKeyCol +  driverOffset;
-            int expectedPowerUnitCol = expectedRouteKeyCol + powerUnitOffset;
-            //int expectedTimeInCol = expectedRouteKeyCol + timeInOffset;
-            int expectedTimeOutCol = expectedRouteKeyCol + timeOutOffset;
-
-            route.setField(routeTuple.at(expectedRouteKeyCol).toString(), routeEnum::key);
-
-            if(driverFoundCol.contains(expectedDriverCol))
-                route.setField(routeTuple.at(expectedDriverCol).toString(), routeEnum::driverName);
-
-            if(equipmentFoundCol.contains(expectedPowerUnitCol))
-                route.setField(routeTuple.at(expectedPowerUnitCol).toString(), routeEnum::truckNum);
-
-            if(timeFoundCol.contains(expectedTimeOutCol))
-            {
-                //qDebug() << routeTuple.at(expectedTimeOutCol).toString();
-                route.setField(routeTuple.at(expectedTimeOutCol).toString(), routeEnum::lateRouteOutTime);
-            }
-            if(!route.getKey().isEmpty()&& !route.getDriverName().isEmpty() && !route.getTruckNumber().isEmpty())
-            {
-                if(route.getRouteDate().isNull() || !route.getRouteDate().isValid())
-                {
-                    route.setField(QTime::currentTime().toString("h:mm"), routeEnum::lateRouteOutTime);
-                }
-                routes.append(route);
-            }
-        }
-    }
-
-    //Needs reimplement to use what's in the route tuple.
-    //routes = applyStartTimeToRoutes(routes);
+    routes = extractRoutesFromSheetValues(sheetValues);
     routes = applyEmployeeNumsToRoutes(routes);
 
-    for(auto t: routes)
-        qDebug() << t.getKey() << t.getRouteDate().toUTC().toString() << t.getDriverName() << t.getDriverId();
+    std::sort(routes.begin(), routes.end(), [](Route r1, Route r2) ->\
+            bool {return r1.getKey() < r2.getKey();});
 
-    std::sort(routes.begin(), routes.end(), [](Route r1, Route r2) -> bool {return r1.getKey() < r2.getKey();});
-    //return routes;
+    for(auto t: routes)
+        qDebug() << t.getKey() << t.getRouteDate().toUTC().toString()\
+                 << t.getDriverName() << t.getDriverId() << "rte dbg";
+
+    return routes;
 }
 
 QVector<Route> DailyLateMasterRoute::getRoutes()
 {
-    return routes;
+    return routes_;
 }
 
 void DailyLateMasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPrecedence)
@@ -126,10 +45,10 @@ void DailyLateMasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPreceden
     const QVector<int> routeIndexVector
     {
         routeInfoPrecedence.indexOf("route"),
-                routeInfoPrecedence.indexOf("driver"),
-                routeInfoPrecedence.indexOf("timeIn"),
-                routeInfoPrecedence.indexOf("timeOut"),
-                routeInfoPrecedence.indexOf("prowerUnit")
+        routeInfoPrecedence.indexOf("driver"),
+        routeInfoPrecedence.indexOf("timeIn"),
+        routeInfoPrecedence.indexOf("timeOut"),
+        routeInfoPrecedence.indexOf("prowerUnit")
     };
 
     if(!routeIndexVector.contains(-1))
@@ -140,15 +59,15 @@ void DailyLateMasterRoute::setRouteInfoPrecedence(QStringList &routeInfoPreceden
         const int timeOutIndex      = routeIndexVector.at(3);
         const int powerUnitIndex    = routeIndexVector.at(4);
 
-        routeOffset     = routeIndex - routeIndex;
-        driverOffset    = driverIndex - routeIndex;
-        timeInOffset    = timeInIndex - routeIndex;
-        timeOutOffset   = timeOutIndex - routeIndex;
-        powerUnitOffset = powerUnitIndex - routeIndex;
+        routeOffset_     = routeIndex - routeIndex;
+        driverOffset_    = driverIndex - routeIndex;
+        timeInOffset_    = timeInIndex - routeIndex;
+        timeOutOffset_   = timeOutIndex - routeIndex;
+        powerUnitOffset_ = powerUnitIndex - routeIndex;
     }
     else
     {
-        qDebug() << "Error with routeInfoPrecidence. There is a missing field. Check for route, driver, powerUnit, and trailer";
+        whatRouteFieldIsMissing(routeIndexVector);
     }
 }
 
@@ -163,8 +82,7 @@ void DailyLateMasterRoute::setEmployeeInfoPrecedence(QStringList &employeeInfoPr
 
     if(!employeeColumnsVerify.contains(-1))
     {
-        mandatoryEmployeeColumns = employeeColumnsVerify;
-        qDebug() << mandatoryEmployeeColumns;
+        mandatoryEmployeeColumns_ = employeeColumnsVerify;
     }
     else
     {
@@ -172,28 +90,141 @@ void DailyLateMasterRoute::setEmployeeInfoPrecedence(QStringList &employeeInfoPr
     }
 }
 
-void DailyLateMasterRoute::buildEmployees()
+
+QVector<Route> DailyLateMasterRoute::extractRoutesFromSheetValues(const QJsonArray &sheetValues)
 {
-    employees.clear();
+    Route route;
+    QVector<Route> routes;
+    QVector<int> routeKeyFoundCol;
+    QVector<int> driverFoundCol;
+    QVector<int> equipmentFoundCol;
+    QVector<int> miscFoundCol;
+    QVector<int> timeFoundCol;
+
+    QJsonArray row;
+
+    for(int rowCount = 0; rowCount < sheetValues.size(); rowCount++)
+    {
+        route = Route();
+        row = sheetValues.at(rowCount).toArray();
+
+        routeKeyFoundCol.clear();
+        driverFoundCol.clear();
+        equipmentFoundCol.clear();
+        miscFoundCol.clear();
+        timeFoundCol.clear();
+
+        for(int colCount = 0; colCount < row.size(); colCount++)
+        {
+            //-----------------------------------------------------------------
+            // Asks the route what this cell is. If enough of these columns
+            // are populated with data then a potential route has been
+            // located.
+            //-----------------------------------------------------------------
+            switch(route.whatIsThis(row.at(colCount).toString()))
+            {
+            case routeEnum::matchDriverName:
+                driverFoundCol.append(colCount);
+                break;
+
+            case routeEnum::matchEquipment:
+                equipmentFoundCol.append(colCount);
+                break;
+
+            case routeEnum::matchMisc:
+                miscFoundCol.append(colCount);
+                break;
+
+            case routeEnum::matchRouteKey:
+                routeKeyFoundCol.append(colCount);
+                break;
+
+            case routeEnum::matchTime:
+                timeFoundCol.append(colCount);
+                break;
+            }
+        }
+
+        //---------------------------------------------------------------------
+        // For all the route keys that have been found, the rest of the
+        // columns for supporting route information are determined by
+        // using the expected offsets.
+        // This allows a route to exist anywhere in a sheet but we're still
+        // able to assemble it based to where the rest of the route info
+        // should be relative to the key itself.
+        //---------------------------------------------------------------------
+        for(auto expectedRouteKeyCol: routeKeyFoundCol)
+        {
+            route = Route();
+
+            int expectedDriverCol = expectedRouteKeyCol +  driverOffset_;
+            int expectedPowerUnitCol = expectedRouteKeyCol + powerUnitOffset_;
+            int expectedTimeOutCol = expectedRouteKeyCol + timeOutOffset_;
+
+            route.setField(row.at(expectedRouteKeyCol)\
+                           .toString(), routeEnum::key);
+
+            if(driverFoundCol.contains(expectedDriverCol))
+            {
+                route.setField(row.at(expectedDriverCol).toString(),\
+                               routeEnum::driverName);
+            }
+
+            if(equipmentFoundCol.contains(expectedPowerUnitCol))
+            {
+                route.setField(row.at(expectedPowerUnitCol).toString(),\
+                               routeEnum::truckNum);
+            }
+
+            if(timeFoundCol.contains(expectedTimeOutCol))
+            {
+                route.setField(row.at(expectedTimeOutCol).toString(),\
+                               routeEnum::lateRouteOutTime);
+            }
+
+            //-----------------------------------------------------------------
+            // Fix me! I am hideous!
+            //-----------------------------------------------------------------
+            if(!route.getKey().isEmpty() &&
+               !route.getDriverName().isEmpty() &&
+               !route.getTruckNumber().isEmpty())
+            {
+                if(route.getRouteDate().isNull() || !route.getRouteDate().isValid())
+                {
+                    route.setField(QTime::currentTime().toString("hh:mm"), routeEnum::lateRouteOutTime);
+                }
+                routes.append(route);
+            }
+            //-----------------------------------------------------------------
+        }
+    }
+    return routes;
+}
+
+QMap<QString, QString> DailyLateMasterRoute::buildEmployees()
+{
+    QMap<QString, QString> employees;
     QString employeeName;
     QString employeeNumber;
-    QJsonObject employeeSheet = QJsonDocument::fromJson(queryEmployees()).object();
-    QJsonArray employeeArray = employeeSheet["values"].toArray();
-    QJsonArray employeeTuple;
+    QJsonObject sheet =
+            QJsonDocument::fromJson(queryEmployees()).object();
 
-    for(int row = 1; row < employeeArray.size(); row++)
+    QJsonArray sheetValues = sheet["values"].toArray();
+    QJsonArray row;
+
+    for(int rowCount = 1; rowCount < sheetValues.size(); rowCount++)
     {
-        employeeTuple = employeeArray.at(row).toArray();
+        row = sheetValues.at(rowCount).toArray();
 
-        for(int col = 0; col < employeeTuple.size(); col++)
+        for(int colCount = 0; colCount < row.size(); colCount++)
         {
-            if(mandatoryEmployeeColumns.at(employeeNameCol) == col)
+            if(mandatoryEmployeeColumns_.at(employeeNameCol) == colCount)
             {
-                employeeName = employeeTuple.at(col).toString();
+                employeeName = row.at(colCount).toString();
             }
-            if(mandatoryEmployeeColumns.at(employeeNumCol) == col)
+            if(mandatoryEmployeeColumns_.at(employeeNumCol) == colCount)
             {
-                employeeNumber = employeeTuple.at(col).toString();
+                employeeNumber = row.at(colCount).toString();
             }
 
         }
@@ -201,10 +232,12 @@ void DailyLateMasterRoute::buildEmployees()
         employeeName = QString();
         employeeNumber = QString();
     }
+    return employees;
 }
 
 QVector<Route> DailyLateMasterRoute::applyEmployeeNumsToRoutes(QVector<Route> routes)
 {
+    QMap<QString, QString> employees = buildEmployees();
     QVector<Route>::iterator routesIter = routes.begin();
     while(routesIter != routes.constEnd())
     {
@@ -212,7 +245,8 @@ QVector<Route> DailyLateMasterRoute::applyEmployeeNumsToRoutes(QVector<Route> ro
         {
             if(employees.contains(routesIter->getDriverName()))
             {
-                routesIter->setField(employees[routesIter->getDriverName()], routeEnum::driverId);
+                routesIter->setField(employees[routesIter->getDriverName()],\
+                        routeEnum::driverId);
             }
             else
             {
@@ -226,20 +260,53 @@ QVector<Route> DailyLateMasterRoute::applyEmployeeNumsToRoutes(QVector<Route> ro
 
 QByteArray DailyLateMasterRoute::queryRoutes()
 {
-    oauthConn->buildOAuth(sheetsScope, QString(sheetsRouteAddress), sheetsCredFilePath);
-    return oauthConn->get();
+    oauthConn_->buildOAuth(sheetsScope_, QString(sheetsRouteAddress_), sheetsCredFilePath_);
+    return oauthConn_->get();
 }
 
 QByteArray DailyLateMasterRoute::queryEmployees()
 {
-    oauthConn->buildOAuth(sheetsScope, sheetsEmployeeAddress, sheetsCredFilePath);
-    return oauthConn->get();
+    oauthConn_->buildOAuth(sheetsScope_, sheetsEmployeeAddress_, sheetsCredFilePath_);
+    return oauthConn_->get();
 }
 
-void DailyLateMasterRoute::whatRouteColIsMissing()
+void DailyLateMasterRoute::whatRouteFieldIsMissing(QVector<int> routeFieldVerify)
 {
-    //Hmm
+    //iterates through vector and provides the indexes of all duplicates.
+    //This is then mapped to the enum type regarding what vector idx applies
+    //to what column.
+    int matchNotFound = -1;
+    QVector<int>::iterator start = routeFieldVerify.begin();
+    QVector<int>::iterator end = routeFieldVerify.end();
+
+    while(end > start){
+        start = std::find_if(start, end, [&matchNotFound](const int& j)\
+        {return j == matchNotFound;});
+
+        if(start != end)
+        {
+            switch(start - routeFieldVerify.begin())
+            {
+            case(routeField):
+                qDebug() << "routeField missing.\
+                            Reverting to default precedence.";
+                            break;
+
+            case(driverField):
+                qDebug() << "driverField missing.\
+                            Reverting to default precedence.";
+                            break;
+
+            case(powerUnitField):
+                qDebug() << "powerUnitField missing. \
+                            Reverting to default precedence.";
+                            break;
+            }
+        }
+        start++;
+    }
 }
+
 
 void DailyLateMasterRoute::whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify)
 {
@@ -271,12 +338,11 @@ void DailyLateMasterRoute::whatEmployeeColIsMissing(QVector<int> employeeColumns
 void DailyLateMasterRoute::abort()
 {
     qDebug() << "Network connection failed...";
-    oauthConn->abort(true);
-    //networkProblem = true;
+    oauthConn_->abort(true);
 }
 
 void DailyLateMasterRoute::tryNetworkAgain()
 {
-    qDebug() << "Network connection failed...";
-    oauthConn->abort(false);
+    qDebug() << "Network connection failed... trying again.";
+    oauthConn_->abort(false);
 }
