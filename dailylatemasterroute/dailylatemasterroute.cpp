@@ -15,7 +15,6 @@ void DailyLateMasterRoute::buildRoutes()
     //QVector<Route> routes;
     routes.clear();
     Route route;
-    bool foundDate;
 
     QVector<int> routeKeyFoundCol;
     QVector<int> driverFoundCol;
@@ -46,7 +45,6 @@ void DailyLateMasterRoute::buildRoutes()
             switch(route.whatIsThis(routeTuple.at(col).toString()))
             {
             case routeEnum::matchSheetDate:
-                foundDate = true;
                 sheetDate = QDateTime::fromString(routeTuple.at(col).toString(), dateFormat);
                 break;
 

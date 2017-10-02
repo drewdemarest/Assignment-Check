@@ -98,7 +98,7 @@ void Route::setField(const QString &data, int fieldEnum)
     }
 }
 
-void Route::applyFullStartTimeOffset(const RouteStartTime &rst)
+void Route::applyRouteStartTime(const RouteStartTime &rst)
 {
     QMap<QString, int> dayOfWeek;
     dayOfWeek["Monday"]     = routeEnum::mon;
@@ -155,11 +155,6 @@ void Route::applyFullStartTimeOffset(const RouteStartTime &rst)
             }
         }
     }
-}
-
-void Route::applySingleStartTimeOffset(qint64 &startTimeOffset, int dayOfWeek)
-{
-
 }
 
 void Route::setDateFormat(const QString &qs)

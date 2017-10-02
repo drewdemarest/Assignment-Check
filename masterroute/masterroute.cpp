@@ -474,7 +474,7 @@ QVector<Route> MasterRoute::applyStartTimeToRoutes(QVector<Route> routes)
 
         if(start != end)
         {
-            start->applyFullStartTimeOffset(t);
+            start->applyRouteStartTime(t);
         }
         start = routes.begin();
         end = routes.end();

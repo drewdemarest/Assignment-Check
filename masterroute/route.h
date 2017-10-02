@@ -19,8 +19,7 @@ public:
 
     int  whatIsThis(const QString &data);
     void setField(const QString &data, int fieldEnum);
-    void applyFullStartTimeOffset(const RouteStartTime &rst);
-    void applySingleStartTimeOffset(qint64 &startTimeOffset, int dayOfWeek);
+    void applyRouteStartTime(const RouteStartTime &rst);
     void setDateFormat(const QString &qs);
     bool isRouteValid();
     QDateTime getRouteDate() const;
