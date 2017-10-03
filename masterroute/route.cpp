@@ -10,22 +10,6 @@ Route::Route()
                     timeRegExp};
 }
 
-bool Route::operator==(const Route &rhs)
-{
-    if(this->getKey() == rhs.getKey())
-        return true;
-    else
-        return false;
-}
-
-bool Route::operator<(const Route &rhs)
-{
-    if(this->getKey() < rhs.getKey())
-        return true;
-    else
-        return false;
-}
-
 int Route::whatIsThis(const QString &data)
 {
     int matchIdx = -1;

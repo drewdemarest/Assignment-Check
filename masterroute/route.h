@@ -16,9 +16,7 @@ class Route
 {
 public:
     Route();
-    bool operator==(const Route &rhs);
-    bool operator<(const Route &rhs);
-
+    bool operator==(const Route &rhs) const {return this->getKey() == rhs.getKey();}
     int  whatIsThis(const QString &data);
     void setField(const QString &data, int fieldEnum);
     void applyRouteStartTime(const RouteStartTime &rst);

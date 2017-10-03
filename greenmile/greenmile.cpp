@@ -31,6 +31,7 @@ QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes(const QVector
 
     buildRoutesFromGreenmileResponse(response);
 
+    routeDiff.findDifferences(masterRouteRoutes, routes);
     return routeDiff.findDifferences(masterRouteRoutes, routes);
 }
 

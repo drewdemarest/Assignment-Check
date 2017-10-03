@@ -61,6 +61,7 @@ QVector<RouteDifference> RouteDifference::findDifferences
  const QVector<Route> &routesB)
 {
     QVector<RouteDifference> differences;
+
     differences.append(compareVectorAtoB(routesA, routesB));
     differences.append(compareVectorBtoA(routesB, routesA));
 
@@ -71,6 +72,17 @@ QVector<RouteDifference> RouteDifference::findDifferences
     auto last = std::unique(differences.begin(), differences.end());
 
     differences.erase(last, differences.end());
+
+    for(QVector<RouteDifference>::iterator it = differences.begin();
+        it != differences.end();)
+    {
+        if(!it->hasDiscrepencies)
+        {
+            it = differences.erase(it);
+        }
+        else
+            ++it;
+    }
 
     return differences;
 }
@@ -101,7 +113,6 @@ QVector<RouteDifference> RouteDifference::compareVectorAtoB
 
     for(auto routeA: routesA)
     {
-        Route A;
         if(routesB.contains(routeA))
         {
             Route routeB = routesB.at(routesB.indexOf(routeA));
@@ -145,6 +156,7 @@ QVector<RouteDifference> RouteDifference::compareVectorBtoA
 RouteDifference RouteDifference::onlyExistsInA(const Route &routeA)
 {
     RouteDifference difference;
+    difference.routeKey = routeA.getKey();
     difference.hasDiscrepencies = true;
     difference.routeExistsInSourceA = true;
     difference.routeExistsInSourceB = false;
@@ -165,6 +177,7 @@ RouteDifference RouteDifference::onlyExistsInA(const Route &routeA)
 RouteDifference RouteDifference::onlyExistsInB(const Route &routeB)
 {
     RouteDifference difference;
+    difference.routeKey = routeB.getKey();
     difference.hasDiscrepencies = true;
     difference.routeExistsInSourceA = true;
     difference.routeExistsInSourceB = false;
