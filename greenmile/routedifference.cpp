@@ -5,7 +5,7 @@ RouteDifference::RouteDifference()
 
 }
 
-bool RouteDifference::operator==(const RouteDifference &rhs)
+bool RouteDifference::operator==(const RouteDifference &rhs) const
 {
     if(this->hasDiscrepencies       == rhs.hasDiscrepencies     &&
        this->routeExistsInSourceA   == rhs.routeExistsInSourceA &&
@@ -179,8 +179,8 @@ RouteDifference RouteDifference::onlyExistsInB(const Route &routeB)
     RouteDifference difference;
     difference.routeKey = routeB.getKey();
     difference.hasDiscrepencies = true;
-    difference.routeExistsInSourceA = true;
-    difference.routeExistsInSourceB = false;
+    difference.routeExistsInSourceA = false;
+    difference.routeExistsInSourceB = true;
 
     if(!routeB.getDriverId().isEmpty())
         difference.driverMismatch = true;
@@ -188,9 +188,9 @@ RouteDifference RouteDifference::onlyExistsInB(const Route &routeB)
     if(!routeB.getTruckNumber().isEmpty())
         difference.truckMismatch = true;
 
-    difference.powerUnitA = routeB.getTruckNumber();
-    difference.driverNameA = routeB.getDriverName();
-    difference.driverNumberA = routeB.getDriverId();
+    difference.powerUnitB = routeB.getTruckNumber();
+    difference.driverNameB = routeB.getDriverName();
+    difference.driverNumberB = routeB.getDriverId();
 
     return difference;
 }
