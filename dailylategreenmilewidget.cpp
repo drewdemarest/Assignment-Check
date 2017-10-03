@@ -27,7 +27,7 @@ void DailyLateGreenmileWidget::todayGMButtonPressed()
     //IMPLEMENT DLMRS ROUTE REMOVAL HERE.
     dlmrs->buildRoutes();
 
-    routeDifferences = gm->compareRoutesToGreenmileRoutes(dlmrs->getRoutes());
+    routeDifferences = gm->compareDLMRSToGreenmileRoutes(dlmrs->getRoutes());
 
     routeDiffModel->addRouteDifferenceVector(routeDifferences);
     ui->routeDiffTableView->setModel(routeDiffModel);

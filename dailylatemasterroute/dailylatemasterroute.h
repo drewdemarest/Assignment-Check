@@ -4,6 +4,7 @@
 #include "masterroute/route.h"
 #include "masterroute/routestarttime.h"
 #include "netcode/oauthnetconnect.h"
+#include "greenmile/greenmile.h"
 #include <algorithm>
 #include <QApplication>
 #include <QtCore>
@@ -114,6 +115,13 @@ private:
 
     void whatRouteFieldIsMissing(QVector<int> employeeColumnsVerify);
     void whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify);
+
+    //-------------------------------------------------------------------------
+    // For specialised comparisons with greenmile. Should be able to get
+    // differences from the DLMRS.
+    //-------------------------------------------------------------------------
+    Greenmile *gm_ = new Greenmile(this);
+
 
 public slots:
     void abort();

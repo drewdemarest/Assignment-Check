@@ -175,9 +175,11 @@ QVector<Route> DailyLateMasterRoute::extractRoutesFromSheetValues
             //-----------------------------------------------------------------
             // Fix me! I am hideous!
             //-----------------------------------------------------------------
-            if(!route.getKey().isEmpty() &&
-               !route.getDriverName().isEmpty() &&
-               !route.getTruckNumber().isEmpty())
+//            if(!route.getKey().isEmpty() &&
+//               !route.getDriverName().isEmpty() &&
+//               !route.getTruckNumber().isEmpty())
+//            {
+            if(!route.getKey().isEmpty())
             {
                 if(route.getRouteDate().isNull() ||
                    !route.getRouteDate().isValid())

@@ -7,6 +7,7 @@
 class RouteDifference
 {
     friend class RouteDifferenceModel;
+    friend class Greenmile;
 
 public:
     RouteDifference();
