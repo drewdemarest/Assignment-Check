@@ -73,8 +73,7 @@ QVector<RouteDifference> RouteDifference::findDifferences
 
     differences.erase(last, differences.end());
 
-    for(QVector<RouteDifference>::iterator it = differences.begin();
-        it != differences.end();)
+    for(auto it = differences.begin(); it != differences.end();)
     {
         if(!it->hasDiscrepencies)
         {
