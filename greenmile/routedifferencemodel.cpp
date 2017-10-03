@@ -89,9 +89,9 @@ QVariant RouteDifferenceModel::data(const QModelIndex &index, int role) const
         switch(index.column())
         {
         case 0:
-            return bool(routeDiffAtRow.routeExistsInGreenmile);
+            return bool(routeDiffAtRow.routeExistsInSourceB);
         case 1:
-            return bool(routeDiffAtRow.routeExistsInMasterRoute);
+            return bool(routeDiffAtRow.routeExistsInSourceA);
         case 2:
             return bool(routeDiffAtRow.driverMismatch);
         case 3:
@@ -104,17 +104,17 @@ QVariant RouteDifferenceModel::data(const QModelIndex &index, int role) const
         switch(index.column())
         {
         case 4:
-            return QString(routeDiffAtRow.masterRouteTruck);
+            return QString(routeDiffAtRow.powerUnitA);
         case 5:
-            return QString(routeDiffAtRow.masterRouteDriverName);
+            return QString(routeDiffAtRow.driverNameA);
         case 6:
-            return QString(routeDiffAtRow.masterRouteDriverID);
+            return QString(routeDiffAtRow.driverNumberA);
         case 7:
-            return QString(routeDiffAtRow.greenmileTruck);
+            return QString(routeDiffAtRow.powerUnitB);
         case 8:
-            return QString(routeDiffAtRow.greenmileDriverName);
+            return QString(routeDiffAtRow.driverNameB);
         case 9:
-            return QString(routeDiffAtRow.greenmileDriverID);
+            return QString(routeDiffAtRow.driverNumberB);
         }
     }
     // FIXME: Implement me!

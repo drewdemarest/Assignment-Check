@@ -16,6 +16,8 @@ class Route
 {
 public:
     Route();
+    bool operator==(const Route &rhs);
+    bool operator<(const Route &rhs);
 
     int  whatIsThis(const QString &data);
     void setField(const QString &data, int fieldEnum);

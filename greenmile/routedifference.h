@@ -2,38 +2,61 @@
 #define ROUTEDIFFERENCE_H
 
 #include <QtCore>
+#include "masterroute/route.h"
 
-struct RouteDifference
+class RouteDifference
 {
+    friend class RouteDifferenceModel;
+
+public:
     RouteDifference();
-
-    bool hasDiscrepencies = false;
-    bool routeExistsInGreenmile = true;
-    bool routeExistsInMasterRoute = true;
-    bool driverMismatch = false;
-    bool truckMismatch = false;
-
-    QString routeKey;
-
-    QString masterRouteTruck;
-    QString masterRouteDriverName;
-    QString masterRouteDriverID;
-
-    QString greenmileTruck;
-    QString greenmileDriverName;
-    QString greenmileDriverID;
-
     //-------------------------------------------------------------------------
-    //Operator Overloads
+    // Operator Overloads
     //-------------------------------------------------------------------------
-    bool operator==(const RouteDifference & other);
+    bool operator==(const RouteDifference &rhs);
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
     // Functions
     //-------------------------------------------------------------------------
+    QVector<RouteDifference> findDifferences(const QVector<Route> &routesA,
+                                             const QVector<Route> &routesB);
+
     void printDebug() const;
     //-------------------------------------------------------------------------
+
+private:
+    bool hasDiscrepencies = false;
+    bool routeExistsInSourceA = true;
+    bool routeExistsInSourceB = true;
+    bool driverMismatch = false;
+    bool truckMismatch = false;
+
+    QString routeKey;
+
+    QString powerUnitA;
+    QString driverNameA;
+    QString driverNumberA;
+
+    QString powerUnitB;
+    QString driverNameB;
+    QString driverNumberB;
+
+    //-------------------------------------------------------------------------
+    // Functions
+    //-------------------------------------------------------------------------
+    QVector<RouteDifference> compareVectorAtoB(
+            const QVector<Route> routesA,
+            const QVector<Route> routesB);
+    QVector<RouteDifference> compareVectorBtoA(
+            const QVector<Route> routesB,
+            const QVector<Route> routesA);
+
+    RouteDifference findDifference(const Route &routeA,
+                                   const Route &routeB);
+
+    RouteDifference onlyExistsInA(const Route &routeA);
+    RouteDifference onlyExistsInB(const Route &routeB);
 
 };
 
