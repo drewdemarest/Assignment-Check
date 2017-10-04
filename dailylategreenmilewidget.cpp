@@ -28,6 +28,10 @@ void DailyLateGreenmileWidget::todayGMButtonPressed()
     dlmrs->buildRoutes();
 
     routeDifferences = gm->compareDLMRSToGreenmileRoutes(dlmrs->getRoutes());
+    for(auto rd: routeDifferences)
+    {
+        rd.printDebug();
+    }
 
     routeDiffModel->addRouteDifferenceVector(routeDifferences);
     ui->routeDiffTableView->setModel(routeDiffModel);

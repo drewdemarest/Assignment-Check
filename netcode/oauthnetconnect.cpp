@@ -9,8 +9,9 @@ OAuthNetConnect::OAuthNetConnect(QObject *parent) :
 
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::granted, this, &OAuthNetConnect::oauthGranted);
-    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailed);
-    connect(responseTimer, &QTimer::timeout, this, &OAuthNetConnect::oauthFailed);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::error, this, &OAuthNetConnect::oauthFailedError);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailedRequestFailed);
+    connect(responseTimer, &QTimer::timeout, this, &OAuthNetConnect::oauthFailedTimeout);
 }
 
 OAuthNetConnect::OAuthNetConnect(const QString &scope, const QString &address, const QString &credentialFilePath, QObject *parent) :
@@ -23,8 +24,9 @@ OAuthNetConnect::OAuthNetConnect(const QString &scope, const QString &address, c
     //connections
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::granted, this, &OAuthNetConnect::oauthGranted);
-    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailed);
-    connect(responseTimer, &QTimer::timeout, this, &OAuthNetConnect::oauthFailed);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::error, this, &OAuthNetConnect::oauthFailedError);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailedRequestFailed);
+    connect(responseTimer, &QTimer::timeout, this, &OAuthNetConnect::oauthFailedTimeout);
 
     buildOAuth(scope, address, credentialFilePath);
 }
@@ -44,6 +46,7 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
         while(waitingForOauth)
         {
             usleep(10);
+            qDebug() << "Stuck waiting?";
             qApp->processEvents();
         }
 
@@ -109,7 +112,7 @@ QByteArray OAuthNetConnect::get()
             qApp->processEvents();
             if(aborted){
                 responseTimer->stop();
-                oauthFailed();
+                oauthFailedTimeout();
                 return QByteArray();
             }
 
@@ -224,7 +227,7 @@ void OAuthNetConnect::oauthGranted()
     emit succeeded();
 }
 
-void OAuthNetConnect::oauthFailed()
+void OAuthNetConnect::oauthFailedTimeout()
 {
     auto rh = oauth2NetworkAccess->replyHandler();
     delete rh;
@@ -236,11 +239,91 @@ void OAuthNetConnect::oauthFailed()
     oauth2NetworkAccess = new QOAuth2AuthorizationCodeFlow(this);
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
     connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::granted, this, &OAuthNetConnect::oauthGranted);
-    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailed);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::error, this, &OAuthNetConnect::oauthFailedError);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailedRequestFailed);
+    connect(responseTimer, &QTimer::timeout, this, &OAuthNetConnect::oauthFailedTimeout);
 
     waitingForOauth = false;
     oauthValid = false;
-    qDebug() << "OAuth2 Failed.";
+    qDebug() << "OAuth2 Failed due to time out.";
+    emit failed();
+}
+
+void OAuthNetConnect::oauthFailedError(const QString &error, const QString &errorDescription, const QUrl &uri)
+{
+    auto rh = oauth2NetworkAccess->replyHandler();
+    delete rh;
+    rh = Q_NULLPTR;
+
+    delete oauth2NetworkAccess;
+    oauth2NetworkAccess = Q_NULLPTR;
+
+    oauth2NetworkAccess = new QOAuth2AuthorizationCodeFlow(this);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::granted, this, &OAuthNetConnect::oauthGranted);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::error, this, &OAuthNetConnect::oauthFailedError);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailedRequestFailed);
+    connect(responseTimer, &QTimer::timeout, this, &OAuthNetConnect::oauthFailedTimeout);
+
+    waitingForOauth = false;
+    oauthValid = false;
+    qDebug() << "OAuth2 Failed with error" << error << errorDescription << uri.toString();
+    emit failed();
+}
+
+void OAuthNetConnect::oauthFailedRequestFailed(const QAbstractOAuth::Error error)
+{
+    auto rh = oauth2NetworkAccess->replyHandler();
+    delete rh;
+    rh = Q_NULLPTR;
+
+    delete oauth2NetworkAccess;
+    oauth2NetworkAccess = Q_NULLPTR;
+
+    oauth2NetworkAccess = new QOAuth2AuthorizationCodeFlow(this);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::granted, this, &OAuthNetConnect::oauthGranted);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::error, this, &OAuthNetConnect::oauthFailedError);
+    connect(oauth2NetworkAccess, &QOAuth2AuthorizationCodeFlow::requestFailed, this, &OAuthNetConnect::oauthFailedRequestFailed);
+    connect(responseTimer, &QTimer::timeout, this, &OAuthNetConnect::oauthFailedTimeout);
+
+    waitingForOauth = false;
+    oauthValid = false;
+    switch (error)
+    {
+    case QAbstractOAuth::Error::NoError:
+        qDebug() << "No error has ocurred.";
+        break;
+
+    case QAbstractOAuth::Error::NetworkError:
+        qDebug() << "Failed to connect to the server.";
+        break;
+
+    case QAbstractOAuth::Error::ServerError:
+        qDebug() << "The server answered the request"
+                    " with an error.";
+        break;
+
+    case QAbstractOAuth::Error::OAuthTokenNotFoundError:
+        qDebug() << "The server's response to a token"
+                    " request provided no token identifier.";
+        break;
+
+    case QAbstractOAuth::Error::OAuthTokenSecretNotFoundError:
+        qDebug() << "	The server's response to a token"
+                    " request provided no token secret.";
+        break;
+
+    case QAbstractOAuth::Error::OAuthCallbackNotVerified:
+        qDebug() << "	The authorization server has not"
+                    " verified the supplied callback URI in"
+                    " the request. This usually happens"
+                    " when the provided callback does"
+                    " not match with the callback"
+                    " supplied during client registration.";
+        break;
+
+    }
     emit failed();
 }
 

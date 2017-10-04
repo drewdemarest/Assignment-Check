@@ -65,7 +65,9 @@ signals:
     void failed();
 public slots:
     void oauthGranted();
-    void oauthFailed();
+    void oauthFailedTimeout();
+    void oauthFailedError(const QString &error, const QString &errorDescription, const QUrl &uri);
+    void oauthFailedRequestFailed(const QAbstractOAuth::Error error);
     void abort(bool abortStatus);
 };
 
