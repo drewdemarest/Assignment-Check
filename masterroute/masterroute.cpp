@@ -2,6 +2,20 @@
 
 MasterRoute::MasterRoute(QObject *parent) : QObject(parent)
 {
+    settings_ = QSqlDatabase::addDatabase("QSQLITE");
+    settings_.setDatabaseName(settingsPath_);
+    qDebug()  <<  QSqlDatabase::drivers();
+
+    if(!settings_.open())
+    {
+        qDebug() << "MasterRoute: Error opening settings DB at "\
+                 << settingsPath_ << ", using default settings";
+    }
+
+    else
+        qDebug() << "MasterRoute: Connected to DB at" << settingsPath_;
+
+    loadSettingsFromDatabase();
 }
 
 MasterRoute::~MasterRoute()
@@ -704,6 +718,23 @@ void MasterRoute::whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify)
         }
         start++;
     }
+}
+
+void MasterRoute::loadSettingsFromDatabase()
+{
+    QSqlQuery query(settings_);
+    query.prepare("SELECT * FROM masterRouteSettings");
+    query.exec();
+    while(query.next())
+    {
+        if(query.value(0).toString() == "sheetsScope")
+            sheetsScope = query.value(1).toString();
+
+        if(query.value(0).toString() == "sheetAddressBase")
+            sheetsAddressBase = query.value(2).toString();
+    }
+
+    qDebug() << sheetsAddressBase << sheetsScope;
 }
 
 void MasterRoute::abort()

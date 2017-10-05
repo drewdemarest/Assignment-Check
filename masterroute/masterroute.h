@@ -8,6 +8,11 @@
 #include <QApplication>
 #include <QtCore>
 #include <QObject>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QSqlRecord>
+#include <QCoreApplication>
 
 //namespace mandatoryDataCol
 //{}
@@ -62,10 +67,10 @@ private:
     //-------------------------------------------------------------------------
     // Network settings.
     //-------------------------------------------------------------------------
-    const QString sheetsScope =
+    QString sheetsScope =
             "https://www.googleapis.com/auth/spreadsheets.readonly";
 
-    const QString sheetsAddressBase =
+    QString sheetsAddressBase =
             "https://sheets.googleapis.com/v4/spreadsheets/"
             "1KA7c9bbG2p4f8SFe5ibbkIycwt0wukRe2_xpTB3SI6A/values/";
 
@@ -184,6 +189,13 @@ private:
     void whatRouteFieldIsMissing(QVector<int> routeFieldVerify);
     void whatRouteStartTimeColIsMissing(QVector<int> startTimeColumnsVerify);
     void whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify);
+
+    //-------------------------------------------------------------------------
+    //Betadase things for settings
+    //-------------------------------------------------------------------------
+    QString settingsPath_ = QApplication::applicationDirPath() + "/settings.db";
+    QSqlDatabase settings_;
+    void loadSettingsFromDatabase();
 
 public slots:
     void abort();
