@@ -26,7 +26,7 @@ bool RouteDifference::operator==(const RouteDifference &rhs) const
         return false;
 }
 
-RouteDifference RouteDifference::findDifference
+ RouteDifference RouteDifference::findDifference
 (const Route &routeA, const Route &routeB)
 {
     RouteDifference difference;
@@ -56,7 +56,7 @@ RouteDifference RouteDifference::findDifference
     return difference;
 }
 
-QVector<RouteDifference> RouteDifference::findDifferences
+ QVector<RouteDifference> RouteDifference::findDifferences
 (const QVector<Route> &routesA,
  const QVector<Route> &routesB)
 {
@@ -104,7 +104,7 @@ void RouteDifference::printDebug() const
     qDebug() << "---------------";
 }
 
-QVector<RouteDifference> RouteDifference::compareVectorAtoB
+ QVector<RouteDifference> RouteDifference::compareVectorAtoB
 (const QVector<Route> routesA, const QVector<Route> routesB)
 {
     RouteDifference difference;
@@ -128,7 +128,7 @@ QVector<RouteDifference> RouteDifference::compareVectorAtoB
     return differences;
 }
 
-QVector<RouteDifference> RouteDifference::compareVectorBtoA
+ QVector<RouteDifference> RouteDifference::compareVectorBtoA
 (const QVector<Route> routesB, const QVector<Route> routesA)
 {
     RouteDifference difference;
@@ -152,7 +152,7 @@ QVector<RouteDifference> RouteDifference::compareVectorBtoA
     return differences;
 }
 
-RouteDifference RouteDifference::onlyExistsInA(const Route &routeA)
+ RouteDifference RouteDifference::onlyExistsInA(const Route &routeA)
 {
     RouteDifference difference;
     difference.routeKey = routeA.getKey();
@@ -173,7 +173,7 @@ RouteDifference RouteDifference::onlyExistsInA(const Route &routeA)
     return difference;
 }
 
-RouteDifference RouteDifference::onlyExistsInB(const Route &routeB)
+ RouteDifference RouteDifference::onlyExistsInB(const Route &routeB)
 {
     RouteDifference difference;
     difference.routeKey = routeB.getKey();

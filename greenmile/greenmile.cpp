@@ -7,105 +7,64 @@ Greenmile::Greenmile(QObject *parent) : QObject(parent)
 
 Greenmile::~Greenmile()
 {
-
+    greenmileConnection_->deleteLater();
 }
 
-QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes(const QVector<Route> &masterRouteRoutes)
+QVector<Route> Greenmile::getRoutesForTimeInterval\
+(const QDateTime &minQueryDateTime, const QDateTime &maxQueryDateTime)
 {
-    RouteDifference  routeDiff;
+    QByteArray response;
+    QVector<Route> greenmileRoutes;
+
+    if(timeIntervalHasError(minQueryDateTime, maxQueryDateTime))
+         return greenmileRoutes;
+
+    response = queryGreenmile(minQueryDateTime.toUTC(),
+                              maxQueryDateTime.toUTC());
+
+    return buildRoutesFromGreenmileResponse(response);
+}
+
+QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes\
+(const QVector<Route> &otherRoutes)
+{
+    QVector<Route> greenmileRoutes;
     QByteArray response;
 
-    makeTimeIntervalForQuery(masterRouteRoutes);
+    makeTimeIntervalForQuery(otherRoutes);
 
-    if(minQueryDateTime_.isNull() || maxQueryDateTime_.isNull())
-    {
-        qDebug() << "Greenmile query datetimes are null,"
-                    " returning empty route vector";
-
-         QVector<RouteDifference> emptyRouteDiffVector;
-         return emptyRouteDiffVector;
-    }
+    if(timeIntervalHasError(minQueryDateTime_, maxQueryDateTime_))
+         return QVector<RouteDifference>();
 
     response = queryGreenmile(minQueryDateTime_.toUTC(),
                               maxQueryDateTime_.toUTC());
 
-    buildRoutesFromGreenmileResponse(response);
+    greenmileRoutes = buildRoutesFromGreenmileResponse(response);
 
-    //routeDiff.findDifferences(masterRouteRoutes, routes_);
-    return routeDiff.findDifferences(masterRouteRoutes, routes_);
+    return RouteDifference::findDifferences(otherRoutes, greenmileRoutes);
 }
 
-QVector<RouteDifference> Greenmile::compareDLMRSToGreenmileRoutes
-(const QVector<Route> &dlmrsRoutes)
+
+Greenmile::TimeIntervalError Greenmile::timeIntervalHasError
+(const QDateTime &minQueryDateTime, const QDateTime &maxQueryDateTime)
 {
-    routes_.clear();
-    routeDifferences_.clear();
-    RouteDifference routeDiff;
-    QByteArray response;
-    QStringList routeDiffKeys;
-    QStringList dlmrsKeys;
-
-    minDLMRSDateTime_ = QDateTime::currentDateTime();
-    minDLMRSDateTime_.setTime(QTime::fromString("430", "h:mm"));
-
-    maxDLMRSDateTime_ = QDateTime::currentDateTime();
-
-    if(minDLMRSDateTime_ > maxDLMRSDateTime_)
+    if(minQueryDateTime.isNull() || maxQueryDateTime.isNull())
     {
-        qDebug() << "DLMRS min time greater than DLMRS max"
-                    " time...  returning empty route vector"
-                    "GM CLASS COMPARE FUNCTION";
+        qDebug() << "Greenmile: Query datetimes are null,"
+                    " returning empty route vector";
 
-         QVector<RouteDifference> emptyRouteDiffVector;
-         return emptyRouteDiffVector;
+         return TimeIntervalError::nullInterval;
     }
 
-    response = queryGreenmile(minDLMRSDateTime_.toUTC(),
-                              maxDLMRSDateTime_.toUTC());
-
-    buildRoutesFromGreenmileResponse(response);
-
-    routeDifferences_ = routeDiff.findDifferences(dlmrsRoutes, routes_);
-
-    for(auto difference: routeDifferences_)
+    if(minQueryDateTime > maxQueryDateTime)
     {
-        routeDiffKeys.append(difference.routeKey);
+        qDebug() << "Greenmile: Minimum time greater than max "
+                    " time...  returning empty route vector";
+
+         return TimeIntervalError::minGteMax;
     }
 
-    for(auto dlmrs : dlmrsRoutes)
-    {
-        dlmrsKeys.append(dlmrs.getKey());
-    }
-
-    qDebug() << "Before" << routeDiffKeys;
-
-    for(auto it = routeDiffKeys.begin(); it != routeDiffKeys.end();)
-    {
-        if(dlmrsKeys.indexOf(*it) == -1)
-        {
-            int idxRemove = it - routeDiffKeys.begin();
-            routeDifferences_.remove(idxRemove);
-
-            it = routeDiffKeys.erase(it);
-        }
-        else
-            ++it;
-    }
-
-    for(auto it = routeDifferences_.begin(); it != routeDifferences_.end();)
-    {
-        if(!it->driverMismatch && !it->truckMismatch)
-        {
-            it = routeDifferences_.erase(it);
-        }
-        else
-            ++it;
-    }
-
-    qDebug() << "After" << routeDiffKeys;
-
-    return routeDifferences_;
-
+    return TimeIntervalError::noError;
 }
 
 void Greenmile::makeTimeIntervalForQuery(const QVector<Route> &r)
@@ -113,11 +72,13 @@ void Greenmile::makeTimeIntervalForQuery(const QVector<Route> &r)
     minQueryDateTime_ = QDateTime();
     maxQueryDateTime_ = QDateTime();
     QVector<Route> rte = r;
+
     if(rte.isEmpty())
     {
         qDebug() << "Greenmile: cannot create query interval from empty vector";
         return;
     }
+
     std::sort(rte.begin(), rte.end(), [](Route r1, Route r2) ->\
             bool {return r1.getRouteDate() < r2.getRouteDate();});
 
@@ -159,41 +120,45 @@ QByteArray Greenmile::queryGreenmile(const QDateTime &begin, const QDateTime &en
     return greenmileConnection_->postRequest(headers_, gmRouteIntervalAddress_, body_);
 }
 
-void Greenmile::buildRoutesFromGreenmileResponse(const QByteArray &gmResponse)
+QVector<Route> Greenmile::buildRoutesFromGreenmileResponse(const QByteArray &gmResponse)
 {
-    routes_.clear();
     Route route;
+    QVector<Route> routes;
     QJsonArray routeArray = QJsonDocument::fromJson(gmResponse).array();
-    qDebug() << routeArray.size();
 
-    for(auto t: routeArray)
+    for(auto jsonArrayValue: routeArray)
     {
         route = Route();
 
-        QJsonObject tRoute = t.toObject();
-        //qDebug() << tRoute["key"].toString();
-        route.setField(tRoute["key"].toString(), routeEnum::key);
-        QJsonArray tEquipmentAssignments =
-                tRoute["equipmentAssignments"].toArray();
-        QJsonArray tDriverAssignments =
-                tRoute["driverAssignments"].toArray();
+        QJsonObject jsonRoute = jsonArrayValue.toObject();
 
-        for(auto e: tEquipmentAssignments)
+        route.setField(jsonRoute["key"].toString(), routeEnum::key);
+
+        QJsonArray jsonArrayEquipmentAssignments =
+                jsonRoute["equipmentAssignments"].toArray();
+        QJsonArray jsonArrayDriverAssignments =
+                jsonRoute["driverAssignments"].toArray();
+
+        for(auto jsonArrayValue: jsonArrayEquipmentAssignments)
         {
-            QJsonObject tEquipmentAssignment = e.toObject();
-            QJsonObject  tEquipment = tEquipmentAssignment["equipment"].toObject();
-            route.setField(tEquipment["key"].toString(), routeEnum::truckNum);
+            QJsonObject jsonEquipmentAssignment =\
+                    jsonArrayValue.toObject();
+
+            QJsonObject  jsonEquipment = jsonEquipmentAssignment["equipment"].toObject();
+            route.setField(jsonEquipment["key"].toString(), routeEnum::truckNum);
         }
 
-        for(auto d: tDriverAssignments)
+        for(auto jsonArrayValue: jsonArrayDriverAssignments)
         {
-            QJsonObject tDriverAssignment = d.toObject();
-            QJsonObject tDriver = tDriverAssignment["driver"].toObject();
-            route.setField(tDriver["key"].toString(), routeEnum::driverId);
-            route.setField(tDriver["name"].toString(), routeEnum::driverName);
+            QJsonObject jsonDriverAssignment = jsonArrayValue.toObject();
+            QJsonObject jsonDriver = jsonDriverAssignment["driver"].toObject();
+            route.setField(jsonDriver["key"].toString(), routeEnum::driverId);
+            route.setField(jsonDriver["name"].toString(), routeEnum::driverName);
         }
-        routes_.append(route);
+        routes.append(route);
     }
+
+    return routes;
 }
 
 void Greenmile::loadHeadersFromJson()

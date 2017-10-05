@@ -8,6 +8,7 @@ DailyLateMasterRoute::DailyLateMasterRoute(QObject *parent) : QObject(parent)
 DailyLateMasterRoute::~DailyLateMasterRoute()
 {
     oauthConn_->deleteLater();
+    gm_->deleteLater();
 }
 
 void DailyLateMasterRoute::buildRoutes()
@@ -38,6 +39,64 @@ QVector<Route> DailyLateMasterRoute::buildTodaysRoutes()
 QVector<Route> DailyLateMasterRoute::getRoutes()
 {
     return routes_;
+}
+
+QVector<RouteDifference> DailyLateMasterRoute::compareRoutesToGreenmile()
+{
+    //Important to set the dates every time this function is called.
+    dailyLateRoutesBegin_.setDate(QDate::currentDate());
+    dailyLateRoutesEnd_ = QDateTime::currentDateTime();
+
+    QStringList dlmrsRouteKeys;
+    QStringList routeDifferenceKeys;
+
+    QVector<Route> dlmrsRoutes = buildTodaysRoutes();
+    QVector<Route> greenmileRoutes =\
+        gm_->getRoutesForTimeInterval(dailyLateRoutesBegin_, dailyLateRoutesEnd_);
+
+    QVector<RouteDifference> routeDifferences =\
+            RouteDifference::findDifferences(dlmrsRoutes, greenmileRoutes);
+
+
+    for(auto routeDifference: routeDifferences)
+    {
+        routeDifferenceKeys.append(routeDifference.routeKey);
+    }
+
+    for(auto dlmrsRoute : dlmrsRoutes)
+    {
+        dlmrsRouteKeys.append(dlmrsRoute.getKey());
+    }
+
+    //If differences contains a key NOT in the daily late sheet, remove that
+    //route difference from the vector.
+    //Dispatch is ONLY concerned with routes in their sheet unlike
+    //the night routes which know a little about everything.
+    for(auto it = routeDifferenceKeys.begin(); it != routeDifferenceKeys.end();)
+    {
+        if(dlmrsRouteKeys.indexOf(*it) == -1)
+        {
+            int idxRemove = it - routeDifferenceKeys.begin();
+            routeDifferences.remove(idxRemove);
+            it = routeDifferenceKeys.erase(it);
+        }
+        else
+            ++it;
+    }
+
+    //If there's no mismatch between driver and truck, remove the route.
+    //While it is feasilbe that dispatch would upload a route with a null
+    //driver and truck... it's highly unlikely that this would ever happen.
+    //99.99% of the time anything wrong is actually a misassignment.
+    for(auto it = routeDifferences.begin(); it != routeDifferences.end();)
+    {
+        if(!it->driverMismatch && !it->truckMismatch)
+            it = routeDifferences.erase(it);
+        else
+            ++it;
+    }
+
+    return routeDifferences;
 }
 
 void DailyLateMasterRoute::setRouteInfoPrecedence

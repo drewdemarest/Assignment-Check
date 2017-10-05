@@ -8,6 +8,7 @@ class RouteDifference
 {
     friend class RouteDifferenceModel;
     friend class Greenmile;
+    friend class DailyLateMasterRoute;
 
 public:
     RouteDifference();
@@ -20,8 +21,8 @@ public:
     //-------------------------------------------------------------------------
     // Functions
     //-------------------------------------------------------------------------
-    QVector<RouteDifference> findDifferences(const QVector<Route> &routesA,
-                                             const QVector<Route> &routesB);
+    static QVector<RouteDifference> findDifferences(const QVector<Route> &routesA,
+                                                    const QVector<Route> &routesB);
 
     void printDebug() const;
     //-------------------------------------------------------------------------
@@ -46,18 +47,18 @@ private:
     //-------------------------------------------------------------------------
     // Functions
     //-------------------------------------------------------------------------
-    QVector<RouteDifference> compareVectorAtoB(
+    static QVector<RouteDifference> compareVectorAtoB(
             const QVector<Route> routesA,
             const QVector<Route> routesB);
-    QVector<RouteDifference> compareVectorBtoA(
+    static QVector<RouteDifference> compareVectorBtoA(
             const QVector<Route> routesB,
             const QVector<Route> routesA);
 
-    RouteDifference findDifference(const Route &routeA,
-                                   const Route &routeB);
+    static RouteDifference findDifference(const Route &routeA,
+                                          const Route &routeB);
 
-    RouteDifference onlyExistsInA(const Route &routeA);
-    RouteDifference onlyExistsInB(const Route &routeB);
+    static RouteDifference onlyExistsInA(const Route &routeA);
+    static RouteDifference onlyExistsInB(const Route &routeB);
 
 };
 

@@ -24,10 +24,8 @@ void DailyLateGreenmileWidget::todayGMButtonPressed()
 {
     ui->gmStackedWidget->setCurrentIndex(dailyLateGMWidgetPages::loadingPage);
 
-    //IMPLEMENT DLMRS ROUTE REMOVAL HERE.
-    dlmrs->buildRoutes();
+    routeDifferences = dlmrs->compareRoutesToGreenmile();
 
-    routeDifferences = gm->compareDLMRSToGreenmileRoutes(dlmrs->getRoutes());
     for(auto rd: routeDifferences)
     {
         rd.printDebug();

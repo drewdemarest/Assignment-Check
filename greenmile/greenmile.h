@@ -12,16 +12,19 @@ class Greenmile : public QObject
 {
     Q_OBJECT
 public:
+    enum TimeIntervalError {noError, nullInterval, minGteMax};
+
     explicit Greenmile(QObject *parent = nullptr);
     ~Greenmile();
 
-    QVector<RouteDifference> compareRoutesToGreenmileRoutes(const QVector<Route> &masterRouteRoutes);
-    QVector<RouteDifference> compareDLMRSToGreenmileRoutes(const QVector<Route> &dlmrsRoutes);
+    QVector<Route> getRoutesForTimeInterval(const QDateTime &minQueryDateTime, const QDateTime &maxQueryDateTime);
+    QVector<RouteDifference> compareRoutesToGreenmileRoutes(const QVector<Route> &otherRoutes);
 
 private:
+    TimeIntervalError timeIntervalHasError(const QDateTime &minQueryDateTime, const QDateTime &maxQueryDateTime);
     void makeTimeIntervalForQuery(const QVector<Route> &r);
     QByteArray queryGreenmile(const QDateTime &begin, const QDateTime &end); 
-    void buildRoutesFromGreenmileResponse(const QByteArray &gmResponse);
+    QVector<Route> buildRoutesFromGreenmileResponse(const QByteArray &gmResponse);
 
     void loadHeadersFromJson();
     void saveHeadersToJson();
@@ -41,8 +44,6 @@ private:
 
     QDateTime minDLMRSDateTime_;
     QDateTime maxDLMRSDateTime_;
-
-
 
 signals:
 

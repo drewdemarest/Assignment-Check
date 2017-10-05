@@ -19,6 +19,7 @@ public:
 
     void buildRoutes();
     QVector<Route> getRoutes();
+    QVector<RouteDifference> compareRoutesToGreenmile();
 
     void setRouteInfoPrecedence(QStringList &routeInfoPrecedence);
     void setEmployeeInfoPrecedence(QStringList &employeeInfoPrecedence);
@@ -104,15 +105,12 @@ private:
     //-------------------------------------------------------------------------
     // Once the sheets have been parsed they, are stored in these containers.
     //-------------------------------------------------------------------------
-    QVector<RouteStartTime> routeStartTimes_;
     QVector<Route> routes_;
     QMap<QString, QString>  employees_;
 
     //-------------------------------------------------------------------------
-    //Route parsing utilities.
+    //Helpful Route parsing utilities.
     //-------------------------------------------------------------------------
-    QString dateFormat_ = "d-MMM-yyyy";
-
     void whatRouteFieldIsMissing(QVector<int> employeeColumnsVerify);
     void whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify);
 
@@ -121,6 +119,9 @@ private:
     // differences from the DLMRS.
     //-------------------------------------------------------------------------
     Greenmile *gm_ = new Greenmile(this);
+    //qint64 dailyLateRouteBeginOffset_ = 16200;
+    QDateTime dailyLateRoutesBegin_;
+    QDateTime dailyLateRoutesEnd_;
 
 
 public slots:
