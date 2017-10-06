@@ -63,15 +63,62 @@ bool RouteDifference::operator==(const RouteDifference &rhs) const
     QVector<RouteDifference> differences;
 
     differences.append(compareVectorAtoB(routesA, routesB));
-    differences.append(compareVectorBtoA(routesB, routesA));
 
     std::sort(differences.begin(), differences.end(),
             [](RouteDifference rd1, RouteDifference rd2) ->\
             bool {return rd1.routeKey < rd2.routeKey;});
 
-    auto last = std::unique(differences.begin(), differences.end());
+    QVector<RouteDifference> reeee;
+    for(auto diff: differences)
+    {
+        if(diff.routeKey == "J-WXX")
+        {
+            reeee.append(diff);
+            diff.printDebug();
+        }
 
-    differences.erase(last, differences.end());
+    }
+
+    for(auto diff: reeee)
+    {
+        RouteDifference difft = diff;
+        for(auto diff2:reeee)
+        {
+            if((difft == diff2) && (reeee.indexOf(difft) != reeee.indexOf(diff2)))
+            {
+                difft.printDebug();
+                diff2.printDebug();
+            }
+        }
+    }
+
+    differences.erase(std::unique(differences.begin(), differences.end()), differences.end());
+
+
+
+    for(auto diff : differences)
+    {
+        auto it = differences.begin();
+        int occurrences = 0;
+        while(it != differences.end())
+        {
+            //qDebug() << diff.routeKey << occurrences << "b4" << int(it - differences.begin());
+            it = std::find_if(it, differences.end(), [&diff](const RouteDifference &vecDiff){return vecDiff.routeKey == diff.routeKey;});
+            if(it != differences.end())
+            {
+                occurrences++;
+                if(occurrences > 1)
+                {
+                    it->routeKey = it->routeKey.append(QString("_" + QString::number(occurrences)));
+                    qDebug() << it->routeKey << occurrences << "aftr";
+                    it++;
+                }
+                else
+                    it++;
+            }
+
+        }
+    }
 
     for(auto it = differences.begin(); it != differences.end();)
     {
@@ -83,6 +130,10 @@ bool RouteDifference::operator==(const RouteDifference &rhs) const
             ++it;
     }
 
+    for(auto diff: differences)
+    {
+        qDebug() << diff.routeKey;
+    }
     return differences;
 }
 

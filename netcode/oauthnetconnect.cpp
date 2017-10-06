@@ -230,6 +230,7 @@ void OAuthNetConnect::oauthGranted()
 void OAuthNetConnect::oauthFailedTimeout()
 {
     auto rh = oauth2NetworkAccess->replyHandler();
+    rh->thread()->terminate();
     delete rh;
     rh = Q_NULLPTR;
 
@@ -252,6 +253,7 @@ void OAuthNetConnect::oauthFailedTimeout()
 void OAuthNetConnect::oauthFailedError(const QString &error, const QString &errorDescription, const QUrl &uri)
 {
     auto rh = oauth2NetworkAccess->replyHandler();
+    rh->thread()->terminate();
     delete rh;
     rh = Q_NULLPTR;
 
@@ -274,6 +276,7 @@ void OAuthNetConnect::oauthFailedError(const QString &error, const QString &erro
 void OAuthNetConnect::oauthFailedRequestFailed(const QAbstractOAuth::Error error)
 {
     auto rh = oauth2NetworkAccess->replyHandler();
+    rh->thread()->terminate();
     delete rh;
     rh = Q_NULLPTR;
 

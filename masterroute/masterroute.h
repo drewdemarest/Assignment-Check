@@ -12,7 +12,6 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
-#include <QCoreApplication>
 
 //namespace mandatoryDataCol
 //{}
@@ -194,7 +193,6 @@ private:
     //Betadase things for settings
     //-------------------------------------------------------------------------
     QString settingsPath_ = QApplication::applicationDirPath() + "/settings.db";
-    QSqlDatabase settings_;
     void loadSettingsFromDatabase();
 
 public slots:
