@@ -68,72 +68,12 @@ bool RouteDifference::operator==(const RouteDifference &rhs) const
             [](RouteDifference rd1, RouteDifference rd2) ->\
             bool {return rd1.routeKey < rd2.routeKey;});
 
-    QVector<RouteDifference> reeee;
-    for(auto diff: differences)
-    {
-        if(diff.routeKey == "J-WXX")
-        {
-            reeee.append(diff);
-            diff.printDebug();
-        }
+    differences.erase(std::unique\
+        (differences.begin(), differences.end()), differences.end());
 
-    }
+    differences = renameRteDiffsWithDuplicateRteKeys(differences);
+    differences = removeRteDiffsWithoutDiscrepencies(differences);
 
-    for(auto diff: reeee)
-    {
-        RouteDifference difft = diff;
-        for(auto diff2:reeee)
-        {
-            if((difft == diff2) && (reeee.indexOf(difft) != reeee.indexOf(diff2)))
-            {
-                difft.printDebug();
-                diff2.printDebug();
-            }
-        }
-    }
-
-    differences.erase(std::unique(differences.begin(), differences.end()), differences.end());
-
-
-
-    for(auto diff : differences)
-    {
-        auto it = differences.begin();
-        int occurrences = 0;
-        while(it != differences.end())
-        {
-            //qDebug() << diff.routeKey << occurrences << "b4" << int(it - differences.begin());
-            it = std::find_if(it, differences.end(), [&diff](const RouteDifference &vecDiff){return vecDiff.routeKey == diff.routeKey;});
-            if(it != differences.end())
-            {
-                occurrences++;
-                if(occurrences > 1)
-                {
-                    it->routeKey = it->routeKey.append(QString("_" + QString::number(occurrences)));
-                    qDebug() << it->routeKey << occurrences << "aftr";
-                    it++;
-                }
-                else
-                    it++;
-            }
-
-        }
-    }
-
-    for(auto it = differences.begin(); it != differences.end();)
-    {
-        if(!it->hasDiscrepencies)
-        {
-            it = differences.erase(it);
-        }
-        else
-            ++it;
-    }
-
-    for(auto diff: differences)
-    {
-        qDebug() << diff.routeKey;
-    }
     return differences;
 }
 
@@ -175,7 +115,6 @@ void RouteDifference::printDebug() const
             differences.append(difference);
         }
     }
-
     return differences;
 }
 
@@ -199,7 +138,6 @@ void RouteDifference::printDebug() const
             differences.append(difference);
         }
     }
-
     return differences;
 }
 
@@ -243,4 +181,54 @@ void RouteDifference::printDebug() const
     difference.driverNumberB = routeB.getDriverId();
 
     return difference;
-}
+ }
+
+ QVector<RouteDifference> RouteDifference::removeRteDiffsWithoutDiscrepencies\
+ (const QVector<RouteDifference> &routeDifferencesIn)
+ {
+     QVector<RouteDifference> routeDifferences = routeDifferencesIn;
+
+     for(auto it = routeDifferences.begin(); it != routeDifferences.end();)
+     {
+         if(!it->hasDiscrepencies)
+         {
+             it = routeDifferences.erase(it);
+         }
+         else
+             ++it;
+     }
+     return routeDifferences;
+ }
+
+ QVector<RouteDifference> RouteDifference::renameRteDiffsWithDuplicateRteKeys\
+ (const QVector<RouteDifference> &routeDifferencesIn)
+ {
+     QVector<RouteDifference> routeDifferences = routeDifferencesIn;
+
+     for(auto routeDifference : routeDifferences)
+     {
+         auto it = routeDifferences.begin();
+         int occurrences = 0;
+         while(it != routeDifferences.end())
+         {
+             it = std::find_if(it, routeDifferences.end(),\
+               [&routeDifference](const RouteDifference &otherDifference)\
+               {return otherDifference.routeKey == routeDifference.routeKey;});
+
+             if(it != routeDifferences.end())
+             {
+                 occurrences++;
+                 if(occurrences > 1)
+                 {
+                     it->routeKey = it->routeKey.append(QString("_" +\
+                        QString::number(occurrences)));
+
+                     it++;
+                 }
+                 else
+                     it++;
+             }
+         }
+     }
+     return routeDifferences;
+ }

@@ -48,11 +48,11 @@ private:
     // Functions
     //-------------------------------------------------------------------------
     static QVector<RouteDifference> compareVectorAtoB(
-            const QVector<Route> routesA,
-            const QVector<Route> routesB);
+                            const QVector<Route> routesA,
+                            const QVector<Route> routesB);
     static QVector<RouteDifference> compareVectorBtoA(
-            const QVector<Route> routesB,
-            const QVector<Route> routesA);
+                            const QVector<Route> routesB,
+                            const QVector<Route> routesA);
 
     static RouteDifference findDifference(const Route &routeA,
                                           const Route &routeB);
@@ -60,6 +60,11 @@ private:
     static RouteDifference onlyExistsInA(const Route &routeA);
     static RouteDifference onlyExistsInB(const Route &routeB);
 
+    static QVector<RouteDifference> removeRteDiffsWithoutDiscrepencies(
+                    const QVector<RouteDifference> &routeDifferencesIn);
+
+    static QVector<RouteDifference> renameRteDiffsWithDuplicateRteKeys(
+                    const QVector<RouteDifference> &routeDifferencesIn);
 };
 
 #endif // ROUTEDIFFERENCE_H

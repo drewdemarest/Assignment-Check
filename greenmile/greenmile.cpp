@@ -2,7 +2,6 @@
 
 Greenmile::Greenmile(QObject *parent) : QObject(parent)
 {
-    //getRoutesForTimeInterval(QDateTime::currentDateTime().addSecs(-18000).toUTC(), QDateTime::currentDateTime().toUTC());
 }
 
 Greenmile::~Greenmile()
