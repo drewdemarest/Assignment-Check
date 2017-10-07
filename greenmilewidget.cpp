@@ -159,4 +159,5 @@ void GreenmileWidget::runReportAgain()
     routeDiffModel->clear();
     ui->routeDiffTableView->setModel(routeDiffModel);
     ui->gmStackedWidget->setCurrentIndex(gmWidgetPages::startPage);
+    mrs->tryNetworkAgain();
 }
