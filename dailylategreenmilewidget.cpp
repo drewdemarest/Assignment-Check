@@ -42,4 +42,5 @@ void DailyLateGreenmileWidget::runReportAgain()
     routeDiffModel->clear();
     ui->routeDiffTableView->setModel(routeDiffModel);
     ui->gmStackedWidget->setCurrentIndex(dailyLateGMWidgetPages::startPage);
+    dlmrs->tryNetworkAgain();
 }
