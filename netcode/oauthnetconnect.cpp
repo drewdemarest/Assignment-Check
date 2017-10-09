@@ -50,7 +50,7 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
             qApp->processEvents();
         }
 
-        loadSettings();
+        //loadSettings();
 
         this->address = address;
 
@@ -78,8 +78,14 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
              {
                   if(stage == QAbstractOAuth::Stage::RequestingAuthorization)
                   {
-                     parameters->insert("approvalPrompt", "force");
-                     parameters->insert("accessType", "offfline");
+                     qDebug() << "Overload func, RA";
+                     parameters->insert("approval_prompt", "force");
+                     parameters->insert("access_type", "offline");
+                     qDebug() << *parameters;
+                  }
+                  if(stage == QAbstractOAuth::Stage::RefreshingAccessToken)
+                  {
+                      qDebug() << *parameters;
                   }
               });
 
@@ -234,6 +240,30 @@ void OAuthNetConnect::oauthGranted()
     tokenExpire = oauth2NetworkAccess->expirationAt();
     saveSettings();
     oauthSettings->sync();
+
+    oauth2NetworkAccess->modifyParametersFunction() = Q_NULLPTR;
+
+    oauth2NetworkAccess->setModifyParametersFunction\
+        ([&](QAbstractOAuth::Stage stage, QVariantMap *parameters)\
+         {
+              if(stage == QAbstractOAuth::Stage::RequestingAuthorization)
+              {
+                 qDebug() << "Overload func, RA";
+                 parameters->insert("approval_prompt", "force");
+                 parameters->insert("access_type", "offline");
+                 qDebug() << *parameters;
+                 qDebug() << "--------------------------------";
+              }
+              if(stage == QAbstractOAuth::Stage::RefreshingAccessToken)
+              {
+                  qDebug() << *parameters;
+              }
+          });
+
+    oauth2NetworkAccess->refreshAccessToken();
+
+    usleep(30000);
+
     emit succeeded();
 }
 

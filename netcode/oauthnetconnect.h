@@ -8,6 +8,7 @@
 #include <QtNetwork>
 #include <QApplication>
 #include <QDesktopServices>
+#include <QAbstractOAuth>
 #include <QOAuth2AuthorizationCodeFlow>
 #include <QOAuthHttpServerReplyHandler>
 
