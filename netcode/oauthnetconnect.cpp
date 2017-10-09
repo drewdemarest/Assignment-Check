@@ -73,6 +73,16 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
         oauth2NetworkAccess->setAccessTokenUrl(tokenUri);
         oauth2NetworkAccess->setClientIdentifierSharedKey(clientSecret);
 
+        oauth2NetworkAccess->setModifyParametersFunction\
+            ([&](QAbstractOAuth::Stage stage, QVariantMap *parameters)\
+             {
+                  if(stage == QAbstractOAuth::Stage::RequestingAuthorization)
+                  {
+                     parameters->insert("approvalPrompt", "force");
+                     parameters->insert("accessType", "offfline");
+                  }
+              });
+
         if(tokenExpire < QDateTime(QDateTime::currentDateTime()))
         {
             auto replyHandler = new QOAuthHttpServerReplyHandler(port, this);
