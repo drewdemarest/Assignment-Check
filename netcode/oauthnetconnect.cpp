@@ -72,7 +72,6 @@ void OAuthNetConnect::buildOAuth(const QString &scope, const QString &address, c
         oauth2NetworkAccess->setClientIdentifier(clientId);
         oauth2NetworkAccess->setAccessTokenUrl(tokenUri);
         oauth2NetworkAccess->setClientIdentifierSharedKey(clientSecret);
-
         oauth2NetworkAccess->setModifyParametersFunction\
             ([&](QAbstractOAuth::Stage stage, QVariantMap *parameters)\
              {
@@ -256,6 +255,9 @@ void OAuthNetConnect::oauthGranted()
               }
               if(stage == QAbstractOAuth::Stage::RefreshingAccessToken)
               {
+                  qDebug() << "Overload func, RAT";
+                  //must add client_secret
+                  //must add client_id
                   qDebug() << *parameters;
               }
           });
