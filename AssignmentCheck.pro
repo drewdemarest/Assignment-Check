@@ -27,7 +27,6 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     netcode/netconnect.cpp \
-    netcode/oauthnetconnect.cpp \
     masterroute/masterroute.cpp \
     masterroute/route.cpp \
     routewidget.cpp \
@@ -38,12 +37,12 @@ SOURCES += \
     dailylatemasterroute/dailylatemasterroute.cpp \
     dailylategreenmilewidget.cpp \
     greenmile/routedifference.cpp \
-    dailylategreenmilesettingswidget.cpp
+    dailylategreenmilesettingswidget.cpp \
+    oauth2.cpp
 
 HEADERS += \
     mainwindow.h \
     netcode/netconnect.h \
-    netcode/oauthnetconnect.h \
     masterroute/masterroute.h \
     masterroute/route.h \
     masterroute/routestarttime.h \
@@ -55,7 +54,8 @@ HEADERS += \
     greenmile/routedifferencemodel.h \
     dailylatemasterroute/dailylatemasterroute.h \
     dailylategreenmilewidget.h \
-    dailylategreenmilesettingswidget.h
+    dailylategreenmilesettingswidget.h \
+    oauth2.h
 
 FORMS += \
         mainwindow.ui \

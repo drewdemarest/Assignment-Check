@@ -3,7 +3,6 @@
 
 #include "route.h"
 #include "routestarttime.h"
-#include "netcode/oauthnetconnect.h"
 #include <algorithm>
 #include <QApplication>
 #include <QtCore>
@@ -60,7 +59,7 @@ private:
     // OAuth2 Network connection. This is a pointer because it
     // needs to stick around.
     //-------------------------------------------------------------------------
-    OAuthNetConnect *oauthConn = new OAuthNetConnect(this);
+    //OAuthNetConnect *oauthConn = new OAuthNetConnect(this);
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------

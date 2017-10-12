@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include "routewidget.h"
 #include "dailylategreenmilewidget.h"
-#include <netcode/oauthnetconnect.h>
 #include <masterroutewidget.h>
 #include <greenmilewidget.h>
 #include <greenmile/greenmile.h>

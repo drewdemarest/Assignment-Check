@@ -9,7 +9,7 @@ MasterRoute::MasterRoute(QObject *parent) : QObject(parent)
 
 MasterRoute::~MasterRoute()
 {
-    oauthConn->deleteLater();
+    //oauthConn->deleteLater();
 }
 
 void MasterRoute::buildAllRoutes()
@@ -544,27 +544,30 @@ QVector<Route> MasterRoute::applyEmployeeNumsToRoutes(QVector<Route> routes)
 
 QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
 {
-    oauthConn->buildOAuth(sheetsScope,\
-                          QString(sheetsAddressBase + dayOfWeekToQuery),\
-                          sheetsCredFilePath);
+//    oauthConn->buildOAuth(sheetsScope,\
+//                          QString(sheetsAddressBase + dayOfWeekToQuery),\
+//                          sheetsCredFilePath);
 
-    return oauthConn->get();
+//    return oauthConn->get();
+    return QByteArray();
 }
 
 QByteArray MasterRoute::queryRouteStartTimes()
 {
-    oauthConn->buildOAuth(sheetsScope,
-                          sheetsStartTimeAddress,
-                          sheetsCredFilePath);
-    return oauthConn->get();
+//    oauthConn->buildOAuth(sheetsScope,
+//                          sheetsStartTimeAddress,
+//                          sheetsCredFilePath);
+//    return oauthConn->get();
+    return QByteArray();
 }
 
 QByteArray MasterRoute::queryEmployees()
 {
-    oauthConn->buildOAuth(sheetsScope,
-                          sheetsEmployeeAddress,
-                          sheetsCredFilePath);
-    return oauthConn->get();
+//    oauthConn->buildOAuth(sheetsScope,
+//                          sheetsEmployeeAddress,
+//                          sheetsCredFilePath);
+//    return oauthConn->get();
+    return QByteArray();
 }
 
 void MasterRoute::whatRouteFieldIsMissing(QVector<int> routeFieldVerify)
@@ -738,13 +741,13 @@ void MasterRoute::loadSettingsFromDatabase()
 void MasterRoute::abort()
 {
     qDebug() << "Network connection failed...";
-    oauthConn->abort(true);
+    //oauthConn->abort(true);
     //networkProblem = true;
 }
 
 void MasterRoute::tryNetworkAgain()
 {
     qDebug() << "Network connection failed...";
-    oauthConn->abort(false);
+    //oauthConn->abort(false);
 }
 

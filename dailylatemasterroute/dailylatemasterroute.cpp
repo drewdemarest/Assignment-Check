@@ -7,7 +7,7 @@ DailyLateMasterRoute::DailyLateMasterRoute(QObject *parent) : QObject(parent)
 
 DailyLateMasterRoute::~DailyLateMasterRoute()
 {
-    oauthConn_->deleteLater();
+    //oauthConn_->deleteLater();
     gm_->deleteLater();
 }
 
@@ -314,20 +314,22 @@ QVector<Route> DailyLateMasterRoute::applyEmployeeNumsToRoutes\
 
 QByteArray DailyLateMasterRoute::queryRoutes()
 {
-    oauthConn_->buildOAuth(sheetsScope_,
-                           QString(sheetsRouteAddress_),
-                           sheetsCredFilePath_);
+//    oauthConn_->buildOAuth(sheetsScope_,
+//                           QString(sheetsRouteAddress_),
+//                           sheetsCredFilePath_);
 
-    return oauthConn_->get();
+//    return oauthConn_->get();
+    return QByteArray();
 }
 
 QByteArray DailyLateMasterRoute::queryEmployees()
 {
-    oauthConn_->buildOAuth(sheetsScope_,
-                           sheetsEmployeeAddress_,
-                           sheetsCredFilePath_);
+//    oauthConn_->buildOAuth(sheetsScope_,
+//                           sheetsEmployeeAddress_,
+//                           sheetsCredFilePath_);
 
-    return oauthConn_->get();
+//    return oauthConn_->get();
+    return QByteArray();
 }
 
 void DailyLateMasterRoute::whatRouteFieldIsMissing
@@ -407,11 +409,11 @@ void DailyLateMasterRoute::whatEmployeeColIsMissing
 void DailyLateMasterRoute::abort()
 {
     qDebug() << "Network connection failed...";
-    oauthConn_->abort(true);
+    //oauthConn_->abort(true);
 }
 
 void DailyLateMasterRoute::tryNetworkAgain()
 {
     qDebug() << "Network connection failed... trying again.";
-    oauthConn_->abort(false);
+    //oauthConn_->abort(false);
 }
