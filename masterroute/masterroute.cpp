@@ -720,7 +720,7 @@ void MasterRoute::loadSettingsFromDatabase()
     settings.open();
     QSqlQuery query(settings);
 
-    query.prepare("SELECT * FROM masterRouteSettings");
+    query.prepare("SELECT value FROM masterRouteSettings WHERE key = gaaaaaaaaaay");
     query.exec();
     while(query.next())
     {
