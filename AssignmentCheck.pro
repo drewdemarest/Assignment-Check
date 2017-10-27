@@ -38,7 +38,7 @@ SOURCES += \
     dailylategreenmilewidget.cpp \
     greenmile/routedifference.cpp \
     dailylategreenmilesettingswidget.cpp \
-    oauth2.cpp
+    netcode/oauth2.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -55,7 +55,7 @@ HEADERS += \
     dailylatemasterroute/dailylatemasterroute.h \
     dailylategreenmilewidget.h \
     dailylategreenmilesettingswidget.h \
-    oauth2.h
+    netcode/oauth2.h
 
 FORMS += \
         mainwindow.ui \
