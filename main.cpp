@@ -10,7 +10,14 @@ int main(int argc, char *argv[])
     w.show();
 
     OAuth2 derp;
+<<<<<<< HEAD
     derp.commitSettingsToDatabase();
+=======
+    QSqlDatabase settings =  derp.makeDatabase();
+    settings.close();
+    settings = QSqlDatabase();
+    settings.removeDatabase("settings");
+>>>>>>> testing
 
     return a.exec();
 }
