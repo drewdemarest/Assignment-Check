@@ -41,7 +41,7 @@ private:
     QRegExp mrsSheetDateRegExp  = QRegExp("\\d+-[A-Z,a-z]{3}-\\d+");
     QRegExp routeRegExp         = QRegExp("^[A-Z]-[A-Z,0-9]{3}");
     QRegExp driverRegExp        = QRegExp("(?:\\w+-)?\\w+'?\\w+,\\s[A-Z]");
-    QRegExp equipmentRegExp     = QRegExp("\\b\\d+\\b");
+    QRegExp equipmentRegExp     = QRegExp("(?:\\b\\d+[a-z,A-Z]{1}\\b)|\\b\\d+\\b");
     QRegExp timeRegExp          = QRegExp("\\d+:\\d+|\\d{3,4}");
 
     //Added all regexp to vector allow for more succinct code.
