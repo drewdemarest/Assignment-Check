@@ -18,6 +18,8 @@ public:
 
     bool commitSettingsToDatabase(/*very long list of arguments*/);
 private:
+    bool saveSettings(QString dbPath);
+    bool loadSettings(QString dbPath);
 
 signals:
 

@@ -169,7 +169,7 @@ private:
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
-    // Once the sheets have been parsed they, are stored in these containers.
+    // Once the sheets have been parsed they are stored in these containers.
     //-------------------------------------------------------------------------
     QVector<Route> mondayRoutes_;
     QVector<Route> tuesdayRoutes_;

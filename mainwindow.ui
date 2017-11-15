@@ -48,22 +48,9 @@
      <x>0</x>
      <y>0</y>
      <width>683</width>
-     <height>20</height>
+     <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>Fi&amp;le</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuSettings">
-    <property name="title">
-     <string>Setti&amp;ngs</string>
-    </property>
-    <addaction name="actionEdit_Route_Start_tImes"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuSettings"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
