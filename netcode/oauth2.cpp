@@ -6,11 +6,11 @@ OAuth2::OAuth2(QObject *parent) : QObject(parent)
 }
 
 
-bool OAuth2::commitSettingsToDatabase(path, sheetsScope, sheetAddress,
-                                              clientId, projectId, authUri,
-                                              tokenUri, auth_providerx509,
-                                              clientSecret, redirectUris,
-                                              databaseFileName)
+bool OAuth2::commitSettingsToDatabase(QString path,QString sheetsScope,QString sheetAddress,
+                                              QString clientId,QString projectId,QString authUri,
+                                              QString tokenUri,QString auth_providerx509,
+                                              QString clientSecret,QString redirectUris,
+                                              QString databaseFileName)
 {
 }
 
