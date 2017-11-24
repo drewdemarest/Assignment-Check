@@ -16,10 +16,19 @@ public:
     explicit OAuth2(QObject *parent = nullptr);
     QByteArray get(/*settings db path*/);
 
-    bool commitSettingsToDatabase(/*very long list of arguments*/);
+    bool commitSettingsToDatabase(QString path, QString sheetsScope,\
+                                  QString sheetAddress, QString clientId,\
+                                  QString projectId, QString authUri,\
+                                  QString tokenUri, QString auth_providerx509,\
+                                  QString clientSecret, QString redirectUris,\
+                                  QString databaseFileName);
 private:
+    QString dbPath_ = QApplication::applicationDirPath() + "/";
+    QString dbName_ = "oauth2Settings.db";
+
     bool saveSettings(QString dbPath);
     bool loadSettings(QString dbPath);
+    //could use a QVector<QMap<QString, QVariant>> to represent a table.
 
 signals:
 
