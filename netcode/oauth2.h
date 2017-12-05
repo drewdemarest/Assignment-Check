@@ -8,27 +8,52 @@
 #include <QObject>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QOAuth2AuthorizationCodeFlow>
 
 class OAuth2 : public QObject
 {
     Q_OBJECT
 public:
     explicit OAuth2(QObject *parent = nullptr);
+    explicit OAuth2(QString dbPath, QObject *parent = nullptr);
+
+    bool setCredentialsFromJson(QString jsonCredPath);
+
+
     QByteArray get(/*settings db path*/);
 
-    bool commitSettingsToDatabase(QString path, QString sheetsScope,\
-                                  QString sheetAddress, QString clientId,\
-                                  QString projectId, QString authUri,\
-                                  QString tokenUri, QString auth_providerx509,\
-                                  QString clientSecret, QString redirectUris,\
-                                  QString databaseFileName);
 private:
-    QString dbPath_ = QApplication::applicationDirPath() + "/";
-    QString dbName_ = "oauth2Settings.db";
+    //-------------------------------------------------------------------------
+    // Settings Subsection
+    //-------------------------------------------------------------------------
+    //Sqlite3 Database path and name
+    QString dbPath_ = QApplication::applicationDirPath() + "/oauth2Settings.db";
 
+    //Query Settings
+    QString queryRequestUrl_;
+
+    //Most OAuth2 implementations require a scope
+    QString apiScope_;
+
+    //OAuth2 Settings
+    QUrl clientId_;
+    QString projectId_;
+    QUrl authUri_;
+    QUrl tokenUri_;
+    QString authProviderX509CertUrl_;
+    QString clientSecret_;
+    QUrl redirectUri_;
+    qint16 port_;
+
+    //
+
+    //Functions
     bool saveSettings(QString dbPath);
     bool loadSettings(QString dbPath);
-    //could use a QVector<QMap<QString, QVariant>> to represent a table.
+    QJsonObject makeJsonFromFile(QString jsonCredentialPath);
+    //-------------------------------------------------------------------------
+    // End Settings Subsection
+    //-------------------------------------------------------------------------
 
 signals:
 
