@@ -544,11 +544,13 @@ QVector<Route> MasterRoute::applyEmployeeNumsToRoutes(QVector<Route> routes)
 
 QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
 {
-//    oauthConn->buildOAuth(sheetsScope,\
-//                          QString(sheetsAddressBase + dayOfWeekToQuery),\
-//                          sheetsCredFilePath);
+    /*
+    oauthConn->buildOAuth(sheetsScope,\
+                          QString(sheetsAddressBase + dayOfWeekToQuery),\
+                          sheetsCredFilePath);
 
-//    return oauthConn->get();
+    return oauthConn->get();
+    */
     return QByteArray();
 }
 
@@ -720,7 +722,7 @@ void MasterRoute::loadSettingsFromDatabase()
     settings.open();
     QSqlQuery query(settings);
 
-    query.prepare("SELECT value FROM masterRouteSettings WHERE key = gaaaaaaaaaay");
+    query.prepare("SELECT value FROM masterRouteSettings WHERE key = ...");
     query.exec();
     while(query.next())
     {
@@ -729,9 +731,11 @@ void MasterRoute::loadSettingsFromDatabase()
 
         if(query.value(0).toString() == "sheetAddressBase")
             sheetsAddressBase = query.value(2).toString();
+
+        qDebug() << "Exec query?";
     }
 
-    qDebug() << sheetsAddressBase << sheetsScope;
+    qDebug() << sheetsAddressBase << sheetsScope << "MasterRoute::loadSettingsFromDatabase";
     query.clear();
     settings.close();
     settings = QSqlDatabase();

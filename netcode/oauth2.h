@@ -17,7 +17,7 @@ public:
     explicit OAuth2(QObject *parent = nullptr);
     explicit OAuth2(QString dbPath, QObject *parent = nullptr);
 
-    bool setCredentialsFromJson(QString jsonCredPath);
+    bool setCredentialsFromJsonFile(QString jsonCredPath);
 
 
     QByteArray get(/*settings db path*/);
@@ -26,7 +26,20 @@ private:
     //-------------------------------------------------------------------------
     // Settings Subsection
     //-------------------------------------------------------------------------
-    //Sqlite3 Database path and name
+    //All keys in this map are lower camel...
+    //This is to match up with the google paradigm, not to troll you.
+    //Project must balance a little Google and also Qt.
+
+    QMap<QString, QString> oauth2Settings_{{"client_id", QString()},
+                                           {"auth_uri", QString()},
+                                           {"token_uri", QString()},
+                                           {"auth_provider_x509_cert_url", QString()},
+                                           {"project_id", QString()},
+                                           {"client_secret", QString()},
+                                           {"query_url", QString()},
+                                           {"api_scope", QString()},
+                                           {"db_path", QString()}};
+
     QString dbPath_ = QApplication::applicationDirPath() + "/oauth2Settings.db";
 
     //Query Settings
@@ -40,14 +53,14 @@ private:
     QString projectId_;
     QUrl authUri_;
     QUrl tokenUri_;
-    QString authProviderX509CertUrl_;
+    QUrl authProviderX509CertUrl_;
     QString clientSecret_;
     QUrl redirectUri_;
     qint16 port_;
 
-    //
-
     //Functions
+    bool doesDatabaseExist(QString dbPath);
+    bool makeInitalDatabase(QString dbPath);
     bool saveSettings(QString dbPath);
     bool loadSettings(QString dbPath);
     QJsonObject makeJsonFromFile(QString jsonCredentialPath);
