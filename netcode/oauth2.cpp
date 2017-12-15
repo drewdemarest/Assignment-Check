@@ -41,6 +41,8 @@ bool OAuth2::setCredentialsFromJsonFile(QString jsonCredPath)
     redirectUri_        = redirectUris[0].toString();
     port_               = static_cast<quint16>(redirectUri_.port());
 
+
+
     if(!saveSettings(dbPath_))
     {
         qDebug() << "Failed to save json credentials to db" \
@@ -87,28 +89,28 @@ bool OAuth2::loadSettings(QString dbPath)
 
     QSqlQuery query(oauth2Settings);
 
-    query.prepare("SELECT value FROM masterRouteSettings WHERE"
-                  "variable = 'sheetsAddressBase'");
 
-    query.exec();
+    for(auto key: oauth2Settings_.keys()){
+        query.prepare("SELECT value FROM oauth2Credentials WHERE key = (:key)");
+        query.bindValue(":key", key);
 
-    int i = 0; //???
+        if(query.exec())
+        {
+            qDebug() << key << "OAuth2::loadSettings query success.";
 
-    while(query.next())
-    {
-        qDebug() << query.value(i).toString() << i;
-        i++;
-
-        if(query.value(0).toString() == "sheetsScope")
-            apiScope_ = query.value(1).toString();
-
-        if(query.value(0).toString() == "sheetsAddressBase")
-            queryRequestUrl_ = query.value(2).toString();
+            while(query.next())
+            {
+                qDebug() << query.value("value").toString();
+            }
+        }
+        else
+        {
+            qDebug() << "OAuth2::loadSettings ERROR: " << query.lastError();
+        }
+        query.clear();
     }
 
     qDebug() << queryRequestUrl_ << apiScope_ << "???";
-    query.clear();
-
 
     oauth2Settings.close();
     oauth2Settings = QSqlDatabase();
@@ -136,8 +138,8 @@ bool OAuth2::saveSettings(QString dbPath)
 
     for(auto t: oauth2Settings_.keys())
     {
-        oauth2Settings_[t] = "derpaderpakgjaslkfjalsk";
         query.prepare("INSERT or REPLACE into oauth2Credentials (key, value) VALUES (:key, :value)");
+        oauth2Settings_[t] = "derpaderpakgjaslkfjalsk";
         query.bindValue(":key", t);
         query.bindValue(":value", oauth2Settings_[t]);
 
