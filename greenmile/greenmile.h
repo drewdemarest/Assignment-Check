@@ -16,14 +16,16 @@ public:
 
     explicit Greenmile(QObject *parent = nullptr);
     ~Greenmile();
-
     QVector<Route> getRoutesForTimeInterval(const QDateTime &minQueryDateTime, const QDateTime &maxQueryDateTime);
-    QVector<RouteDifference> compareRoutesToGreenmileRoutes(const QVector<Route> &otherRoutes);
+    QVector<RouteDifference> compareRoutesToGMRoutesRouteDate(const QVector<Route> &otherRoutes);
+    QVector<RouteDifference> compareRoutesToGMRoutesBaselineStart(const QVector<Route> &otherRoutes);
 
 private:
     TimeIntervalError timeIntervalHasError(const QDateTime &minQueryDateTime, const QDateTime &maxQueryDateTime);
-    void makeTimeIntervalForQuery(const QVector<Route> &r);
-    QByteArray queryGreenmile(const QDateTime &begin, const QDateTime &end); 
+    void makeDateIntervalForQuery(const QVector<Route> &r);
+    void makeDateTimeIntervalForQuery(const QVector<Route> &r);
+    QByteArray queryGreenmileBaselineStartTime(const QDateTime &begin, const QDateTime &end);
+    QByteArray queryGreenmileRouteDate(const QDate &begin, const QDate &end);
     QVector<Route> buildRoutesFromGreenmileResponse(const QByteArray &gmResponse);
 
     void loadHeadersFromJson();
@@ -38,6 +40,9 @@ private:
     QStringList headers_;
     QVector<Route> routes_;
     QVector<RouteDifference> routeDifferences_;
+
+    QDate minQueryDate_;
+    QDate maxQueryDate_;
 
     QDateTime minQueryDateTime_;
     QDateTime maxQueryDateTime_;

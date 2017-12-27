@@ -101,14 +101,14 @@ QVector<Route> MasterRoute::buildRoutes(QString dayOfWeek)
     QJsonArray sheetValues = routeSheet["values"].toArray();
 
     routes = extractRoutesFromSheetValues(sheetValues);
-    routes = applyStartTimeToRoutes(routes);
+    routes = applyBaselineDepartureToRoutes(routes);
     routes = applyEmployeeNumsToRoutes(routes);
 
     std::sort(routes.begin(), routes.end(), [](Route r1, Route r2) ->\
             bool {return r1.getKey() < r2.getKey();});
 
     for(auto t: routes)
-        qDebug() << t.getKey() << t.getRouteDate().toUTC().toString()\
+        qDebug() << t.getKey() << t.getRouteBaselineDeparture().toUTC().toString()\
                  << t.getDriverName() << t.getDriverId() << "rte dbg";
 
     return routes;
@@ -117,7 +117,6 @@ QVector<Route> MasterRoute::buildRoutes(QString dayOfWeek)
 QVector<Route> MasterRoute::extractRoutesFromSheetValues(const QJsonArray &sheetValues)
 {
     QDateTime sheetDate = extractSheetDate(sheetValues);
-
     Route route;
     QVector<Route> routes;
     QVector<int> routeKeyFoundCol;
@@ -199,6 +198,8 @@ QVector<Route> MasterRoute::extractRoutesFromSheetValues(const QJsonArray &sheet
             }
 
             route.setField(sheetDate.toString(route.getDateFormat()), routeEnum::date);
+            route.setField(sheetDate.toString(route.getDateFormat()), routeEnum::baselineDepartureDate);
+
             routes.append(route);
         }
     }
@@ -462,7 +463,7 @@ QVector<RouteStartTime> MasterRoute::extractRouteStartTimesFromSheetValues(const
     return routeStartTimes;
 }
 
-QVector<Route> MasterRoute::applyStartTimeToRoutes(QVector<Route> routes)
+QVector<Route> MasterRoute::applyBaselineDepartureToRoutes(QVector<Route> routes)
 {
     QVector<RouteStartTime> routeStartTimes = buildRouteStartTimes();
     QVector<Route>::iterator start = routes.begin();
@@ -477,13 +478,14 @@ QVector<Route> MasterRoute::applyStartTimeToRoutes(QVector<Route> routes)
 
         if(start != end)
         {
-            start->applyRouteStartTime(t);
+            start->applyRouteBaselineDeparture(t);
         }
         start = routes.begin();
         end = routes.end();
     }
     return routes;
 }
+
 
 QMap<QString, QString> MasterRoute::buildEmployees()
 {

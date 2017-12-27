@@ -65,12 +65,16 @@ void Route::setField(const QString &data, int fieldEnum)
         break;
 
     case routeEnum::date:
-        date = QDateTime::fromString(data, dateFormat);
+        date = QDate::fromString(data, dateFormat);
+        break;
+
+    case routeEnum::baselineDepartureDate:
+        baselineDeparture = QDateTime::fromString(data, dateFormat);
         break;
 
     case routeEnum::lateRouteOutTime:
-        date = QDateTime::currentDateTime();
-        date.setTime(QTime::fromString(data, timeFormat));
+        baselineDeparture = QDateTime::currentDateTime();
+        baselineDeparture.setTime(QTime::fromString(data, timeFormat));
         break;
 
     case routeEnum::driverName:
@@ -99,7 +103,7 @@ void Route::setField(const QString &data, int fieldEnum)
     }
 }
 
-void Route::applyRouteStartTime(const RouteStartTime &rst)
+void Route::applyRouteBaselineDeparture(const RouteStartTime &rst)
 {
     QMap<QString, int> dayOfWeek;
     dayOfWeek["Monday"]     = routeEnum::mon;
@@ -121,36 +125,36 @@ void Route::applyRouteStartTime(const RouteStartTime &rst)
         this->satMidnightOffsetmSec = rst.satMidnightOffsetmSec;
         this->sunMidnightOffsetmSec = rst.sunMidnightOffsetmSec;
 
-        if(!date.isNull())
+        if(!baselineDeparture.isNull())
         {
-            switch(dayOfWeek.value(date.toString("dddd")))
+            switch(dayOfWeek.value(baselineDeparture.toString("dddd")))
             {
             case routeEnum::mon:
-                date = date.addMSecs(monMidnightOffsetmSec);
+                baselineDeparture = baselineDeparture.addMSecs(monMidnightOffsetmSec);
                 //qDebug() << key << date.toString();
                 break;
             case routeEnum::tue:
-                date = date.addMSecs(tueMidnightOffsetmSec);
+                baselineDeparture = baselineDeparture.addMSecs(tueMidnightOffsetmSec);
                 //qDebug() << key << date.toString();
                 break;
             case routeEnum::wed:
-                date = date.addMSecs(wedMidnightOffsetmSec);
+                baselineDeparture = baselineDeparture.addMSecs(wedMidnightOffsetmSec);
                 //qDebug() << key << date.toString();
                 break;
             case routeEnum::thu:
-                date = date.addMSecs(thuMidnightOffsetmSec);
+                baselineDeparture = baselineDeparture.addMSecs(thuMidnightOffsetmSec);
                 //qDebug() << key << date.toString();
                 break;
             case routeEnum::fri:
-                date = date.addMSecs(friMidnightOffsetmSec);
+                baselineDeparture = baselineDeparture.addMSecs(friMidnightOffsetmSec);
                 //qDebug() << key << date.toString();
                 break;
             case routeEnum::sat:
-                date = date.addMSecs(satMidnightOffsetmSec);
+                baselineDeparture = baselineDeparture.addMSecs(satMidnightOffsetmSec);
                 //qDebug() << key << date.toString();
                 break;
             case routeEnum::sun:
-                date = date.addMSecs(sunMidnightOffsetmSec);
+                baselineDeparture = baselineDeparture.addMSecs(sunMidnightOffsetmSec);
                 //qDebug() << key << date.toString();
                 break;
             }
@@ -168,7 +172,12 @@ bool Route::isRouteValid()
     return true;
 }
 
-QDateTime Route::getRouteDate() const
+QDateTime Route::getRouteBaselineDeparture() const
+{
+    return baselineDeparture;
+}
+
+QDate Route::getRouteDate() const
 {
     return date;
 }
