@@ -63,6 +63,7 @@ bool RouteDifference::operator==(const RouteDifference &rhs) const
     QVector<RouteDifference> differences;
 
     differences.append(compareVectorAtoB(routesA, routesB));
+    differences.append(compareVectorBtoA(routesB, routesA));
 
     std::sort(differences.begin(), differences.end(),
             [](RouteDifference rd1, RouteDifference rd2) ->\

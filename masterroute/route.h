@@ -6,7 +6,7 @@
 
 namespace routeEnum
 {
-    enum {key, truckNum, trailerNum, driverName, driverId, date, timeInOffice, timeOutOffice, lateRouteOutTime, misc, empty};
+    enum {key, truckNum, trailerNum, driverName, driverId, date, timeInOffice, timeOutOffice, lateRouteOutTime, misc, empty, baselineDepartureDate};
     enum {matchSheetDate, matchRouteKey, matchDriverName, matchEquipment, matchTime, matchMisc, matchEmpty};
     enum {mon, tue, wed, thu, fri, sat, sun};
 }
@@ -19,10 +19,11 @@ public:
     bool operator==(const Route &rhs) const {return this->getKey() == rhs.getKey();}
     int  whatIsThis(const QString &data);
     void setField(const QString &data, int fieldEnum);
-    void applyRouteStartTime(const RouteStartTime &rst);
+    void applyRouteBaselineDeparture(const RouteStartTime &rst);
     void setDateFormat(const QString &qs);
     bool isRouteValid();
-    QDateTime getRouteDate() const;
+    QDateTime getRouteBaselineDeparture() const;
+    QDate getRouteDate() const;
     QString getKey() const;
     QString getTruckNumber() const;
     QString getTrailerNumber() const;
@@ -50,7 +51,8 @@ private:
     QString dateFormat = "d-MMM-yyyy";
     QString timeFormat = "h:mm";
 
-    QDateTime   date;
+    QDateTime   baselineDeparture;
+    QDate       date;
     QString     key;
     QString     truckNum;
     QString     trailerNum;

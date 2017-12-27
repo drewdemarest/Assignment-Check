@@ -9,6 +9,7 @@ Greenmile::~Greenmile()
     greenmileConnection_->deleteLater();
 }
 
+
 QVector<Route> Greenmile::getRoutesForTimeInterval\
 (const QDateTime &minQueryDateTime, const QDateTime &maxQueryDateTime)
 {
@@ -18,25 +19,42 @@ QVector<Route> Greenmile::getRoutesForTimeInterval\
     if(timeIntervalHasError(minQueryDateTime, maxQueryDateTime))
          return greenmileRoutes;
 
-    response = queryGreenmile(minQueryDateTime.toUTC(),
-                              maxQueryDateTime.toUTC());
+    response = queryGreenmileBaselineStartTime(minQueryDateTime.toUTC(),
+                                               maxQueryDateTime.toUTC());
 
     return buildRoutesFromGreenmileResponse(response);
 }
 
-QVector<RouteDifference> Greenmile::compareRoutesToGreenmileRoutes\
+QVector<RouteDifference> Greenmile::compareRoutesToGMRoutesRouteDate(const QVector<Route> &otherRoutes)
+{
+    QByteArray response;
+    QVector<Route> greenmileRoutes;
+
+    makeDateIntervalForQuery(otherRoutes);
+
+//    if(!routeDate.isValid() || routeDate.isNull())
+//         return greenmileRoutes;
+
+    response = queryGreenmileRouteDate(minQueryDate_, maxQueryDate_);
+
+    greenmileRoutes = buildRoutesFromGreenmileResponse(response);
+
+    return RouteDifference::findDifferences(otherRoutes, greenmileRoutes);
+}
+
+QVector<RouteDifference> Greenmile::compareRoutesToGMRoutesBaselineStart\
 (const QVector<Route> &otherRoutes)
 {
     QVector<Route> greenmileRoutes;
     QByteArray response;
 
-    makeTimeIntervalForQuery(otherRoutes);
+    makeDateTimeIntervalForQuery(otherRoutes);
 
     if(timeIntervalHasError(minQueryDateTime_, maxQueryDateTime_))
          return QVector<RouteDifference>();
 
-    response = queryGreenmile(minQueryDateTime_.toUTC(),
-                              maxQueryDateTime_.toUTC());
+    response = queryGreenmileBaselineStartTime(minQueryDateTime_.toUTC(),
+                                               maxQueryDateTime_.toUTC());
 
     greenmileRoutes = buildRoutesFromGreenmileResponse(response);
 
@@ -66,7 +84,29 @@ Greenmile::TimeIntervalError Greenmile::timeIntervalHasError
     return TimeIntervalError::noError;
 }
 
-void Greenmile::makeTimeIntervalForQuery(const QVector<Route> &r)
+void Greenmile::makeDateIntervalForQuery(const QVector<Route> &r)
+{
+     minQueryDate_ = QDate();
+     maxQueryDate_ = QDate();
+     QVector<Route> rte = r;
+
+     if(rte.isEmpty())
+     {
+         qDebug() << "Greenmile: cannot create query interval from empty vector";
+         return;
+     }
+
+     std::sort(rte.begin(), rte.end(), [](Route r1, Route r2) ->\
+             bool {return r1.getRouteDate() < r2.getRouteDate();});
+
+     minQueryDate_ = rte.first().getRouteDate();
+     maxQueryDate_ = rte.last().getRouteDate();
+
+     qDebug() << minQueryDate_.toString(Qt::ISODate);
+     qDebug() << maxQueryDate_.toString(Qt::ISODate);
+}
+
+void Greenmile::makeDateTimeIntervalForQuery(const QVector<Route> &r)
 {
     minQueryDateTime_ = QDateTime();
     maxQueryDateTime_ = QDateTime();
@@ -79,15 +119,15 @@ void Greenmile::makeTimeIntervalForQuery(const QVector<Route> &r)
     }
 
     std::sort(rte.begin(), rte.end(), [](Route r1, Route r2) ->\
-            bool {return r1.getRouteDate() < r2.getRouteDate();});
+            bool {return r1.getRouteBaselineDeparture() < r2.getRouteBaselineDeparture();});
 
-    minQueryDateTime_ = rte.first().getRouteDate().addMSecs(-timeIntervalPaddingMsec_);
-    maxQueryDateTime_ = rte.last().getRouteDate().addMSecs(timeIntervalPaddingMsec_);
+    minQueryDateTime_ = rte.first().getRouteBaselineDeparture().addMSecs(-timeIntervalPaddingMsec_);
+    maxQueryDateTime_ = rte.last().getRouteBaselineDeparture().addMSecs(timeIntervalPaddingMsec_);
     qDebug() << minQueryDateTime_.toString(Qt::ISODate);
     qDebug() << maxQueryDateTime_.toString(Qt::ISODate);
 }
 
-QByteArray Greenmile::queryGreenmile(const QDateTime &begin, const QDateTime &end)
+QByteArray Greenmile::queryGreenmileBaselineStartTime(const QDateTime &begin, const QDateTime &end)
 {
     loadHeadersFromJson();
     QJsonObject postBodyJson;
@@ -102,6 +142,38 @@ QByteArray Greenmile::queryGreenmile(const QDateTime &begin, const QDateTime &en
 
     QJsonObject queryToDateTime;
     queryToDateTime["attr"] = QString("baseLineDeparture");
+    queryToDateTime["lte"] = end.toString(Qt::ISODate);
+
+    logicalConditions.append(queryFromDateTime);
+    logicalConditions.append(queryToDateTime);
+
+    evaluationStatement["and"] = logicalConditions;
+
+    criteriaChain.append(evaluationStatement);
+
+    postBodyJson["criteriaChain"] = criteriaChain;
+
+    //qDebug() << QJsonDocument(postBodyJson).toJson(QJsonDocument::Compact);
+
+    body_ = QJsonDocument(postBodyJson).toJson(QJsonDocument::Compact);
+    return greenmileConnection_->postRequest(headers_, gmRouteIntervalAddress_, body_);
+}
+
+QByteArray Greenmile::queryGreenmileRouteDate(const QDate &begin, const QDate &end)
+{
+    loadHeadersFromJson();
+    QJsonObject postBodyJson;
+    QJsonArray criteriaChain;
+
+    QJsonObject evaluationStatement;
+    QJsonArray logicalConditions;
+
+    QJsonObject queryFromDateTime;
+    queryFromDateTime["attr"] = QString("date");
+    queryFromDateTime["gte"] = begin.toString(Qt::ISODate);
+
+    QJsonObject queryToDateTime;
+    queryToDateTime["attr"] = QString("date");
     queryToDateTime["lte"] = end.toString(Qt::ISODate);
 
     logicalConditions.append(queryFromDateTime);

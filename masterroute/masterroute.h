@@ -160,7 +160,7 @@ private:
     QVector<RouteStartTime> extractRouteStartTimesFromSheetValues
         (const QJsonArray &sheetValues);
 
-    QVector<Route> applyStartTimeToRoutes(QVector<Route> routes);
+    QVector<Route> applyBaselineDepartureToRoutes(QVector<Route> routes);
     QMap<QString, QString> buildEmployees();
     QVector<Route> applyEmployeeNumsToRoutes(QVector<Route> routes);
     QByteArray queryRoutes(QString& dayOfWeekToQuery);

@@ -30,7 +30,7 @@ QVector<Route> DailyLateMasterRoute::buildTodaysRoutes()
             bool {return r1.getKey() < r2.getKey();});
 
     for(auto t: routes)
-        qDebug() << t.getKey() << t.getRouteDate().toUTC().toString()\
+        qDebug() << t.getKey() << t.getRouteBaselineDeparture().toUTC().toString()\
                  << t.getDriverName() << t.getDriverId() << "rte dbg";
 
     return routes;
@@ -240,8 +240,8 @@ QVector<Route> DailyLateMasterRoute::extractRoutesFromSheetValues
 //            {
             if(!route.getKey().isEmpty())
             {
-                if(route.getRouteDate().isNull() ||
-                   !route.getRouteDate().isValid())
+                if(route.getRouteBaselineDeparture().isNull() ||
+                   !route.getRouteBaselineDeparture().isValid())
                 {
                     route.setField(QTime::currentTime().toString("hh:mm"),
                                    routeEnum::lateRouteOutTime);
