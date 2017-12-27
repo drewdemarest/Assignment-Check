@@ -6,8 +6,12 @@
 
 namespace routeEnum
 {
-    enum {key, truckNum, trailerNum, driverName, driverId, date, timeInOffice, timeOutOffice, lateRouteOutTime, misc, empty, baselineDepartureDate};
-    enum {matchSheetDate, matchRouteKey, matchDriverName, matchEquipment, matchTime, matchMisc, matchEmpty};
+    enum {key, truckNum, trailerNum, driverName, driverId, date, timeInOffice,\
+          timeOutOffice, lateRouteOutTime, misc, empty, baselineDepartureDate};
+
+    enum {matchSheetDate, matchRouteKey, matchDriverName, matchEquipment,\
+          matchTime, matchMisc, matchEmpty};
+
     enum {mon, tue, wed, thu, fri, sat, sun};
 }
 #include "routestarttime.h"
