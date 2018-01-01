@@ -27,21 +27,29 @@ bool OAuth2::setCredentialsFromJsonFile(QString jsonCredPath)
     const QJsonObject credentials = makeJsonFromFile(jsonCredPath);
     const QJsonObject credentialWebSection = credentials["web"].toObject();
 
-    clientId_           = QUrl(credentialWebSection["client_id"].toString());
-    projectId_          = credentialWebSection["project_id"].toString();
-    authUri_            = QUrl(credentialWebSection["auth_uri"].toString());
-    tokenUri_           = QUrl(credentialWebSection["token_uri"].toString());
-    clientSecret_       = credentialWebSection["client_secret"].toString();
+    for(auto jsonKey: credentialWebSection.keys())
+    {
+        if(oauth2Settings_.contains(jsonKey))
+        {
+            oauth2Settings_[jsonKey] = credentialWebSection[jsonKey];
+        }
+    }
 
-    authProviderX509CertUrl_ = credentialWebSection["auth_provider_x509_cert_url"].toString();
+//    clientId_           = QUrl(credentialWebSection["client_id"].toString());
+//    projectId_          = credentialWebSection["project_id"].toString();
+//    authUri_            = QUrl(credentialWebSection["auth_uri"].toString());
+//    tokenUri_           = QUrl(credentialWebSection["token_uri"].toString());
+//    clientSecret_       = credentialWebSection["client_secret"].toString();
 
-    auto redirectUris   = credentialWebSection["redirect_uris"].toArray();
+//    authProviderX509CertUrl_ = credentialWebSection["auth_provider_x509_cert_url"].toString();
 
-    qDebug() << redirectUris.size();
-    redirectUri_        = redirectUris[0].toString();
-    port_               = static_cast<quint16>(redirectUri_.port());
+//    auto redirectUris   = credentialWebSection["redirect_uris"].toArray();
 
+//    qDebug() << redirectUris.size();
+//    redirectUri_        = redirectUris[0].toString();
+//    port_               = static_cast<quint16>(redirectUri_.port());
 
+    qDebug() << "Dingo dingo!" << oauth2Settings_;
 
     if(!saveSettings(dbPath_))
     {
@@ -138,21 +146,43 @@ bool OAuth2::saveSettings(QString dbPath)
 
     for(auto t: oauth2Settings_.keys())
     {
-        query.prepare("INSERT or REPLACE into oauth2Credentials (key, value) VALUES (:key, :value)");
-        oauth2Settings_[t] = "derpaderpakgjaslkfjalsk";
-        query.bindValue(":key", t);
-        query.bindValue(":value", oauth2Settings_[t]);
-
-        if(query.exec())
+        if(oauth2Settings_[t].toJsonValue().isArray())
         {
-            qDebug() << t << "OAuth2::saveSettings query success.";
-        }
-        else
-        {
-            qDebug() << "OAuth2::saveSettings ERROR: " << query.lastError();
-        }
+            QJsonDocument arrayToString;
+            arrayToString.setArray(oauth2Settings_[t].toJsonArray());
 
-        query.clear();
+            query.prepare("INSERT or REPLACE into oauth2Credentials (key, value) VALUES (:key, :value)");
+            query.bindValue(":key", t);
+            query.bindValue(":value", QString(arrayToString.toJson()));
+
+            if(query.exec())
+            {
+                qDebug() << t << "OAuth2::saveSettings query success.";
+            }
+            else
+            {
+                qDebug() << "OAuth2::saveSettings ERROR: " << query.lastError();
+            }
+
+            query.clear();
+        }
+        else{
+            query.prepare("INSERT or REPLACE into oauth2Credentials (key, value) VALUES (:key, :value)");
+            //oauth2Settings_[t] = "derpaderpakgjaslkfjalsk";
+            query.bindValue(":key", t);
+            query.bindValue(":value", oauth2Settings_[t]);
+
+            if(query.exec())
+            {
+                qDebug() << t << "OAuth2::saveSettings query success.";
+            }
+            else
+            {
+                qDebug() << "OAuth2::saveSettings ERROR: " << query.lastError();
+            }
+
+            query.clear();
+        }
     }
 
     query.clear();

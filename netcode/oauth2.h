@@ -30,15 +30,16 @@ private:
     //This is to match up with the google paradigm, not to troll you.
     //Project must balance a little Google and also Qt.
 
-    QMap<QString, QString> oauth2Settings_{{"client_id", QString()},
-                                           {"auth_uri", QString()},
-                                           {"token_uri", QString()},
-                                           {"auth_provider_x509_cert_url", QString()},
-                                           {"project_id", QString()},
-                                           {"client_secret", QString()},
-                                           {"query_url", QString()},
-                                           {"api_scope", QString()},
-                                           {"db_path", QString()}};
+    QMap<QString, QVariant> oauth2Settings_{{"client_id", QVariant()},
+                                           {"auth_uri", QVariant()},
+                                           {"token_uri", QVariant()},
+                                           {"auth_provider_x509_cert_url", QVariant()},
+                                           {"project_id", QVariant()},
+                                           {"client_secret", QVariant()},
+                                           {"query_url", QVariant()},
+                                           {"api_scope", QVariant()},
+                                           {"db_path", QVariant()},
+                                           {"redirect_uris", QVariant()}};
 
     QString dbPath_ = QApplication::applicationDirPath() + "/oauth2Settings.db";
 
