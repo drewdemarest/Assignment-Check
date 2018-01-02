@@ -219,7 +219,7 @@ bool OAuth2::makeInitalDatabase(QString dbPath)
     }
 
     QSqlQuery query(oauth2Settings);
-    query.prepare("CREATE TABLE oauth2Credentials(key text primary key, value text)");
+    query.prepare("CREATE TABLE oauth2Credentials(key text PRIMARY KEY, value text, isJsonArray bool)");
     success = query.exec();
     query.clear();
 
