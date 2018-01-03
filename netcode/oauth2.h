@@ -38,10 +38,10 @@ private:
                                            {"client_secret", QVariant()},
                                            {"query_url", QVariant()},
                                            {"api_scope", QVariant()},
-                                           {"db_path", QVariant()},
+                                           {"db_path", QVariant(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"))},
                                            {"redirect_uris", QVariant()}};
 
-    QString dbPath_ = QApplication::applicationDirPath() + "/oauth2Settings.db";
+    QVariant &dbPath_ = oauth2Settings_["db_path"];
 
     //Query Settings
     QString queryRequestUrl_;
