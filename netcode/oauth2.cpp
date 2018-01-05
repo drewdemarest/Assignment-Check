@@ -92,14 +92,9 @@ bool OAuth2::loadSettings(QString dbPath)
     for(auto key: oauth2Settings_.keys()){
         queryString.append("'" + key + "', ");
     }
-
     queryString.remove((queryString.length() - 2), 2);
     queryString.append(")");
 
-    //qDebug() << queryString;
-
-    //query.prepare("SELECT value FROM oauth2Credentials WHERE key = (:key)");
-    //query.bindValue(":key", key);
     query.prepare(queryString);
 
     if(query.exec())
@@ -111,7 +106,7 @@ bool OAuth2::loadSettings(QString dbPath)
             if(query.value("isJsonArray").toBool())
                 oauth2Settings_["redirect_uris"] = QJsonDocument::fromJson(query.value("value").toString().toUtf8()).array();
             else
-                oauth2Settings_[query.value("key").toString()] = query.value("value");
+                oauth2Settings_[query.value("key").toString()] = query.value("value").toJsonValue();
         }
     }
     else
@@ -148,10 +143,10 @@ bool OAuth2::saveSettings(QString dbPath)
 
     for(auto key: oauth2Settings_.keys())
     {
-        if(oauth2Settings_[key].toJsonValue().isArray())
+        if(oauth2Settings_[key].isArray())
         {
             QJsonDocument arrayToString;
-            arrayToString.setArray(oauth2Settings_[key].toJsonArray());
+            arrayToString.setArray(oauth2Settings_[key].toArray());
             queryString.append("('" + key + "', '" + QString(arrayToString.toJson()) + "', '" + QString::number(true) + "'),");
         }
         else{
@@ -159,8 +154,6 @@ bool OAuth2::saveSettings(QString dbPath)
         }
     }
     queryString.remove(queryString.length() - 1, 1);
-
-    //qDebug() << queryString;
 
     query.prepare(queryString);
     if(query.exec())
@@ -175,7 +168,6 @@ bool OAuth2::saveSettings(QString dbPath)
     }
 
     query.clear();
-
     oauth2Settings.close();
     oauth2Settings = QSqlDatabase();
     oauth2Settings.removeDatabase("settings");
