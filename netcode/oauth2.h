@@ -4,6 +4,7 @@
 #include <QtCore>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QSqlRecord>
 #include <QApplication>
 #include <QObject>
 #include <QMessageBox>
@@ -29,7 +30,6 @@ private:
     //All keys in this map are lower camel...
     //This is to match up with the google paradigm, not to troll you.
     //Project must balance a little Google and also Qt.
-
     QMap<QString, QVariant> oauth2Settings_{{"client_id", QVariant()},
                                            {"auth_uri", QVariant()},
                                            {"token_uri", QVariant()},
@@ -40,24 +40,6 @@ private:
                                            {"api_scope", QVariant()},
                                            {"db_path", QVariant(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"))},
                                            {"redirect_uris", QVariant()}};
-
-    QVariant &dbPath_ = oauth2Settings_["db_path"];
-
-    //Query Settings
-    QString queryRequestUrl_;
-
-    //Most OAuth2 implementations require a scope
-    QString apiScope_;
-
-    //OAuth2 Settings
-    QUrl clientId_;
-    QString projectId_;
-    QUrl authUri_;
-    QUrl tokenUri_;
-    QUrl authProviderX509CertUrl_;
-    QString clientSecret_;
-    QUrl redirectUri_;
-    qint16 port_;
 
     //Functions
     bool doesDatabaseExist(QString dbPath);

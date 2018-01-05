@@ -3,24 +3,29 @@
 OAuth2::OAuth2(QObject *parent) : QObject(parent)
 {
     qDebug() << "SUMMONED!";
-    if(!doesDatabaseExist(dbPath_.toString()))
-        makeInitalDatabase(dbPath_.toString());
+    if(!doesDatabaseExist(oauth2Settings_["db_path"].toString()))
+        makeInitalDatabase(oauth2Settings_["db_path"].toString());
 
-    setCredentialsFromJsonFile(QApplication::applicationDirPath() + "/client.json");
-    saveSettings(dbPath_.toString());
-    loadSettings(dbPath_.toString());
+    //loadSettings(oauth2Settings_["db_path"].toString());
+    //qDebug() << oauth2Settings_["auth_provider_x509_cert_url"].toString();
+
+    //setCredentialsFromJsonFile(QApplication::applicationDirPath() + "/client.json");
+    //saveSettings(oauth2Settings_["db_path"].toString());
+    loadSettings(oauth2Settings_["db_path"].toString());
+    qDebug() << oauth2Settings_;
 }
 
 OAuth2::OAuth2(QString dbPath, QObject *parent) : QObject(parent)
 {
+
     qDebug() << "SUMMONED! AND OVERLOADED, PHORRRWAR";
 
-    dbPath_ = dbPath;
+    oauth2Settings_["db_path"] = dbPath;
+    loadSettings(oauth2Settings_["db_path"].toString());
+    if(!doesDatabaseExist(oauth2Settings_["db_path"].toString()))
+        makeInitalDatabase(oauth2Settings_["db_path"].toString());
 
-    if(!doesDatabaseExist(dbPath_.toString()))
-        makeInitalDatabase(dbPath_.toString());
-
-    loadSettings(dbPath_.toString());
+    loadSettings(oauth2Settings_["db_path"].toString());
 }
 
 
@@ -37,7 +42,7 @@ bool OAuth2::setCredentialsFromJsonFile(QString jsonCredPath)
         }
     }
 
-    if(!saveSettings(dbPath_.toString()))
+    if(!saveSettings(oauth2Settings_["db_path"].toString()))
     {
         qDebug() << "Failed to save json credentials to db" \
                  << "in OAuth2::setCredentialsFromJson";
@@ -85,13 +90,13 @@ bool OAuth2::loadSettings(QString dbPath)
     QString queryString  = "SELECT * FROM oauth2Credentials WHERE key IN (";
 
     for(auto key: oauth2Settings_.keys()){
-        queryString.append("'" + key + "'" + QString(", "));
+        queryString.append("'" + key + "', ");
     }
 
     queryString.remove((queryString.length() - 2), 2);
     queryString.append(")");
 
-    qDebug() << queryString;
+    //qDebug() << queryString;
 
     //query.prepare("SELECT value FROM oauth2Credentials WHERE key = (:key)");
     //query.bindValue(":key", key);
@@ -102,12 +107,11 @@ bool OAuth2::loadSettings(QString dbPath)
         qDebug() << "OAuth2::loadSettings query success.";
 
         while(query.next())
-        {
-            qDebug() << "--------------------------------";
-            qDebug() << query.value("key").toString();
-            qDebug() << query.value("value").toString();
-            qDebug() << query.value("isJsonArray").toString();
-            qDebug() << "--------------------------------";
+        {     
+            if(query.value("isJsonArray").toBool())
+                oauth2Settings_["redirect_uris"] = QJsonDocument::fromJson(query.value("value").toString().toUtf8()).array();
+            else
+                oauth2Settings_[query.value("key").toString()] = query.value("value");
         }
     }
     else
@@ -124,9 +128,8 @@ bool OAuth2::loadSettings(QString dbPath)
 
 bool OAuth2::saveSettings(QString dbPath)
 {
-    bool success;
-    bool isJsonArray = false;
-    QString valueTuple;
+    bool success = false;
+    QString queryString = "INSERT or REPLACE into oauth2Credentials VALUES ";
 
     QSqlDatabase oauth2Settings;
 
@@ -149,24 +152,26 @@ bool OAuth2::saveSettings(QString dbPath)
         {
             QJsonDocument arrayToString;
             arrayToString.setArray(oauth2Settings_[key].toJsonArray());
-            valueTuple.append("('" + key + "', '" + QString(arrayToString.toJson()) + "', '" + QString::number(true) + "'),");
+            queryString.append("('" + key + "', '" + QString(arrayToString.toJson()) + "', '" + QString::number(true) + "'),");
         }
         else{
-            valueTuple.append("('" + key + "', '" + oauth2Settings_[key].toString() + "', '" + QString::number(false) + "'),");
+            queryString.append("('" + key + "', '" + oauth2Settings_[key].toString() + "', '" + QString::number(false) + "'),");
         }
     }
-    valueTuple.remove(valueTuple.length() - 1, 1);
+    queryString.remove(queryString.length() - 1, 1);
 
-    qDebug() << valueTuple;
+    //qDebug() << queryString;
 
-    query.prepare("INSERT or REPLACE into oauth2Credentials VALUES " + valueTuple);
+    query.prepare(queryString);
     if(query.exec())
     {
         qDebug() << "OAuth2::saveSettings query success.";
+        success = true;
     }
     else
     {
         qDebug() << "OAuth2::saveSettings ERROR: " << query.lastError();
+        success = false;
     }
 
     query.clear();
