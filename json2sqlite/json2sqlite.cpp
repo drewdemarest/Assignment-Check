@@ -1,15 +1,15 @@
 #include "json2sqlite.h"
 
-Json2Sqlite::Json2Sqlite(QString dbPath)
+Json2Sqlite::Json2Sqlite()
 {
     qDebug() << "json2sqlite ctor";
-
-    if(!doesDatabaseExist(dbPath))
-        makeInitalDatabase(dbPath);
 }
 
 QJsonObject Json2Sqlite::loadSettings(QString dbPath, QJsonObject jsonSettings)
 {
+    if(!doesDatabaseExist(dbPath))
+        makeInitalDatabase(dbPath);
+
     QSqlDatabase database;
     database = database.addDatabase("QSQLITE", "settings");
     database.setDatabaseName(dbPath);
@@ -60,6 +60,9 @@ QJsonObject Json2Sqlite::loadSettings(QString dbPath, QJsonObject jsonSettings)
 
 bool Json2Sqlite::saveSettings(QString dbPath, QJsonObject jsonSettings)
 {
+    if(!doesDatabaseExist(dbPath))
+        makeInitalDatabase(dbPath);
+
     bool success = false;
     QString queryString = "INSERT or REPLACE into settings VALUES ";
 

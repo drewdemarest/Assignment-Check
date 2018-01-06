@@ -40,7 +40,7 @@ private:
                                 {"refresh_token", QJsonValue()}};
 
     //Functions
-
+    QString dbPath_ = QApplication::applicationDirPath() + "/oauth2Settings.db";
     QJsonObject makeJsonFromFile(QString jsonCredentialPath);
     //-------------------------------------------------------------------------
     // End Settings Subsection

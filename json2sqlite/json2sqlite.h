@@ -11,7 +11,7 @@
 class Json2Sqlite
 {
 public:
-    Json2Sqlite(QString dbPath);
+    Json2Sqlite();
     bool saveSettings(QString dbPath, QJsonObject jsonSettings);
     QJsonObject loadSettings(QString dbPath, QJsonObject jsonSettings);
     bool doesDatabaseExist(QString dbPath);
