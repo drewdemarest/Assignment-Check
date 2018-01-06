@@ -1,17 +1,14 @@
 #ifndef OAUTH2_H
 #define OAUTH2_H
 
+
 #include <QtCore>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlRecord>
-#include <QApplication>
 #include <QObject>
 #include <QMessageBox>
-#include <QSqlError>
 #include <QOAuth2AuthorizationCodeFlow>
+#include "json2sqlite/json2sqlite.h"
 
-class OAuth2 : public QObject
+class OAuth2 : public QObject, public Json2Sqlite
 {
     Q_OBJECT
 public:
@@ -43,10 +40,7 @@ private:
                                 {"refresh_token", QJsonValue()}};
 
     //Functions
-    bool doesDatabaseExist(QString dbPath);
-    bool makeInitalDatabase(QString dbPath);
-    bool saveSettings(QString dbPath);
-    bool loadSettings(QString dbPath);
+
     QJsonObject makeJsonFromFile(QString jsonCredentialPath);
     //-------------------------------------------------------------------------
     // End Settings Subsection
