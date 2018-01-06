@@ -104,7 +104,7 @@ bool OAuth2::loadSettings(QString dbPath)
         while(query.next())
         {     
             if(query.value("isJsonArray").toBool())
-                oauth2Settings_["redirect_uris"] = QJsonDocument::fromJson(query.value("value").toString().toUtf8()).array();
+                oauth2Settings_[query.value("key").toString()] = QJsonDocument::fromJson(query.value("value").toString().toUtf8()).array();
             else
                 oauth2Settings_[query.value("key").toString()] = query.value("value").toJsonValue();
         }
