@@ -4,11 +4,7 @@ OAuth2::OAuth2(QObject *parent) : QObject(parent), Json2Sqlite()
 {
     qDebug() << "SUMMONED!";
 
-    //loadSettings(oauth2Settings_["db_path"].toString());
-    //qDebug() << oauth2Settings_["auth_provider_x509_cert_url"].toString();
-
     setCredentialsFromJsonFile(QApplication::applicationDirPath() + "/client.json");
-    saveSettings(oauth2Settings_["db_path"].toString(), oauth2Settings_);
     loadSettings(oauth2Settings_["db_path"].toString(), oauth2Settings_);
     qDebug() << oauth2Settings_;
 }
