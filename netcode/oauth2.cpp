@@ -6,6 +6,30 @@ OAuth2::OAuth2(QObject *parent) : QObject(parent), Json2Sqlite()
 
     oauth2Settings_ = loadSettings(oauth2Settings_["db_path"].toString(), oauth2Settings_);
     qDebug() << oauth2Settings_;
+
+//test code to make big old array from file
+
+    QByteArray testQBA;
+    QFile testArrFile(QString(QApplication::applicationDirPath() + "/tst.txt"));
+
+    if(!testArrFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Failed to open test file";
+    }
+
+    while(!testArrFile.atEnd())
+    {
+        testQBA.append(testArrFile.readLine());
+    }
+    //testQBA.replace("'", QString(QStringLiteral("\\\'")).toUtf8());
+    //qDebug() << testQBA;
+    QJsonArray testArr = QJsonDocument::fromJson(testQBA).array();
+    qDebug() << testArr.size();
+    testArrFile.close();
+
+//end test code
+
+    saveArray(QString(QApplication::applicationDirPath() + "/test.db"), "dingo", "id", testArr);
 }
 
 OAuth2::OAuth2(QString dbPath, QObject *parent) : QObject(parent), Json2Sqlite()
@@ -57,6 +81,7 @@ QJsonObject OAuth2::makeJsonFromFile(QString jsonCredentialPath)
         credentials.append(jsonCredentialFile.readLine());
     }
 
+    jsonCredentialFile.close();
     return QJsonObject(QJsonDocument::fromJson(credentials).object());
 }
 
