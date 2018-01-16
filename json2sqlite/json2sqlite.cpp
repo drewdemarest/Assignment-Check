@@ -189,7 +189,7 @@ bool Json2Sqlite::saveArray(QString dbPath, QString table, QString primaryKey, Q
     }
     queryString.remove(queryString.length() - 2, 2);
 
-    qDebug() << queryString;
+    //qDebug() << queryString;
 
     //Done building query open db connection
     QSqlDatabase database;

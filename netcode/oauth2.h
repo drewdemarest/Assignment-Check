@@ -17,7 +17,6 @@ public:
 
     bool setCredentialsFromJsonFile(QString jsonCredPath);
 
-
     QByteArray get(/*settings db path*/);
 
 private:
@@ -36,6 +35,7 @@ private:
                                 {"query_url", QJsonValue()},
                                 {"api_scope", QJsonValue()},
                                 {"db_path", QJsonValue(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"))},
+                                {"json_credential_path", QJsonValue(QString(QApplication::applicationDirPath() + "/client.json"))},
                                 {"redirect_uris", QJsonArray()},
                                 {"refresh_token", QJsonValue()}};
 
