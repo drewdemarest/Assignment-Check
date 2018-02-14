@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QOAuth2AuthorizationCodeFlow>
 #include <QOAuthHttpServerReplyHandler>
+#include <QAbstractOAuth2>
 #include <QDesktopServices>
 #include "json2sqlite/json2sqlite.h"
 
@@ -65,7 +66,7 @@ private:
     QString dbPath_ = QApplication::applicationDirPath() + "/oauth2Settings.db";
     QJsonObject makeJsonFromFile(QString jsonCredentialPath);
 
-    QOAuth2AuthorizationCodeFlow *google = new QOAuth2AuthorizationCodeFlow(this);
+    QOAuth2AuthorizationCodeFlow *google = new QOAuth2AuthorizationCodeFlow;
     //-------------------------------------------------------------------------
     // End Settings Subsection
     //-------------------------------------------------------------------------
@@ -76,6 +77,7 @@ public slots:
 
 private slots:
     bool saveOAuth2TokensToDB();
+    bool tokens(const QByteArray &tokens);
 
 };
 

@@ -546,6 +546,7 @@ QVector<Route> MasterRoute::applyEmployeeNumsToRoutes(QVector<Route> routes)
 
 QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
 {
+    qDebug() << dayOfWeekToQuery;
     /*
     oauthConn->buildOAuth(sheetsScope,\
                           QString(sheetsAddressBase + dayOfWeekToQuery),\

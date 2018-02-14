@@ -154,16 +154,17 @@ QJsonObject OAuth2::makeJsonFromFile(QString jsonCredentialPath)
 
 bool OAuth2::saveOAuth2TokensToDB()
 {
-    qDebug() << google->refreshToken();
-    google->refreshAccessToken();
     oauth2Settings_["token"] = google->token();
     oauth2Settings_["expiration_at"] = google->expirationAt().toString();
     oauth2Settings_["refresh_token"] = google->refreshToken();
     saveSettings(oauth2Settings_["db_path"].toString(), oauth2Settings_);
+    qDebug() << google->refreshToken();
+    qDebug() << google->token();
+    google->refreshAccessToken();
+    qDebug() << google->refreshToken();
+    qDebug() << google->token();
     return true;
 }
-
-
 
 QByteArray OAuth2::get()
 {
@@ -182,13 +183,50 @@ QByteArray OAuth2::get()
     google->setAccessTokenUrl(tokenUri);
     google->setClientIdentifierSharedKey(clientSecret);
 
+    google->setModifyParametersFunction\
+        ([&](QAbstractOAuth::Stage stage, QVariantMap *parameters)\
+         {
+              if(stage == QAbstractOAuth::Stage::RequestingAuthorization)
+              {
+                 qDebug() << "Overload func, RA";
+                 parameters->insert("approval_prompt", "force");
+                 parameters->insert("access_type", "offline");
+                 qDebug() << *parameters;
+                 qDebug() << "--------------------------------";
+              }
+              if(stage == QAbstractOAuth::Stage::RefreshingAccessToken)
+              {
+                  qDebug() << "Refresh Access";
+                  parameters->insert("client_secret", oauth2Settings_["client_secret"].toString());
+                  parameters->insert("refresh_token", oauth2Settings_["refresh_token"].toString());
+                  parameters->insert("grant_type", "refresh_token");
+                  parameters->insert("client_id", oauth2Settings_["client_id"].toString());
+                  qDebug() << *parameters;
+              }
+          });
+
     auto replyHandler = new QOAuthHttpServerReplyHandler(port, this);
     google->setReplyHandler(replyHandler);
 
     google->grant();
 
+//    if(oauth2Settings_["refresh_token"].toString().isEmpty())
+//    {
+//        google->grant();
+//    }
+//    else
+//    {
+//        connect(google, &QOAuth2AuthorizationCodeFlow::finished, this, &OAuth2::tokens);
+//        google->setRefreshToken(oauth2Settings_["refresh_token"].toString());
+//        google->setToken(oauth2Settings_["token"].toString());
+//        google->refreshAccessToken();
+//    }
 
-    auto reply = google->get(QUrl("https://www.googleapis.com/plus/v1/people/me"));
-    qDebug() << reply;
     return QByteArray();
 }
+
+ bool OAuth2::tokens(const QByteArray &tokens)
+ {
+     qDebug() << tokens;
+     return true;
+ }

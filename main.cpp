@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     w.show();
 
     //QString(QApplication::applicationDirPath()+ "/client.json"
-    OAuth2 derp(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"));
+    OAuth2 derp(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"), QString(QApplication::applicationDirPath()+ "/client.json"));
     derp.get();
     return a.exec();
 }
