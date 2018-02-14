@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QMessageBox>
 #include <QOAuth2AuthorizationCodeFlow>
+#include <QOAuthHttpServerReplyHandler>
+#include <QDesktopServices>
 #include "json2sqlite/json2sqlite.h"
 
 class OAuth2 : public QObject, public Json2Sqlite
@@ -13,17 +15,27 @@ class OAuth2 : public QObject, public Json2Sqlite
     Q_OBJECT
 public:
     explicit OAuth2(QString dbPath,
+                    QString client_id,
+                    QString project_id,
+                    QString auth_uri,
+                    QString token_uri,
+                    QString auth_provider_x509_cert_url,
+                    QString client_secret,
+                    QStringList redirect_uris,
                     QObject *parent = nullptr,
-                    QString client_id = QString(),
-                    QString project_id = QString(),
-                    QString auth_uri = QString(),
-                    QString token_uri = QString(),
-                    QString auth_provider_x509_cert_url = QString(),
-                    QString client_secret = QString(),
-                    QStringList redirect_uris = QStringList(),
-                    QString googleJsonCredPath = QString());
+                    QString scope = QString());
 
-    bool setCredentialsFromJsonFile(QString jsonCredPath);
+    explicit OAuth2(QString dbPath,
+                    QString googleJsonCredPath,
+                    QObject *parent = nullptr,
+                    QString scope = QString());
+
+    explicit OAuth2(QString dbPath,
+                    QObject *parent = nullptr,
+                    QString scope = QString());
+
+    bool setCredentialsFromJsonFile(const QString &jsonCredPath);
+    bool setScope(const QString &scope);
 
     QByteArray get(/*settings db path*/);
 
@@ -45,11 +57,15 @@ private:
                                 {"db_path", QJsonValue(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"))},
                                 {"json_credential_path", QJsonValue()},
                                 {"redirect_uris", QJsonArray()},
+                                {"token", QJsonValue()},
+                                {"expiration_at", QJsonValue()},
                                 {"refresh_token", QJsonValue()}};
 
     //Functions
     QString dbPath_ = QApplication::applicationDirPath() + "/oauth2Settings.db";
     QJsonObject makeJsonFromFile(QString jsonCredentialPath);
+
+    QOAuth2AuthorizationCodeFlow *google = new QOAuth2AuthorizationCodeFlow(this);
     //-------------------------------------------------------------------------
     // End Settings Subsection
     //-------------------------------------------------------------------------
@@ -57,6 +73,10 @@ private:
 signals:
 
 public slots:
+
+private slots:
+    bool saveOAuth2TokensToDB();
+
 };
 
 #endif // OAUTH2_H

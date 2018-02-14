@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
+    //QString(QApplication::applicationDirPath()+ "/client.json"
     OAuth2 derp(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"));
     derp.get();
     return a.exec();
