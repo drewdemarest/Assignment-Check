@@ -12,8 +12,16 @@ class OAuth2 : public QObject, public Json2Sqlite
 {
     Q_OBJECT
 public:
-    explicit OAuth2(QObject *parent = nullptr);
-    explicit OAuth2(QString dbPath, QObject *parent = nullptr);
+    explicit OAuth2(QString dbPath,
+                    QObject *parent = nullptr,
+                    QString client_id = QString(),
+                    QString project_id = QString(),
+                    QString auth_uri = QString(),
+                    QString token_uri = QString(),
+                    QString auth_provider_x509_cert_url = QString(),
+                    QString client_secret = QString(),
+                    QStringList redirect_uris = QStringList(),
+                    QString googleJsonCredPath = QString());
 
     bool setCredentialsFromJsonFile(QString jsonCredPath);
 
@@ -35,7 +43,7 @@ private:
                                 {"query_url", QJsonValue()},
                                 {"api_scope", QJsonValue()},
                                 {"db_path", QJsonValue(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"))},
-                                {"json_credential_path", QJsonValue(QString(QApplication::applicationDirPath() + "/client.json"))},
+                                {"json_credential_path", QJsonValue()},
                                 {"redirect_uris", QJsonArray()},
                                 {"refresh_token", QJsonValue()}};
 

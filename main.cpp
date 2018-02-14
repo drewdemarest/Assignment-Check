@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    OAuth2 derp;
+    OAuth2 derp(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"));
     derp.get();
     return a.exec();
 }
