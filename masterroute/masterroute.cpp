@@ -3,8 +3,6 @@
 MasterRoute::MasterRoute(QObject *parent) : QObject(parent)
 {
 
-    loadSettingsFromDatabase();
-
 }
 
 MasterRoute::~MasterRoute()
@@ -717,33 +715,6 @@ void MasterRoute::whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify)
     }
 }
 
-void MasterRoute::loadSettingsFromDatabase()
-{
-    QSqlDatabase settings;
-    settings = settings.addDatabase("QSQLITE", "settings");
-    settings.setDatabaseName(settingsPath_);
-    settings.open();
-    QSqlQuery query(settings);
-
-    query.prepare("SELECT value FROM masterRouteSettings WHERE key = ...");
-    query.exec();
-    while(query.next())
-    {
-        if(query.value(0).toString() == "sheetsScope")
-            sheetsScope = query.value(1).toString();
-
-        if(query.value(0).toString() == "sheetAddressBase")
-            sheetsAddressBase = query.value(2).toString();
-
-        qDebug() << "Exec query?";
-    }
-
-    qDebug() << sheetsAddressBase << sheetsScope << "MasterRoute::loadSettingsFromDatabase";
-    query.clear();
-    settings.close();
-    settings = QSqlDatabase();
-    settings.removeDatabase("settings");
-}
 
 void MasterRoute::abort()
 {

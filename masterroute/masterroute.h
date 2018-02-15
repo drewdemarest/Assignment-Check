@@ -189,10 +189,8 @@ private:
     void whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify);
 
     //-------------------------------------------------------------------------
-    //Betadase things for settings
+    //Database things for settings
     //-------------------------------------------------------------------------
-    QString settingsPath_ = QApplication::applicationDirPath() + "/settings.db";
-    void loadSettingsFromDatabase();
 
 public slots:
     void abort();
