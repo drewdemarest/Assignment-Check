@@ -154,15 +154,17 @@ QJsonObject OAuth2::makeJsonFromFile(QString jsonCredentialPath)
 
 bool OAuth2::saveOAuth2TokensToDB()
 {
+    qDebug() << "Token from get after granted" << google->token();
     oauth2Settings_["token"] = google->token();
     oauth2Settings_["expiration_at"] = google->expirationAt().toString();
-    oauth2Settings_["refresh_token"] = google->refreshToken();
+
+    if(!google->refreshToken().isEmpty())
+    {
+        oauth2Settings_["refresh_token"] = google->refreshToken();
+        google->setRefreshToken(oauth2Settings_["refresh_token"].toString());
+    }
+
     saveSettings(oauth2Settings_["db_path"].toString(), oauth2Settings_);
-    qDebug() << google->refreshToken();
-    qDebug() << google->token();
-    google->refreshAccessToken();
-    qDebug() << google->refreshToken();
-    qDebug() << google->token();
     return true;
 }
 
@@ -188,7 +190,7 @@ QByteArray OAuth2::get()
          {
               if(stage == QAbstractOAuth::Stage::RequestingAuthorization)
               {
-                 qDebug() << "Overload func, RA";
+                 qDebug() << "Request Access";
                  parameters->insert("approval_prompt", "force");
                  parameters->insert("access_type", "offline");
                  qDebug() << *parameters;
@@ -197,6 +199,7 @@ QByteArray OAuth2::get()
               if(stage == QAbstractOAuth::Stage::RefreshingAccessToken)
               {
                   qDebug() << "Refresh Access";
+                  parameters->clear();
                   parameters->insert("client_secret", oauth2Settings_["client_secret"].toString());
                   parameters->insert("refresh_token", oauth2Settings_["refresh_token"].toString());
                   parameters->insert("grant_type", "refresh_token");
@@ -208,19 +211,20 @@ QByteArray OAuth2::get()
     auto replyHandler = new QOAuthHttpServerReplyHandler(port, this);
     google->setReplyHandler(replyHandler);
 
-    google->grant();
+    if(oauth2Settings_["refresh_token"].toString().isEmpty())
+    {
+        google->grant();
+    }
+    else
+    {
+        //connect(google, &QOAuth2AuthorizationCodeFlow::finished, this, &OAuth2::tokens);
 
-//    if(oauth2Settings_["refresh_token"].toString().isEmpty())
-//    {
-//        google->grant();
-//    }
-//    else
-//    {
-//        connect(google, &QOAuth2AuthorizationCodeFlow::finished, this, &OAuth2::tokens);
-//        google->setRefreshToken(oauth2Settings_["refresh_token"].toString());
-//        google->setToken(oauth2Settings_["token"].toString());
-//        google->refreshAccessToken();
-//    }
+        google->setRefreshToken(oauth2Settings_["refresh_token"].toString());
+        google->setToken(oauth2Settings_["token"].toString());
+        qDebug() << "from get after DB set" << google->token();
+        google->refreshAccessToken();
+
+    }
 
     return QByteArray();
 }

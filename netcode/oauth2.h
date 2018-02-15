@@ -10,6 +10,7 @@
 #include <QAbstractOAuth2>
 #include <QDesktopServices>
 #include "json2sqlite/json2sqlite.h"
+#include <unistd.h>
 
 class OAuth2 : public QObject, public Json2Sqlite
 {
