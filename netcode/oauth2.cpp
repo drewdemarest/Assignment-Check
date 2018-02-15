@@ -193,7 +193,6 @@ QByteArray OAuth2::get()
                  qDebug() << "Request Access";
                  parameters->insert("approval_prompt", "force");
                  parameters->insert("access_type", "offline");
-                 qDebug() << *parameters;
                  qDebug() << "--------------------------------";
               }
               if(stage == QAbstractOAuth::Stage::RefreshingAccessToken)
@@ -204,7 +203,6 @@ QByteArray OAuth2::get()
                   parameters->insert("refresh_token", oauth2Settings_["refresh_token"].toString());
                   parameters->insert("grant_type", "refresh_token");
                   parameters->insert("client_id", oauth2Settings_["client_id"].toString());
-                  qDebug() << *parameters;
               }
           });
 
