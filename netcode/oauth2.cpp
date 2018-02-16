@@ -8,8 +8,8 @@ OAuth2::OAuth2(QString dbPath,
                QString auth_provider_x509_cert_url,
                QString client_secret,
                QStringList redirect_uris,
-               QObject *parent,
-               QString scope) : QObject(parent), Json2Sqlite()
+               QString scope,
+               QObject *parent) : QObject(parent), Json2Sqlite()
 {
     qDebug() << "oauth2 ctor overload 0";
 
@@ -28,7 +28,7 @@ OAuth2::OAuth2(QString dbPath,
     oauth2Settings_["auth_provider_x509_cert_url"] = QJsonValue(auth_provider_x509_cert_url);
     oauth2Settings_["client_secret"] = QJsonValue(client_secret);
     oauth2Settings_["redirect_uris"] = QJsonArray::fromStringList(redirect_uris);
-    oauth2Settings_["scope"] = QJsonValue(scope);
+    oauth2Settings_["api_scope"] = QJsonValue(scope);
 
     if(!oauth2Settings_["db_path"].toString().isEmpty())
         saveSettings(oauth2Settings_["db_path"].toString(), oauth2Settings_);
@@ -40,13 +40,15 @@ OAuth2::OAuth2(QString dbPath,
 
     connect(google, &QOAuth2AuthorizationCodeFlow::granted,
         this, &OAuth2::saveOAuth2TokensToDB);
+
+    build();
 }
 
 
 OAuth2::OAuth2(QString dbPath,
                QString googleJsonCredPath,
-               QObject *parent,
-               QString scope) : QObject(parent), Json2Sqlite()
+               QString scope,
+               QObject *parent) : QObject(parent), Json2Sqlite()
 {
     qDebug() << "oauth2 ctor overload1";
 
@@ -64,7 +66,7 @@ OAuth2::OAuth2(QString dbPath,
         setCredentialsFromJsonFile(oauth2Settings_["json_credential_path"].toString());
     }
 
-    oauth2Settings_["scope"] = QJsonValue(scope);
+    oauth2Settings_["api_scope"] = QJsonValue(scope);
 
     if(!oauth2Settings_["db_path"].toString().isEmpty())
         saveSettings(oauth2Settings_["db_path"].toString(), oauth2Settings_);
@@ -76,11 +78,13 @@ OAuth2::OAuth2(QString dbPath,
 
     connect(google, &QOAuth2AuthorizationCodeFlow::granted,
         this, &OAuth2::saveOAuth2TokensToDB);
+
+    build();
 }
 
 OAuth2::OAuth2(QString dbPath,
-               QObject *parent,
-               QString scope) : QObject(parent), Json2Sqlite()
+               QString scope,
+               QObject *parent) : QObject(parent), Json2Sqlite()
 {
     qDebug() << "oauth2 ctor overload1";
 
@@ -92,7 +96,7 @@ OAuth2::OAuth2(QString dbPath,
     else
         qDebug() << "Warning Oauth2 ctor: there is no database path, not loading settings";
 
-    oauth2Settings_["scope"] = QJsonValue(scope);
+    oauth2Settings_["api_scope"] = QJsonValue(scope);
 
     if(!oauth2Settings_["db_path"].toString().isEmpty())
         saveSettings(oauth2Settings_["db_path"].toString(), oauth2Settings_);
@@ -104,6 +108,8 @@ OAuth2::OAuth2(QString dbPath,
 
     connect(google, &QOAuth2AuthorizationCodeFlow::granted,
         this, &OAuth2::saveOAuth2TokensToDB);
+
+    build();
 }
 
 bool OAuth2::setCredentialsFromJsonFile(const QString &jsonCredPath)
@@ -131,6 +137,11 @@ bool OAuth2::setCredentialsFromJsonFile(const QString &jsonCredPath)
     return success;
 }
 
+void OAuth2::setScope(const QString &scope)
+{
+    oauth2Settings_["api_scope"] = QJsonValue(scope);
+}
+
 QJsonObject OAuth2::makeJsonFromFile(QString jsonCredentialPath)
 {
     QByteArray credentials;
@@ -156,7 +167,7 @@ bool OAuth2::saveOAuth2TokensToDB()
 {
     qDebug() << "Token from get after granted" << google->token();
     oauth2Settings_["token"] = google->token();
-    oauth2Settings_["expiration_at"] = google->expirationAt().toString();
+    oauth2Settings_["expiration_at"] = google->expirationAt().toString(Qt::ISODateWithMs);
 
     if(!google->refreshToken().isEmpty())
     {
@@ -168,22 +179,20 @@ bool OAuth2::saveOAuth2TokensToDB()
     return true;
 }
 
-QByteArray OAuth2::get()
+bool OAuth2::build()
 {
+    bool success = true;
 
-    google->setScope("https://www.googleapis.com/auth/spreadsheets.readonly");
-    const QUrl authUri(oauth2Settings_["auth_uri"].toString());
-    const auto clientId = oauth2Settings_["client_id"].toString();
-    const QUrl tokenUri(oauth2Settings_["token_uri"].toString());
-    const auto clientSecret(oauth2Settings_["client_secret"].toString());
+    google->setScope(oauth2Settings_["api_scope"].toString());
+
     const auto redirectUris = oauth2Settings_["redirect_uris"].toArray();
     const QUrl redirectUri(redirectUris[0].toString()); // Get the first URI
     const auto port = static_cast<quint16>(redirectUri.port()); // Get the port
 
-    google->setAuthorizationUrl(authUri);
-    google->setClientIdentifier(clientId);
-    google->setAccessTokenUrl(tokenUri);
-    google->setClientIdentifierSharedKey(clientSecret);
+    google->setAuthorizationUrl(oauth2Settings_["auth_uri"].toString());
+    google->setClientIdentifier(oauth2Settings_["client_id"].toString());
+    google->setAccessTokenUrl(oauth2Settings_["token_uri"].toString());
+    google->setClientIdentifierSharedKey(oauth2Settings_["client_secret"].toString());
 
     google->setModifyParametersFunction\
         ([&](QAbstractOAuth::Stage stage, QVariantMap *parameters)\
@@ -215,16 +224,25 @@ QByteArray OAuth2::get()
     }
     else
     {
-        //connect(google, &QOAuth2AuthorizationCodeFlow::finished, this, &OAuth2::tokens);
-
         google->setRefreshToken(oauth2Settings_["refresh_token"].toString());
         google->setToken(oauth2Settings_["token"].toString());
         qDebug() << "from get after DB set" << google->token();
         google->refreshAccessToken();
-
     }
+    return success;
+}
 
-    return QByteArray();
+QByteArray OAuth2::get(const QString &address)
+{
+    QNetworkReply *response = google->get(QUrl(address));
+    while(!response->isFinished())
+    {
+        qApp->processEvents();
+        usleep(10);
+    }
+    QByteArray responseCopy = response->readAll();
+    response->deleteLater();
+    return responseCopy;
 }
 
  bool OAuth2::tokens(const QByteArray &tokens)
