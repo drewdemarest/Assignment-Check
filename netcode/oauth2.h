@@ -49,7 +49,7 @@ private:
     //All keys in this map are lower camel...
     //This is to match up with the google paradigm, not to troll you.
     //Project must balance a little Google and also Qt.
-    bool ready = false;
+    bool readyForRequests_ = false;
     QJsonObject oauth2Settings_{{"client_id", QJsonValue()},
                                 {"auth_uri", QJsonValue()},
                                 {"token_uri", QJsonValue()},

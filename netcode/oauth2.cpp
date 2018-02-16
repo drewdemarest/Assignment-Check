@@ -176,6 +176,7 @@ bool OAuth2::saveOAuth2TokensToDB()
     }
 
     saveSettings(oauth2Settings_["db_path"].toString(), oauth2Settings_);
+    readyForRequests_ = true;
     return true;
 }
 
@@ -234,6 +235,11 @@ bool OAuth2::build()
 
 QByteArray OAuth2::get(const QString &address)
 {
+    while(!readyForRequests_)
+    {
+        qApp->processEvents();
+        usleep(10);
+    }
     QNetworkReply *response = google->get(QUrl(address));
     while(!response->isFinished())
     {
