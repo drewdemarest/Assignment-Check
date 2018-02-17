@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QtCore>
 #include <QObject>
+#include "netcode/oauth2.h"
 
 class DailyLateMasterRoute : public QObject
 {

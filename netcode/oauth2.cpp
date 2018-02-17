@@ -223,13 +223,21 @@ bool OAuth2::build()
     {
         google->grant();
     }
-    else
+    else if(QDateTime::fromString(oauth2Settings_["expiration_at"].toString(), Qt::ISODateWithMs) < QDateTime::currentDateTime())
     {
         google->setRefreshToken(oauth2Settings_["refresh_token"].toString());
         google->setToken(oauth2Settings_["token"].toString());
         qDebug() << "from get after DB set" << google->token();
         google->refreshAccessToken();
     }
+    else
+    {
+        google->setRefreshToken(oauth2Settings_["refresh_token"].toString());
+        google->setToken(oauth2Settings_["token"].toString());
+        qDebug() << "from get after DB set" << google->token();
+        readyForRequests_ = true;
+    }
+
     return success;
 }
 

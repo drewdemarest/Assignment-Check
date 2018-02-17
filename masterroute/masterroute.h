@@ -11,6 +11,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
+#include "netcode/oauth2.h"
 
 //namespace mandatoryDataCol
 //{}
@@ -59,7 +60,7 @@ private:
     // OAuth2 Network connection. This is a pointer because it
     // needs to stick around.
     //-------------------------------------------------------------------------
-    //OAuthNetConnect *oauthConn = new OAuthNetConnect(this);
+
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------

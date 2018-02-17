@@ -319,7 +319,10 @@ QByteArray DailyLateMasterRoute::queryRoutes()
 //                           sheetsCredFilePath_);
 
 //    return oauthConn_->get();
-    return QByteArray();
+
+    OAuth2 oauthConn(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"), QString(QApplication::applicationDirPath()+ "/client.json"), sheetsScope_, this);
+    return oauthConn.get(QString(sheetsRouteAddress_));
+
 }
 
 QByteArray DailyLateMasterRoute::queryEmployees()
@@ -329,7 +332,8 @@ QByteArray DailyLateMasterRoute::queryEmployees()
 //                           sheetsCredFilePath_);
 
 //    return oauthConn_->get();
-    return QByteArray();
+    OAuth2 oauthConn(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"), QString(QApplication::applicationDirPath()+ "/client.json"), sheetsScope_, this);
+    return oauthConn.get(sheetsEmployeeAddress_);
 }
 
 void DailyLateMasterRoute::whatRouteFieldIsMissing

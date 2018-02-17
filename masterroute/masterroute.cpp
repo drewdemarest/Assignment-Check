@@ -463,10 +463,31 @@ QVector<RouteStartTime> MasterRoute::extractRouteStartTimesFromSheetValues(const
 
 QVector<Route> MasterRoute::applyBaselineDepartureToRoutes(QVector<Route> routes)
 {
+    //Slower method than the commented out version below.
+    //However this method can find and apply baseline start times to all duplicates.
     QVector<RouteStartTime> routeStartTimes = buildRouteStartTimes();
     QVector<Route>::iterator start = routes.begin();
     QVector<Route>::iterator end = routes.end();
+    for(auto t: routeStartTimes)
+    {
+        QString toFind = t.routeKey;
 
+        //QString toFind = t.routeKey;
+        while(end > start){
+            start = std::find_if(start, end, [&toFind](Route &j)\
+            {return j.getKey() == toFind;});
+
+            if(start != end)
+            {
+                qDebug() << t.routeKey;
+                start->applyRouteBaselineDeparture(t);
+            }
+            start++;
+        }
+        start = routes.begin();
+        end = routes.end();
+    }
+/*
     for(auto t: routeStartTimes)
     {
         QString toFind = t.routeKey;
@@ -475,12 +496,12 @@ QVector<Route> MasterRoute::applyBaselineDepartureToRoutes(QVector<Route> routes
         {return j.getKey() == toFind;});
 
         if(start != end)
-        {
             start->applyRouteBaselineDeparture(t);
-        }
+
         start = routes.begin();
         end = routes.end();
     }
+*/
     return routes;
 }
 
@@ -545,14 +566,14 @@ QVector<Route> MasterRoute::applyEmployeeNumsToRoutes(QVector<Route> routes)
 QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
 {
     qDebug() << dayOfWeekToQuery;
-    /*
+/*
     oauthConn->buildOAuth(sheetsScope,\
                           QString(sheetsAddressBase + dayOfWeekToQuery),\
                           sheetsCredFilePath);
-
-    return oauthConn->get();
-    */
-    return QByteArray();
+*/
+    OAuth2 oauthConn(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"), QString(QApplication::applicationDirPath()+ "/client.json"), sheetsScope, this);
+    return oauthConn.get(QString(sheetsAddressBase + dayOfWeekToQuery));
+    //return QByteArray();
 }
 
 QByteArray MasterRoute::queryRouteStartTimes()
@@ -561,6 +582,8 @@ QByteArray MasterRoute::queryRouteStartTimes()
 //                          sheetsStartTimeAddress,
 //                          sheetsCredFilePath);
 //    return oauthConn->get();
+    OAuth2 oauthConn(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"), QString(QApplication::applicationDirPath()+ "/client.json"), sheetsScope, this);
+    return oauthConn.get(sheetsStartTimeAddress);
     return QByteArray();
 }
 
@@ -570,6 +593,9 @@ QByteArray MasterRoute::queryEmployees()
 //                          sheetsEmployeeAddress,
 //                          sheetsCredFilePath);
 //    return oauthConn->get();
+    OAuth2 oauthConn(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"), QString(QApplication::applicationDirPath()+ "/client.json"), sheetsScope, this);
+    return oauthConn.get(sheetsEmployeeAddress);
+
     return QByteArray();
 }
 

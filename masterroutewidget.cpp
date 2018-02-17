@@ -11,6 +11,9 @@ MasterRouteWidget::MasterRouteWidget(QWidget *parent) :
         connect(ui->abortButton, &QPushButton::clicked, mrs, &MasterRoute::abort);
         connect(ui->refreshMRSButton, &QPushButton::clicked, this, &MasterRouteWidget::refreshRoutes);
         connect(ui->refreshMRSButton, &QPushButton::clicked, mrs, &MasterRoute::tryNetworkAgain);
+        QStringList tempList;
+        tempList << "route" << "startsPrevDay" << "stuff" << "stuff" << "mon" << "tue" << "wed" << "thu" << "fri" << "sat" << "sun";
+        mrs->setStartTimeInfoPrecedence(tempList);
 }
 
 MasterRouteWidget::~MasterRouteWidget()
