@@ -58,7 +58,7 @@ private:
                                 {"client_secret", QJsonValue()},
                                 {"query_url", QJsonValue()},
                                 {"api_scope", QJsonValue()},
-                                {"db_path", QJsonValue(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"))},
+                                {"db_path", QJsonValue()},
                                 {"json_credential_path", QJsonValue()},
                                 {"redirect_uris", QJsonArray()},
                                 {"token", QJsonValue()},
