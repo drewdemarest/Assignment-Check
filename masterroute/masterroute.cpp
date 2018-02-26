@@ -3,13 +3,11 @@
 MasterRoute::MasterRoute(QObject *parent) : QObject(parent)
 {
 
-    loadSettingsFromDatabase();
-
 }
 
 MasterRoute::~MasterRoute()
 {
-    oauthConn->deleteLater();
+    //oauthConn->deleteLater();
 }
 
 void MasterRoute::buildAllRoutes()
@@ -465,10 +463,31 @@ QVector<RouteStartTime> MasterRoute::extractRouteStartTimesFromSheetValues(const
 
 QVector<Route> MasterRoute::applyBaselineDepartureToRoutes(QVector<Route> routes)
 {
+    //Slower method than the commented out version below.
+    //However this method can find and apply baseline start times to all duplicates.
     QVector<RouteStartTime> routeStartTimes = buildRouteStartTimes();
     QVector<Route>::iterator start = routes.begin();
     QVector<Route>::iterator end = routes.end();
+    for(auto t: routeStartTimes)
+    {
+        QString toFind = t.routeKey;
 
+        //QString toFind = t.routeKey;
+        while(end > start){
+            start = std::find_if(start, end, [&toFind](Route &j)\
+            {return j.getKey() == toFind;});
+
+            if(start != end)
+            {
+                qDebug() << t.routeKey;
+                start->applyRouteBaselineDeparture(t);
+            }
+            start++;
+        }
+        start = routes.begin();
+        end = routes.end();
+    }
+/*
     for(auto t: routeStartTimes)
     {
         QString toFind = t.routeKey;
@@ -477,12 +496,12 @@ QVector<Route> MasterRoute::applyBaselineDepartureToRoutes(QVector<Route> routes
         {return j.getKey() == toFind;});
 
         if(start != end)
-        {
             start->applyRouteBaselineDeparture(t);
-        }
+
         start = routes.begin();
         end = routes.end();
     }
+*/
     return routes;
 }
 
@@ -546,27 +565,38 @@ QVector<Route> MasterRoute::applyEmployeeNumsToRoutes(QVector<Route> routes)
 
 QByteArray MasterRoute::queryRoutes(QString &dayOfWeekToQuery)
 {
+    qDebug() << dayOfWeekToQuery;
+/*
     oauthConn->buildOAuth(sheetsScope,\
                           QString(sheetsAddressBase + dayOfWeekToQuery),\
                           sheetsCredFilePath);
-
-    return oauthConn->get();
+*/
+    OAuth2 oauthConn(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"), QString(QApplication::applicationDirPath()+ "/client.json"), sheetsScope, this);
+    return oauthConn.get(QString(sheetsAddressBase + dayOfWeekToQuery));
+    //return QByteArray();
 }
 
 QByteArray MasterRoute::queryRouteStartTimes()
 {
-    oauthConn->buildOAuth(sheetsScope,
-                          sheetsStartTimeAddress,
-                          sheetsCredFilePath);
-    return oauthConn->get();
+//    oauthConn->buildOAuth(sheetsScope,
+//                          sheetsStartTimeAddress,
+//                          sheetsCredFilePath);
+//    return oauthConn->get();
+    OAuth2 oauthConn(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"), QString(QApplication::applicationDirPath()+ "/client.json"), sheetsScope, this);
+    return oauthConn.get(sheetsStartTimeAddress);
+    return QByteArray();
 }
 
 QByteArray MasterRoute::queryEmployees()
 {
-    oauthConn->buildOAuth(sheetsScope,
-                          sheetsEmployeeAddress,
-                          sheetsCredFilePath);
-    return oauthConn->get();
+//    oauthConn->buildOAuth(sheetsScope,
+//                          sheetsEmployeeAddress,
+//                          sheetsCredFilePath);
+//    return oauthConn->get();
+    OAuth2 oauthConn(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"), QString(QApplication::applicationDirPath()+ "/client.json"), sheetsScope, this);
+    return oauthConn.get(sheetsEmployeeAddress);
+
+    return QByteArray();
 }
 
 void MasterRoute::whatRouteFieldIsMissing(QVector<int> routeFieldVerify)
@@ -711,42 +741,17 @@ void MasterRoute::whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify)
     }
 }
 
-void MasterRoute::loadSettingsFromDatabase()
-{
-    QSqlDatabase settings;
-    settings = settings.addDatabase("QSQLITE", "settings");
-    settings.setDatabaseName(settingsPath_);
-    settings.open();
-    QSqlQuery query(settings);
-
-    query.prepare("SELECT * FROM masterRouteSettings");
-    query.exec();
-    while(query.next())
-    {
-        if(query.value(0).toString() == "sheetsScope")
-            sheetsScope = query.value(1).toString();
-
-        if(query.value(0).toString() == "sheetAddressBase")
-            sheetsAddressBase = query.value(2).toString();
-    }
-
-    qDebug() << sheetsAddressBase << sheetsScope;
-    query.clear();
-    settings.close();
-    settings = QSqlDatabase();
-    settings.removeDatabase("settings");
-}
 
 void MasterRoute::abort()
 {
     qDebug() << "Network connection failed...";
-    oauthConn->abort(true);
+    //oauthConn->abort(true);
     //networkProblem = true;
 }
 
 void MasterRoute::tryNetworkAgain()
 {
     qDebug() << "Network connection failed...";
-    oauthConn->abort(false);
+    //oauthConn->abort(false);
 }
 

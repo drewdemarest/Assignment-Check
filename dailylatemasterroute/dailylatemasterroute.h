@@ -3,12 +3,12 @@
 
 #include "masterroute/route.h"
 #include "masterroute/routestarttime.h"
-#include "netcode/oauthnetconnect.h"
 #include "greenmile/greenmile.h"
 #include <algorithm>
 #include <QApplication>
 #include <QtCore>
 #include <QObject>
+#include "netcode/oauth2.h"
 
 class DailyLateMasterRoute : public QObject
 {
@@ -29,7 +29,7 @@ private:
     // OAuth2 Network connection. This is a pointer because it
     // needs to stick around.
     //-------------------------------------------------------------------------
-    OAuthNetConnect *oauthConn_ = new OAuthNetConnect(this);
+    //OAuthNetConnect *oauthConn_ = new OAuthNetConnect(this);
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------

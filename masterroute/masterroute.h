@@ -3,7 +3,6 @@
 
 #include "route.h"
 #include "routestarttime.h"
-#include "netcode/oauthnetconnect.h"
 #include <algorithm>
 #include <QApplication>
 #include <QtCore>
@@ -12,6 +11,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
+#include "netcode/oauth2.h"
 
 //namespace mandatoryDataCol
 //{}
@@ -60,7 +60,7 @@ private:
     // OAuth2 Network connection. This is a pointer because it
     // needs to stick around.
     //-------------------------------------------------------------------------
-    OAuthNetConnect *oauthConn = new OAuthNetConnect(this);
+
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
@@ -170,7 +170,7 @@ private:
     //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
-    // Once the sheets have been parsed they, are stored in these containers.
+    // Once the sheets have been parsed they are stored in these containers.
     //-------------------------------------------------------------------------
     QVector<Route> mondayRoutes_;
     QVector<Route> tuesdayRoutes_;
@@ -190,10 +190,8 @@ private:
     void whatEmployeeColIsMissing(QVector<int> employeeColumnsVerify);
 
     //-------------------------------------------------------------------------
-    //Betadase things for settings
+    //Database things for settings
     //-------------------------------------------------------------------------
-    QString settingsPath_ = QApplication::applicationDirPath() + "/settings.db";
-    void loadSettingsFromDatabase();
 
 public slots:
     void abort();
