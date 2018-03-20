@@ -322,7 +322,6 @@ QByteArray DailyLateMasterRoute::queryRoutes()
 
     OAuth2 oauthConn(QString(QApplication::applicationDirPath() + "/oauth2Settings.db"), QString(QApplication::applicationDirPath()+ "/client.json"), sheetsScope_, this);
     return oauthConn.get(QString(sheetsRouteAddress_));
-
 }
 
 QByteArray DailyLateMasterRoute::queryEmployees()
