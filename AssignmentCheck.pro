@@ -66,3 +66,6 @@ FORMS += \
     masterroutewidget.ui \
     dailylategreenmilewidget.ui \
     dailylategreenmilesettingswidget.ui
+
+RESOURCES += \
+    icons.qrc

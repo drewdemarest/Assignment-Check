@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>gmac.png</file>
+    </qresource>
+</RCC>

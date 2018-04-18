@@ -249,10 +249,18 @@ QByteArray OAuth2::get(const QString &address)
         usleep(10);
     }
     QNetworkReply *response = google->get(QUrl(address));
+    int sleepTimer = 0;
     while(!response->isFinished())
     {
         qApp->processEvents();
         usleep(10);
+        sleepTimer += 10;
+        if(sleepTimer >= 4000000)
+        {
+            response->abort();
+            return QByteArray();
+        }
+
     }
     QByteArray responseCopy = response->readAll();
     response->deleteLater();

@@ -61,9 +61,17 @@ bool RouteDifference::operator==(const RouteDifference &rhs) const
  const QVector<Route> &routesB)
 {
     QVector<RouteDifference> differences;
+    QVector<RouteDifference> diffA;
+    QVector<RouteDifference> diffB;
 
-    differences.append(compareVectorAtoB(routesA, routesB));
-    differences.append(compareVectorBtoA(routesB, routesA));
+    diffA = compareVectorAtoB(routesA, routesB);
+    diffB = compareVectorBtoA(routesB, routesA);
+
+    diffA = renameRteDiffsWithDuplicateRteKeys(diffA);
+    diffB = renameRteDiffsWithDuplicateRteKeys(diffB);
+
+    differences.append(diffA);
+    differences.append(diffB);
 
     std::sort(differences.begin(), differences.end(),
             [](RouteDifference rd1, RouteDifference rd2) ->\
@@ -72,7 +80,7 @@ bool RouteDifference::operator==(const RouteDifference &rhs) const
     differences.erase(std::unique\
         (differences.begin(), differences.end()), differences.end());
 
-    differences = renameRteDiffsWithDuplicateRteKeys(differences);
+    //differences = renameRteDiffsWithDuplicateRteKeys(differences);
     differences = removeRteDiffsWithoutDiscrepencies(differences);
 
     return differences;
