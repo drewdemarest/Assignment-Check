@@ -268,12 +268,14 @@ QMap<QString, QString> DailyLateMasterRoute::buildEmployees()
     for(int rowCount = 1; rowCount < sheetValues.size(); rowCount++)
     {
         row = sheetValues.at(rowCount).toArray();
+        //qDebug() << row;
 
         for(int colCount = 0; colCount < row.size(); colCount++)
         {
             if(mandatoryEmployeeColumns_.at(employeeNameCol) == colCount)
             {
                 employeeName = row.at(colCount).toString();
+                //qDebug() << employeeName;
             }
             if(mandatoryEmployeeColumns_.at(employeeNumCol) == colCount)
             {
@@ -282,6 +284,7 @@ QMap<QString, QString> DailyLateMasterRoute::buildEmployees()
 
         }
         employees[employeeName] = employeeNumber;
+        //qDebug() << employeeName <<  employees[employeeName];
         employeeName = QString();
         employeeNumber = QString();
     }
@@ -292,9 +295,11 @@ QVector<Route> DailyLateMasterRoute::applyEmployeeNumsToRoutes\
 (QVector<Route> routes)
 {
     QMap<QString, QString> employees = buildEmployees();
+    qDebug() << employees.keys();
     QVector<Route>::iterator routesIter = routes.begin();
     while(routesIter != routes.constEnd())
     {
+        qDebug() << employees[routesIter->getDriverName()] << routesIter->getDriverName() << routesIter->getKey();
         if(!routesIter->getDriverName().trimmed().isEmpty())
         {
             if(employees.contains(routesIter->getDriverName()))

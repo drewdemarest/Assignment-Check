@@ -50,6 +50,7 @@ void RouteDifferenceModel::addRouteDifferenceVector(const QVector<RouteDifferenc
 {
     this->beginResetModel();
     routeDifferences = routeDiffs;
+    //routeDifferences = RouteDifference::renameRteDiffsWithDuplicateRteKeys(routeDifferences);
     this->endResetModel();
 }
 

@@ -45,7 +45,7 @@ private:
     //-------------------------------------------------------------------------
     QRegExp mrsSheetDateRegExp  = QRegExp("\\d+-[A-Z,a-z]{3}-\\d+");
     QRegExp routeRegExp         = QRegExp("^[A-Z]-[A-Z,0-9]{3}");
-    QRegExp driverRegExp        = QRegExp("(?:\\w+-)?\\w+'?\\w+,\\s[A-Z]");
+    QRegExp driverRegExp        = QRegExp("(?:\\w+-)?\\w+'?\\w+,\\s\\w+");
     QRegExp equipmentRegExp     = QRegExp("(?:\\b\\d+[a-z,A-Z]{1}\\b)|\\b\\d+\\b");
     QRegExp timeRegExp          = QRegExp("\\d+:\\d+|\\d{3,4}");
 
